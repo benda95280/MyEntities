@@ -5,4 +5,4 @@ Gives the head of a player.
 - **/playerhead [playerName] : Give player head**
   
 ## Screenshot 
-<img height=200 src="https://minecraftcommand.science//system/blogs/avatars/000/000/004/medium/custom_heads.png" />
+<img height=200 src="https://i.ibb.co/9wq4s7R/playerheadobj-V1.png" />
