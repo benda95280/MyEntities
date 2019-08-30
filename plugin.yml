@@ -1,0 +1,17 @@
+name: PlayerHeadObj
+version: 1.3
+main: Enes5519\PlayerHeadObj\PlayerHeadObj
+api: 3.0.0
+author: Enes5519
+
+permissions:
+  playerheadObj:
+    description: Main permission
+    default: op
+    children:
+      playerheadObj.give:
+        default: op
+      playerheadObj.spawn:
+        default: op
+      playerheadObj.attack:
+        default: op
