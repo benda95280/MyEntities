@@ -1,6 +1,7 @@
 <?php
 
-/*
+/*	
+ *  Original Source: https://github.com/Enes5519/PlayerHead 
  *  PlayerHeadObj - a Altay and PocketMine-MP plugin to add player head on server
  *  Copyright (C) 2018 Enes Yıldırım
  *
@@ -21,9 +22,9 @@
 
 declare(strict_types=1);
 
-namespace Enes5519\PlayerHeadObj\commands;
+namespace Benda95280\PlayerHeadObj\commands;
 
-use Enes5519\PlayerHeadObj\PlayerHeadObj;
+use Benda95280\PlayerHeadObj\PlayerHeadObj;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
@@ -40,7 +41,7 @@ class PHCommand extends Command{
 
 	public function __construct(array $messages){
 		$this->messages = $messages;
-		parent::__construct('PlayerHeadObj', 'Give a player head', '/PlayerHeadObj <playerName:string>', ['pho']);
+		parent::__construct('PlayerHeadObj', 'Give a player headObj', '/PlayerHeadObj <playerName:string>', ['pho']);
 		$this->setPermission('PlayerHeadObj.give');
 	}
 
@@ -55,11 +56,8 @@ class PHCommand extends Command{
 
 			
 			$skinName = implode(' ', $args);
-			echo PlayerHeadObj::getInstance()->getDataFolder() . "skins\\".$skinName . ".png";
 			if(file_exists(PlayerHeadObj::getInstance()->getDataFolder() . "skins\\".$skinName . ".png")) {
-			// new Skin("Standard_Custom", $this->createSkin($skin))
-			    // $sender->getInventory()->addItem(PlayerHeadObj::getPlayerHeadItem($player->getSkin(), $player->getName()));
-				$sender->getInventory()->addItem(PlayerHeadObj::getPlayerHeadItem($sender->getSkin(), $skinName));
+				$sender->getInventory()->addItem(PlayerHeadObj::getPlayerHeadItem($skinName));
 				$sender->sendMessage(PlayerHeadObj::PREFIX . TextFormat::colorize(sprintf($this->messages['message-head-added'], $skinName)));
 
 			}

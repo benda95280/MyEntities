@@ -1,6 +1,7 @@
 <?php
 
-/*
+/*	
+ *  Original Source: https://github.com/Enes5519/PlayerHead 
  *  PlayerHeadObj - a Altay and PocketMine-MP plugin to add player head on server
  *  Copyright (C) 2018 Enes Yıldırım
  *
@@ -21,9 +22,9 @@
 
 declare(strict_types=1);
 
-namespace Enes5519\PlayerHeadObj\entities;
+namespace Benda95280\PlayerHeadObj\entities;
 
-use Enes5519\PlayerHeadObj\PlayerHeadObj;
+use Benda95280\PlayerHeadObj\PlayerHeadObj;
 use pocketmine\entity\Human;
 use pocketmine\entity\Skin;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -33,7 +34,7 @@ use pocketmine\Player;
 
 class HeadEntityObj extends Human{
     public const HEAD_GEOMETRY = '{
-	"geometry.player_headObj2": {
+	"geometry.player_headObj": {
 		"texturewidth": 64,
 		"textureheight": 64,
 		"bones": [
@@ -73,6 +74,6 @@ class HeadEntityObj extends Human{
 	}
 
 	public function getDrops() : array{
-        return [PlayerHeadObj::getPlayerHeadItem($this->skin, $this->skin->getSkinId())];
+        return [PlayerHeadObj::getPlayerHeadItem($this->skin->getSkinId())];
     }
 }

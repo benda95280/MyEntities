@@ -1,7 +1,8 @@
 <?php
 
-/*
- *  PlayerHead - a Altay and PocketMine-MP plugin to add player head on server
+/*	
+ *  Original Source: https://github.com/Enes5519/PlayerHead 
+ *  PlayerHeadObj - a Altay and PocketMine-MP plugin to add player head on server
  *  Copyright (C) 2018 Enes Yıldırım
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -21,10 +22,10 @@
 
 declare(strict_types=1);
 
-namespace Enes5519\PlayerHeadObj;
+namespace Benda95280\PlayerHeadObj;
 
-use Enes5519\PlayerHeadObj\commands\PHCommand;
-use Enes5519\PlayerHeadObj\entities\HeadEntityObj;
+use Benda95280\PlayerHeadObj\commands\PHCommand;
+use Benda95280\PlayerHeadObj\entities\HeadEntityObj;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Skin;
 use pocketmine\event\block\BlockPlaceEvent;
@@ -38,6 +39,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\TextFormat;
+
 
 class PlayerHeadObj extends PluginBase implements Listener{
 	/** @var bool */
@@ -64,6 +66,15 @@ class PlayerHeadObj extends PluginBase implements Listener{
 
 		$this->getServer()->getCommandMap()->register('PlayerHeadObj', new PHCommand($data));
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
+		//Count skins available
+		$pathSkinsHead = PlayerHeadObj::getInstance()->getDataFolder()."skins\\";
+		$file = glob($pathSkinsHead . '*');
+		$countFileSkinsHead = 0;
+		if ($file != false)
+		{
+			$countFileSkinsHead = count($file);
+		}
+		$this->getLogger()->info("§aActivated§f: §b§l$countFileSkinsHead §r§bHeadSkins§r§f found");
 	}
 	
     public static function getInstance() : PlayerHeadObj {
@@ -84,14 +95,6 @@ class PlayerHeadObj extends PluginBase implements Listener{
 		}
 	}
 
-	public function onDeath(PlayerDeathEvent $event) : void{
-		if($this->dropDeath){
-			$drops = $event->getDrops();
-			$drops[] = self::getPlayerHeadItem($event->getPlayer()->getSkin(), $event->getPlayer()->getName());
-			$event->setDrops($drops);
-		}
-	}
-
 	private static function getYaw(Vector3 $pos, Vector3 $target) : float{
 		$yaw = atan2($target->z - $pos->z, $target->x - $pos->x) / M_PI * 180 - 90;
 		if($yaw < 0){
@@ -108,15 +111,13 @@ class PlayerHeadObj extends PluginBase implements Listener{
 	}
 
 	/**
-	 * @param Skin $skin
 	 * @param string $name
 	 * @return Item
 	 */
-	public static function getPlayerHeadItem(Skin $skin, string $name) : Item{
+	public static function getPlayerHeadItem(string $name) : Item{
 		return (ItemFactory::get(Item::MOB_HEAD, 3))
 			->setCustomBlockData(new CompoundTag('Skin', [
 				new StringTag('Name', $name),
-				// new ByteArrayTag('Data', $skin->getSkinData())
 				new ByteArrayTag('Data', PlayerHeadObj::createSkin($name))
 			]))
 			->setCustomName(TextFormat::colorize(sprintf(self::$headFormat, $name), '&'));
