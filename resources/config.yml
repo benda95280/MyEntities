@@ -1,5 +1,5 @@
 ---
-head-format: '&r&6%s''s HeadObj'
+head-format: '&r&6%s''s'
 
-message-head-added: '&a%s''s headObj added in your inventory.'
+message-head-added: '&a%s''s item added in your inventory.'
 ...

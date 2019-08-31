@@ -117,7 +117,7 @@ class PlayerHeadObj extends PluginBase implements Listener{
 	public static function getPlayerHeadItem(string $name) : Item{
 		return (ItemFactory::get(Item::MOB_HEAD, 3))
 			->setCustomBlockData(new CompoundTag('Skin', [
-				new StringTag('Name', $name),
+				new StringTag('Name', ucfirst($name)),
 				new ByteArrayTag('Data', PlayerHeadObj::createSkin($name))
 			]))
 			->setCustomName(TextFormat::colorize(sprintf(self::$headFormat, $name), '&'));

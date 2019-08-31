@@ -70,7 +70,6 @@ class HeadEntityObj extends Human{
 
 	public function setSkin(Skin $skin) : void{
 		parent::setSkin(new Skin($skin->getSkinId(), $skin->getSkinData(), '', 'geometry.player_headObj', self::HEAD_GEOMETRY));
-		echo"ok";
 	}
 
 	public function getDrops() : array{
