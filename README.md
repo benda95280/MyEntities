@@ -14,6 +14,9 @@ Gives a head item with skin to a player.
 Source / credits of the skin: https://minecraft-heads.com/
 
 book: https://minecraft-heads.com/custom-heads/decoration/30771-old-book
+
 bowl_pasta: https://minecraft-heads.com/custom-heads/food%20&%20drinks/30178-bowl-of-pasta-with-tomato-sauce
+
 calice: https://minecraft-heads.com/custom-heads/decoration/883-golden-chalice
+
 crate_locked: https://minecraft-heads.com/custom-heads/decoration/31223-locked-crate-gray
