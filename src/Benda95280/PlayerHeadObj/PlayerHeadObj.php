@@ -45,13 +45,14 @@ class PlayerHeadObj extends PluginBase implements Listener{
 	/** @var bool */
 	private $dropDeath = false;
 	/** @var string */
-	private static $headFormat;
     private static $instance;
+	public static $skinsList;
 
 	public const PREFIX = TextFormat::BLUE . 'PlayerHeadObj' . TextFormat::DARK_GRAY . '> ';
 	
 	public function onEnable() : void{
-		
+		$this->getLogger()->info("§aLoading ...");
+
         if (self::$instance === null) {
             self::$instance = $this;
         }
@@ -59,22 +60,40 @@ class PlayerHeadObj extends PluginBase implements Listener{
 		$this->saveDefaultConfig();
 
 		$data = $this->getConfig()->getAll();
-		$this->dropDeath = $data['drop-on-death'] ?? false;
-		self::$headFormat = $data['head-format'] ?? '&r&6%s\'s Head';
-
+		self::$skinsList = $data["skins"];
+		
 		Entity::registerEntity(HeadEntityObj::class, true, ['PlayerHeadObj']);
 
-		$this->getServer()->getCommandMap()->register('PlayerHeadObj', new PHCommand($data));
+		$this->getServer()->getCommandMap()->register('PlayerHeadObj', new PHCommand($data["message"]));
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
 		//Count skins available
 		$pathSkinsHead = PlayerHeadObj::getInstance()->getDataFolder()."skins\\";
-		$file = glob($pathSkinsHead . '*');
-		$countFileSkinsHead = 0;
-		if ($file != false)
-		{
-			$countFileSkinsHead = count($file);
+		$countFileSkinsHeadSmall = 0;
+		$countFileSkinsHeadNormal= 0;
+		foreach(self::$skinsList as $skinName => $skinValue) {
+			if (!file_exists($pathSkinsHead.$skinName.'.png')) {
+				$this->getLogger()->info("§4'".$skinName."' Do not have any skin (png) file ! It has been removed from plugin.");
+				unset(self::$skinsList[$skinName]);
+				continue;
+			}
+			if ($skinValue["type"] == "head") {
+				if ($skinValue["size"] === 0) $countFileSkinsHeadSmall++;
+				else if ($skinValue["size"] === 1) $countFileSkinsHeadNormal++;
+				else {
+					$this->getLogger()->info("§4'".$skinName."' Size error ! It has been removed from plugin.");
+					unset(self::$skinsList[$skinName]);
+					continue;
+				}
+			}
+			else {
+				$this->getLogger()->info("§4'".$skinName."' Type do not exist ! It has been removed from plugin.");
+				unset(self::$skinsList[$skinName]);
+				continue;
+			}
 		}
-		$this->getLogger()->info("§aActivated§f: §b§l$countFileSkinsHead §r§bHeadSkins§r§f found");
+		$this->getLogger()->info("§b§l$countFileSkinsHeadSmall §r§bHead skin small§r§f found");
+		$this->getLogger()->info("§b§l$countFileSkinsHeadNormal §r§bHead skin normal§r§f found");
+		$this->getLogger()->info("§aActivated");
 	}
 	
     public static function getInstance() : PlayerHeadObj {
@@ -97,6 +116,7 @@ class PlayerHeadObj extends PluginBase implements Listener{
 
 	private static function getYaw(Vector3 $pos, Vector3 $target) : float{
 		$yaw = atan2($target->z - $pos->z, $target->x - $pos->x) / M_PI * 180 - 90;
+		echo $yaw;
 		if($yaw < 0){
 			$yaw += 360.0;
 		}
@@ -114,13 +134,13 @@ class PlayerHeadObj extends PluginBase implements Listener{
 	 * @param string $name
 	 * @return Item
 	 */
-	public static function getPlayerHeadItem(string $name) : Item{
+	public static function getPlayerHeadItem(string $name,string $nameFinal) : Item{
 		return (ItemFactory::get(Item::MOB_HEAD, 3))
 			->setCustomBlockData(new CompoundTag('Skin', [
-				new StringTag('Name', ucfirst($name)),
+				new StringTag('Name', $name),
 				new ByteArrayTag('Data', PlayerHeadObj::createSkin($name))
 			]))
-			->setCustomName(TextFormat::colorize(sprintf(self::$headFormat, $name), '&'));
+			->setCustomName(TextFormat::colorize('&r'.$nameFinal, '&'));
 	}
 
     public static function createSkin($skinName){

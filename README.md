@@ -20,3 +20,5 @@ bowl_pasta: https://minecraft-heads.com/custom-heads/food%20&%20drinks/30178-bow
 calice: https://minecraft-heads.com/custom-heads/decoration/883-golden-chalice
 
 crate_locked: https://minecraft-heads.com/custom-heads/decoration/31223-locked-crate-gray
+
+bible: https://minecraft-heads.com/custom-heads/decoration/603-bible

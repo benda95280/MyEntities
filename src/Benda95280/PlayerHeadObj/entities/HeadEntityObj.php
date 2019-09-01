@@ -85,6 +85,7 @@ class HeadEntityObj extends Human{
 	}
 
 	public function getDrops() : array{
-        return [PlayerHeadObj::getPlayerHeadItem($this->skin->getSkinId())];
+		$nameFinal = ucfirst(PlayerHeadObj::$skinsList[$this->skin->getSkinId()]['name']);
+        return [PlayerHeadObj::getPlayerHeadItem($this->skin->getSkinId(),$nameFinal)];
     }
 }

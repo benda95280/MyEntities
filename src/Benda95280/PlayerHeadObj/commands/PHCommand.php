@@ -56,9 +56,11 @@ class PHCommand extends Command{
 
 			
 			$skinName = implode(' ', $args);
-			if(file_exists(PlayerHeadObj::getInstance()->getDataFolder() . "skins\\".$skinName . ".png")) {
-				$sender->getInventory()->addItem(PlayerHeadObj::getPlayerHeadItem($skinName));
-				$sender->sendMessage(PlayerHeadObj::PREFIX . TextFormat::colorize(sprintf($this->messages['message-head-added'], $skinName)));
+			
+			if (isset(PlayerHeadObj::$skinsList[$skinName])) {
+				$nameFinal = ucfirst(PlayerHeadObj::$skinsList[$skinName]['name']);
+				$sender->getInventory()->addItem(PlayerHeadObj::getPlayerHeadItem($skinName,$nameFinal));
+				$sender->sendMessage(PlayerHeadObj::PREFIX . TextFormat::colorize(sprintf($this->messages['message-head-added'], $nameFinal)));
 
 			}
 			else {
