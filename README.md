@@ -22,3 +22,8 @@ calice: https://minecraft-heads.com/custom-heads/decoration/883-golden-chalice
 crate_locked: https://minecraft-heads.com/custom-heads/decoration/31223-locked-crate-gray
 
 bible: https://minecraft-heads.com/custom-heads/decoration/603-bible
+
+
+## Thanks for help to:
+- HimbeersaftLP
+- Kenn Fatt
