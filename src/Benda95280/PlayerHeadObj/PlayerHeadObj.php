@@ -116,18 +116,11 @@ class PlayerHeadObj extends PluginBase implements Listener{
 
 	private static function getYaw(Vector3 $pos, Vector3 $target) : float{
 		$yaw = atan2($target->z - $pos->z, $target->x - $pos->x) / M_PI * 180 - 90;
-		echo $yaw;
 		if($yaw < 0){
 			$yaw += 360.0;
 		}
-
-		foreach([45, 90, 135, 180, 225, 270, 315, 360] as $direction){
-			if($yaw <= $direction){
-				return $direction;
-			}
-		}
-
-		return $yaw;
+		// Round to nearest multiple of 45
+		return round($yaw / 45) * 45;
 	}
 
 	/**
