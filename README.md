@@ -1,6 +1,8 @@
 ## Source of the code - Thanks To Enes5519
 https://github.com/Enes5519/PlayerHead/
 
+-----------------
+
 # PlayerHeadObj
 Gives a head item with skin to a player.   
   
@@ -23,6 +25,7 @@ crate_locked: https://minecraft-heads.com/custom-heads/decoration/31223-locked-c
 
 bible: https://minecraft-heads.com/custom-heads/decoration/603-bible
 
+-----------------
 
 ## Thanks for help to:
 - HimbeersaftLP
