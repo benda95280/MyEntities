@@ -84,7 +84,7 @@ class PlayerHeadObj extends PluginBase implements Listener{
 	public function onPlace(BlockPlaceEvent $event) : void{
 		$player = $event->getPlayer();
 		if($player->hasPermission('PlayerHeadObj.spawn') and ($item = $player->getInventory()->getItemInHand())->getId() === Item::MOB_HEAD and ($blockData = $item->getCustomBlockData()) !== null){
-			$nbt = Entity::createBaseNBT($event->getBlock()->add(0.5, 0, 0.5), null, self::getYaw($event->getBlock(), $player));
+			$nbt = Entity::createBaseNBT($event->getBlock()->add(0.5, 0, 0.5), null, self::getYaw($event->getBlock()->add(0.5, 0, 0.5), $player)); // Add 0.5 because block center is at half coordinate
             $blockData->setName('Skin');
 			$nbt->setTag($blockData);
             (new HeadEntityObj($player->level, $nbt))->spawnToAll();
