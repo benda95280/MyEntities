@@ -25,11 +25,13 @@ declare(strict_types=1);
 namespace Benda95280\PlayerHeadObj\entities;
 
 use Benda95280\PlayerHeadObj\PlayerHeadObj;
+use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\entity\Human;
 use pocketmine\entity\Skin;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\Player;
 
 class HeadEntityObj extends Human{
@@ -70,6 +72,16 @@ class HeadEntityObj extends Human{
 
 	public function setSkin(Skin $skin) : void{
 		parent::setSkin(new Skin($skin->getSkinId(), $skin->getSkinData(), '', 'geometry.player_headObj', self::HEAD_GEOMETRY));
+	}
+
+	protected function startDeathAnimation(): void {
+    	// Replace death animation with particles
+		$this->level->addParticle(new DestroyBlockParticle($this, BlockFactory::get(Block::SOUL_SAND)));
+		$this->despawnFromAll();
+	}
+
+	protected function endDeathAnimation(): void {
+		// We don't need to do this anymore
 	}
 
 	public function getDrops() : array{
