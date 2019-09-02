@@ -47,20 +47,23 @@ class PlayerHeadObj extends PluginBase implements Listener{
 	/** @var string */
     private static $instance;
 	public static $skinsList;
+	public static $miscList;
 
 	public const PREFIX = TextFormat::BLUE . 'PlayerHeadObj' . TextFormat::DARK_GRAY . '> ';
 	
 	public function onEnable() : void{
-		$this->getLogger()->info("§aLoading ...");
 
         if (self::$instance === null) {
             self::$instance = $this;
         }
 		
+		//Load configuration file
 		$this->saveDefaultConfig();
-
 		$data = $this->getConfig()->getAll();
 		self::$skinsList = $data["skins"];
+		self::$miscList = $data["misc"];
+		
+		if (self::$miscList["log-level"] > 0) $this->getLogger()->info("§aLoading ...");
 		
 		Entity::registerEntity(HeadEntityObj::class, true, ['PlayerHeadObj']);
 
@@ -71,19 +74,40 @@ class PlayerHeadObj extends PluginBase implements Listener{
 		$countFileSkinsHeadSmall = 0;
 		$countFileSkinsHeadNormal= 0;
 		foreach(self::$skinsList as $skinName => $skinValue) {
+			//Entity must have a skin file
 			if (!file_exists($pathSkinsHead.$skinName.'.png')) {
 				$this->getLogger()->info("§4'".$skinName."' Do not have any skin (png) file ! It has been removed from plugin.");
 				unset(self::$skinsList[$skinName]);
 				continue;
 			}
-			if ($skinValue["type"] == "head") {
-				if ($skinValue["size"] === 0) $countFileSkinsHeadSmall++;
-				else if ($skinValue["size"] === 1) $countFileSkinsHeadNormal++;
+			//Entity declaration cannot have white space and correct lenght
+			if (preg_match('/\s/',$skinName) || strlen($skinName) <= 4 || strlen($skinName) >= 16) {
+				$this->getLogger()->info("§4'".$skinName."' Entity declaration cannot contain space and have 4-16 Char ! It has been removed from plugin.");
+				unset(self::$skinsList[$skinName]);
+				continue;
+			}
+			//Entity must have a correct lenght	name
+			if (!isset($skinValue["name"]) || strlen($skinValue["name"]) <= 4 || strlen($skinValue["name"]) >= 16) {
+				$this->getLogger()->info("§4'".$skinName."' Name must have have 4-16 Char ! It has been removed from plugin.");
+				unset(self::$skinsList[$skinName]);
+				continue;
+			}
+			
+			//** Entity verification **//
+			
+			// HEAD ENTITY //
+			//Type of entity is a must to have
+			if (isset($skinValue["type"]) || $skinValue["type"] == "head") {
+				//Head must have a size
+				if (isset($skinValue["size"]) && $skinValue["size"] === 0) $countFileSkinsHeadSmall++;
+				else if (isset($skinValue["size"]) && $skinValue["size"] === 1) $countFileSkinsHeadNormal++;
 				else {
 					$this->getLogger()->info("§4'".$skinName."' Size error ! It has been removed from plugin.");
 					unset(self::$skinsList[$skinName]);
 					continue;
 				}
+				if (self::$miscList["log-level"] > 1)	$this->getLogger()->info("§b§lLoaded: §r§6Head Skin§r§f $skinName / Size: ".$skinValue["size"]." / name: '".$skinValue["name"]."'");
+
 			}
 			else {
 				$this->getLogger()->info("§4'".$skinName."' Type do not exist ! It has been removed from plugin.");
@@ -91,9 +115,11 @@ class PlayerHeadObj extends PluginBase implements Listener{
 				continue;
 			}
 		}
-		$this->getLogger()->info("§b§l$countFileSkinsHeadSmall §r§bHead skin small§r§f found");
-		$this->getLogger()->info("§b§l$countFileSkinsHeadNormal §r§bHead skin normal§r§f found");
-		$this->getLogger()->info("§aActivated");
+		if (self::$miscList["log-level"] > 0) {
+			$this->getLogger()->info("§b§l$countFileSkinsHeadSmall §r§bHead skin small§r§f found");
+			$this->getLogger()->info("§b§l$countFileSkinsHeadNormal §r§bHead skin normal§r§f found");
+			$this->getLogger()->info("§aActivated");
+		}
 	}
 	
     public static function getInstance() : PlayerHeadObj {
