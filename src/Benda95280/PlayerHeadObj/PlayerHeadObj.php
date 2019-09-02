@@ -43,11 +43,11 @@ use pocketmine\utils\TextFormat;
 
 
 class PlayerHeadObj extends PluginBase implements Listener{
-	/** @var bool */
-	private $dropDeath = false;
-	/** @var string */
+	/** @var PlayerHeadObj  */
     private static $instance;
+	/** @var array $skinsList */
 	public static $skinsList;
+	/** @var array $miscList */
 	public static $miscList;
 
 	public const PREFIX = TextFormat::BLUE . 'PlayerHeadObj' . TextFormat::DARK_GRAY . '> '.TextFormat::WHITE;
@@ -71,7 +71,7 @@ class PlayerHeadObj extends PluginBase implements Listener{
 		$this->getServer()->getCommandMap()->register('PlayerHeadObj', new PHCommand($data["message"]));
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
 		//Count skins available
-		$pathSkinsHead = PlayerHeadObj::getInstance()->getDataFolder()."skins\\";
+		$pathSkinsHead = $this->getDataFolder() . "skins" . DIRECTORY_SEPARATOR;
 		$countFileSkinsHeadSmall = 0;
 		$countFileSkinsHeadNormal= 0;
 		foreach(self::$skinsList as $skinName => $skinValue) {
