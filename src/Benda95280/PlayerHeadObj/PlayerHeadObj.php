@@ -41,6 +41,7 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\utils\TextFormat;
 
 
+
 class PlayerHeadObj extends PluginBase implements Listener{
 	/** @var bool */
 	private $dropDeath = false;
@@ -49,7 +50,7 @@ class PlayerHeadObj extends PluginBase implements Listener{
 	public static $skinsList;
 	public static $miscList;
 
-	public const PREFIX = TextFormat::BLUE . 'PlayerHeadObj' . TextFormat::DARK_GRAY . '> ';
+	public const PREFIX = TextFormat::BLUE . 'PlayerHeadObj' . TextFormat::DARK_GRAY . '> '.TextFormat::WHITE;
 	
 	public function onEnable() : void{
 

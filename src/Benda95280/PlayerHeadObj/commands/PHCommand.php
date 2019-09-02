@@ -32,6 +32,7 @@ use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Config;
 use pocketmine\plugin\PluginBase;
+use pocketmine\item\ItemFactory;
 
 
 
@@ -53,21 +54,43 @@ class PHCommand extends Command{
 		if(empty($args)){
 			throw new InvalidCommandSyntaxException();
 		}
+		//Did we have any arguments ?
+		if (isset($args[0])) {
+			
+			// Give item
+			if (strtolower($args[0]) == "item"){
+				unset ($args[0]);
+				$itemName = implode(' ', $args);
+				if (!empty($itemName)) {
+					if ($itemName == "rotator") {
+						$item = ItemFactory::get(280 /* ID */, 0 /* Item Damage/meta */, 1 /*Count*/);
+						$item->setCustomName("§6**Obj Rotation**");
+						$sender->getInventory()->addItem($item);
+					}
+					else $sender->sendMessage(PlayerHeadObj::PREFIX ."Error: Item do not exist !");
+				}
+				else $sender->sendMessage(PlayerHeadObj::PREFIX ."Error: Item error !");
+			}
+			
+			//Else, is it a skin ?
+			elseif (strtolower($args[0]) == "entity") {
+				unset ($args[0]);
+				$skinName = implode(' ', $args);
+				
+				if (isset(PlayerHeadObj::$skinsList[$skinName])) {
+					$nameFinal = ucfirst(PlayerHeadObj::$skinsList[$skinName]['name']);
+					$sender->getInventory()->addItem(PlayerHeadObj::getPlayerHeadItem($skinName,$nameFinal));
+					$sender->sendMessage(PlayerHeadObj::PREFIX . TextFormat::colorize(sprintf($this->messages['message-head-added'], $nameFinal)));
 
-			
-			$skinName = implode(' ', $args);
-			
-			if (isset(PlayerHeadObj::$skinsList[$skinName])) {
-				$nameFinal = ucfirst(PlayerHeadObj::$skinsList[$skinName]['name']);
-				$sender->getInventory()->addItem(PlayerHeadObj::getPlayerHeadItem($skinName,$nameFinal));
-				$sender->sendMessage(PlayerHeadObj::PREFIX . TextFormat::colorize(sprintf($this->messages['message-head-added'], $nameFinal)));
+				}
+				else {
+					$sender->sendMessage(PlayerHeadObj::PREFIX ."Error: Entity do not exist !");
+				}			
 
 			}
-			else {
-                $sender->sendMessage("Error: Skin do not exist !");
-            }			
-
-		
+			else $sender->sendMessage(PlayerHeadObj::PREFIX ."Error: What do you say ? How may  help you ?");
+			
+		}
 		return true;
 	}
 

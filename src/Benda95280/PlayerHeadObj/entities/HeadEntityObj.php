@@ -67,7 +67,17 @@ class HeadEntityObj extends Human{
     public function attack(EntityDamageEvent $source) : void{
         /** @var Player $player */ // #blameJetbrains
 		$attack = ($source instanceof EntityDamageByEntityEvent and ($player = $source->getDamager()) instanceof Player) ? $player->hasPermission('PlayerHeadObj.attack') : true;
-        if($attack) parent::attack($source);
+        if($attack) {
+			$player = $source->getDamager();
+			$entity = $source->getEntity();
+			$item = $player->getInventory()->getItemInHand();
+			if ($item->getID() == 280 && $item->getCustomName() == "§6**Obj Rotation**") {
+				$newYaw = ($entity->getYaw() + 45) % 360;
+				$entity->setRotation($newYaw, 0);
+				$entity->respawnToAll();
+			}
+			else	parent::attack($source);
+		}
     }
 
 	public function setSkin(Skin $skin) : void{
