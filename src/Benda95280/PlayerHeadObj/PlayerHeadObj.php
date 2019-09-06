@@ -36,7 +36,9 @@ use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ByteArrayTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\TextFormat;
 
@@ -73,7 +75,8 @@ class PlayerHeadObj extends PluginBase implements Listener{
 		//Count skins available
 		$pathSkinsHead = $this->getDataFolder() . "skins" . DIRECTORY_SEPARATOR;
 		$countFileSkinsHeadSmall = 0;
-		$countFileSkinsHeadNormal= 0;
+		$countFileSkinsHeadNormal = 0;
+		$countFileSkinsHeadBlock = 0;
 		foreach(self::$skinsList as $skinName => $skinValue) {
 			//Entity must have a skin file
 			if (!file_exists($pathSkinsHead.$skinName.'.png')) {
@@ -94,20 +97,46 @@ class PlayerHeadObj extends PluginBase implements Listener{
 				continue;
 			}
 			
+			//ENTITY PARAMETER CHECK
+			
+			//Entity must have Param child
+			if (!isset($skinValue["param"])) {
+				$this->getLogger()->info("§4'".$skinName."' Name must have a param child ! It has been removed from plugin.");
+				unset(self::$skinsList[$skinName]);
+				continue;
+			}
+			//Entity must have a parameter Health in Param
+			if (!isset($skinValue["param"]["health"]) || !is_int($skinValue["param"]["health"]) || $skinValue["param"]["health"] < 1 || $skinValue["param"]["health"] > 75) {
+				$this->getLogger()->info("§4'".$skinName."' Name must have  1-75 (Int) Health-Param ! It has been removed from plugin.");
+				unset(self::$skinsList[$skinName]);
+				continue;
+			}
+			//Entity must have a parameter Unbreakable in Param
+			if (!isset($skinValue["param"]["unbreakable"]) || !is_int($skinValue["param"]["unbreakable"]) || !($skinValue["param"]["unbreakable"] == 1 || $skinValue["param"]["unbreakable"] == 0)) {
+				$this->getLogger()->info("§4'".$skinName."' Name must have 0 or 1 int Unbreakable-Param ! It has been removed from plugin.");
+				unset(self::$skinsList[$skinName]);
+				continue;
+			}
+			
 			//** Entity verification **//
 			
 			// HEAD ENTITY //
 			//Type of entity is a must to have
+			
+			//TODO: Create missing parameter and save it
+			//TODO: Log error if unknown parameter
+			
 			if (isset($skinValue["type"]) || $skinValue["type"] == "head") {
 				//Head must have a size
-				if (isset($skinValue["size"]) && $skinValue["size"] === 0) $countFileSkinsHeadSmall++;
-				else if (isset($skinValue["size"]) && $skinValue["size"] === 1) $countFileSkinsHeadNormal++;
+				if (isset($skinValue["param"]["size"]) && $skinValue["param"]["size"] === "small") $countFileSkinsHeadSmall++;
+				else if (isset($skinValue["param"]["size"]) && $skinValue["param"]["size"] === "normal") $countFileSkinsHeadNormal++;
+				else if (isset($skinValue["param"]["size"]) && $skinValue["param"]["size"] === "block") $countFileSkinsHeadBlock++;
 				else {
 					$this->getLogger()->info("§4'".$skinName."' Size error ! It has been removed from plugin.");
 					unset(self::$skinsList[$skinName]);
 					continue;
 				}
-				if (self::$miscList["log-level"] > 1)	$this->getLogger()->info("§b§lLoaded: §r§6Head Skin§r§f $skinName / Size: ".$skinValue["size"]." / name: '".$skinValue["name"]."'");
+				if (self::$miscList["log-level"] > 1)	$this->getLogger()->info("§b§lLoaded: §r§6Head Skin§r§f $skinName / Size: ".$skinValue["param"]["size"]." / name: '".$skinValue["name"]."'");
 
 			}
 			else {
@@ -119,6 +148,7 @@ class PlayerHeadObj extends PluginBase implements Listener{
 		if (self::$miscList["log-level"] > 0) {
 			$this->getLogger()->info("§b§l$countFileSkinsHeadSmall §r§bHead skin small§r§f found");
 			$this->getLogger()->info("§b§l$countFileSkinsHeadNormal §r§bHead skin normal§r§f found");
+			$this->getLogger()->info("§b§l$countFileSkinsHeadBlock §r§bHead skin block§r§f found");
 			$this->getLogger()->info("§aActivated");
 		}
 	}
@@ -131,8 +161,12 @@ class PlayerHeadObj extends PluginBase implements Listener{
 		$player = $event->getPlayer();
 		if($player->hasPermission('PlayerHeadObj.spawn') and ($item = $player->getInventory()->getItemInHand())->getId() === Item::MOB_HEAD and ($blockData = $item->getCustomBlockData()) !== null){
 			$nbt = Entity::createBaseNBT($event->getBlock()->add(0.5, 0, 0.5), null, self::getYaw($event->getBlock()->add(0.5, 0, 0.5), $player)); // Add 0.5 because block center is at half coordinate
-            $blockData->setName('Skin');
-			$nbt->setTag($blockData);
+			$blockDataSkin = $blockData->getCompoundTag("skin");
+			$blockDataParam = $blockData->getCompoundTag("param");
+			$blockDataSkin->setName('Skin');
+			$blockDataParam->setName('Param');
+			$nbt->setTag($blockDataSkin);
+			$nbt->setTag($blockDataParam);
             (new HeadEntityObj($player->level, $nbt))->spawnToAll();
 			if(!$player->isCreative()){
 				$player->getInventory()->setItemInHand($item->setCount($item->getCount() - 1));
@@ -142,25 +176,33 @@ class PlayerHeadObj extends PluginBase implements Listener{
 	}
 
 	private static function getYaw(Vector3 $pos, Vector3 $target) : float{
+		//Entity must rotate 90° cause of block
+		//TODO: Handle 45° for other block
 		$yaw = atan2($target->z - $pos->z, $target->x - $pos->x) / M_PI * 180 - 90;
 		if($yaw < 0){
 			$yaw += 360.0;
 		}
 		// Round to nearest multiple of 45
-		return round($yaw / 45) * 45;
+		return round($yaw / 90) * 90;
 	}
 
 	/**
 	 * @param string $name
+	 * @param string $nameFinal
+	 * @param array $param
 	 * @return Item
 	 */
-	public static function getPlayerHeadItem(string $name,string $nameFinal) : Item{
-		return (ItemFactory::get(Item::MOB_HEAD, 3))
-			->setCustomBlockData(new CompoundTag('Skin', [
-				new StringTag('Name', $name),
-				new ByteArrayTag('Data', PlayerHeadObj::createSkin($name))
-			]))
+	public static function getPlayerHeadItem(string $name,string $nameFinal,array $param) : Item{
+		$item = (ItemFactory::get(Item::MOB_HEAD, 3))
+			->setCustomBlockData(new CompoundTag("", [
+				new CompoundTag('skin', [
+					new StringTag('Name', $name),
+					new ByteArrayTag('Data', PlayerHeadObj::createSkin($name)),
+				]),
+				PlayerHeadObj::arrayToCompTag($param,"param")
+				]))
 			->setCustomName(TextFormat::colorize('&r'.$nameFinal, '&'));
+		return $item;
 	}
 
     public static function createSkin($skinName){
@@ -180,6 +222,14 @@ class PlayerHeadObj extends PluginBase implements Listener{
 			}
 			@imagedestroy($img);
 			return $bytes;
+    }
+    public static function arrayToCompTag($array,String $arrayname){
+		$tag = new CompoundTag($arrayname, []);
+		foreach($array as $key => $value){
+			if (is_int($value)) $tag->setTag(new IntTag($key, $value));
+			elseif (is_string($value)) $tag->setTag(new StringTag($key, $value));
+		}
+		return $tag;
     }
 	
 }

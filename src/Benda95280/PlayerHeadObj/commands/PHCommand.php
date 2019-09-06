@@ -67,6 +67,11 @@ class PHCommand extends Command{
 						$item->setCustomName("§6**Obj Rotation**");
 						$sender->getInventory()->addItem($item);
 					}
+					else if ($itemName == "remover") {
+						$item = ItemFactory::get(280 /* ID */, 0 /* Item Damage/meta */, 1 /*Count*/);
+						$item->setCustomName("§6**Obj Remover**");
+						$sender->getInventory()->addItem($item);
+					}
 					else $sender->sendMessage(PlayerHeadObj::PREFIX ."Error: Item do not exist !");
 				}
 				else $sender->sendMessage(PlayerHeadObj::PREFIX ."Error: Item error !");
@@ -79,7 +84,8 @@ class PHCommand extends Command{
 				
 				if (isset(PlayerHeadObj::$skinsList[$skinName])) {
 					$nameFinal = ucfirst(PlayerHeadObj::$skinsList[$skinName]['name']);
-					$sender->getInventory()->addItem(PlayerHeadObj::getPlayerHeadItem($skinName,$nameFinal));
+					$param = PlayerHeadObj::$skinsList[$skinName]['param'];
+					$sender->getInventory()->addItem(PlayerHeadObj::getPlayerHeadItem($skinName,$nameFinal,$param));
 					$sender->sendMessage(PlayerHeadObj::PREFIX . TextFormat::colorize(sprintf($this->messages['message-head-added'], $nameFinal)));
 
 				}

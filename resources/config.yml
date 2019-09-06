@@ -9,20 +9,36 @@ skins:
   book_1:
     type: 'head'
     name: 'Nice Book'
-    size: 0
+    #RemoverTool can break it
+    param:
+      size: 'small'
+      health: 1
+      unbreakable: 1
   book_bible:
     type: 'head'
     name: 'Holy bible'
-    size: 0
+    param:
+      size: 'normal'
+      health: 10
+      unbreakable: 0
   bowl_pasta:
     type: 'head'
     name: 'Pasta bowl'
-    size: 1
+    param:
+      size: 'normal'
+      health: 1
+      unbreakable: 0
   calice:
     type: 'head'
     name: '&1Calice'
-    size: 1
+    param:
+      size: 'block'
+      health: 1
+      unbreakable: 0
   crate_locked:
     type: 'head'
     name: 'Locked crate'
-    size: 1
+    param:
+      size: 'block'
+      health: 1
+      unbreakable: 0

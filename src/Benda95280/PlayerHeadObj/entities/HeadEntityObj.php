@@ -35,8 +35,8 @@ use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\Player;
 
 class HeadEntityObj extends Human{
-    public const HEAD_GEOMETRY = '{
-	"geometry.player_headObj": {
+    public const HEAD_GEOMETRY_NORMAL = '{
+	"geometry.player_headObj_NORMAL": {
 		"texturewidth": 64,
 		"textureheight": 64,
 		"bones": [
@@ -44,8 +44,40 @@ class HeadEntityObj extends Human{
 				"name": "head",
 				"pivot": [0, 0, 0],
 				"cubes": [
-					{"origin": [-4, 0, -4], "size": [8, 8, 8], "uv": [0, 0], "mirror": true},
-					{"origin": [-4, 0, -4], "size": [8, 8, 8], "uv": [32, 0], "inflate": 0.5, "mirror": true}
+					{"origin": [-4, 0.5, -4], "size": [8, 8, 8], "uv": [0, 0], "mirror": true},
+					{"origin": [-4, 0.5, -4], "size": [8, 8, 8], "uv": [32, 0], "inflate": 0.5, "mirror": true}
+				]
+			}
+		]
+	}
+}';
+    public const HEAD_GEOMETRY_SMALL = '{
+	"geometry.player_headObj_SMALL": {
+		"texturewidth": 64,
+		"textureheight": 64,
+		"bones": [
+			{
+				"name": "head",
+				"pivot": [0, 0, 0],
+				"cubes": [
+					{"origin": [-4, -1.5, -4], "size": [8, 8, 8], "uv": [0, 0], "inflate": -2, "mirror": true},
+					{"origin": [-4, -1.5, -4], "size": [8, 8, 8], "uv": [32, 0], "inflate": -1.5, "mirror": true}
+				]
+			}
+		]
+	}
+}';
+    public const HEAD_GEOMETRY_BLOCK1 = '{
+	"geometry.player_headObj_BLOCK1": {
+		"texturewidth": 64,
+		"textureheight": 64,
+		"bones": [
+			{
+				"name": "head",
+				"pivot": [0, 0, 0],
+				"cubes": [
+					{"origin": [-4, 4, -4], "size": [8, 8, 8], "uv": [0, 0], "inflate": 3.5, "mirror": true},
+					{"origin": [-4, 4, -4], "size": [8, 8, 8], "uv": [32, 0], "inflate": 4, "mirror": true}
 				]
 			}
 		]
@@ -55,7 +87,9 @@ class HeadEntityObj extends Human{
     public $width = 0.5, $height = 0.6;
 
     protected function initEntity() : void{
-	    $this->setMaxHealth(1);
+		$nbt = $this->namedtag;
+		// var_dump($nbt->getCompoundTag("Param"));		
+	    $this->setMaxHealth($nbt->getCompoundTag("Param")->getInt("health"));
         $this->setSkin($this->getSkin());
 	    parent::initEntity();
     }
@@ -66,22 +100,47 @@ class HeadEntityObj extends Human{
 
     public function attack(EntityDamageEvent $source) : void{
         /** @var Player $player */ // #blameJetbrains
+		$nbt = $this->namedtag;
 		$attack = ($source instanceof EntityDamageByEntityEvent and ($player = $source->getDamager()) instanceof Player) ? $player->hasPermission('PlayerHeadObj.attack') : true;
         if($attack) {
 			$player = $source->getDamager();
 			$entity = $source->getEntity();
 			$item = $player->getInventory()->getItemInHand();
 			if ($item->getID() == 280 && $item->getCustomName() == "§6**Obj Rotation**") {
-				$newYaw = ($entity->getYaw() + 45) % 360;
-				$entity->setRotation($newYaw, 0);
-				$entity->respawnToAll();
+				if ($nbt->getCompoundTag("Param")->getString("size") == "block") {
+					//Block must rotate 90°
+					$newYaw = ($entity->getYaw() + 90) % 360;
+					$entity->setRotation($newYaw, 0);
+					$entity->respawnToAll();
+				}
+				else{
+					$newYaw = ($entity->getYaw() + 45) % 360;
+					$entity->setRotation($newYaw, 0);
+					$entity->respawnToAll();
+				}
 			}
-			else	parent::attack($source);
+			elseif ($nbt->getCompoundTag("Param")->getInt("unbreakable") == 1 && $item->getID() != 280 && $item->getCustomName() != "§6**Obj Remover**") {
+				//Nothing
+			}
+			else if ($item->getID() == 280 && $item->getCustomName() == "§6**Obj Remover**") {
+				$entity->kill();
+			}
+			else parent::attack($source);
 		}
     }
 
 	public function setSkin(Skin $skin) : void{
-		parent::setSkin(new Skin($skin->getSkinId(), $skin->getSkinData(), '', 'geometry.player_headObj', self::HEAD_GEOMETRY));
+		$nbt = $this->namedtag;
+		if ($nbt->getCompoundTag("Param")->getString("size") == "small") {
+			parent::setSkin(new Skin($skin->getSkinId(), $skin->getSkinData(), '', 'geometry.player_headObj_SMALL', self::HEAD_GEOMETRY_SMALL));
+		}
+		else if ($nbt->getCompoundTag("Param")->getString("size") == "block") {
+			parent::setSkin(new Skin($skin->getSkinId(), $skin->getSkinData(), '', 'geometry.player_headObj_BLOCK1', self::HEAD_GEOMETRY_BLOCK1));
+		}
+		else {
+			parent::setSkin(new Skin($skin->getSkinId(), $skin->getSkinData(), '', 'geometry.player_headObj_NORMAL', self::HEAD_GEOMETRY_NORMAL));
+		}
+
 	}
 
 	protected function startDeathAnimation(): void {
@@ -95,7 +154,9 @@ class HeadEntityObj extends Human{
 	}
 
 	public function getDrops() : array{
+		//TODO: What's happen if no more exist in config ?
 		$nameFinal = ucfirst(PlayerHeadObj::$skinsList[$this->skin->getSkinId()]['name']);
-        return [PlayerHeadObj::getPlayerHeadItem($this->skin->getSkinId(),$nameFinal)];
+		$param = PlayerHeadObj::$skinsList[$this->skin->getSkinId()]['param'];
+        return [PlayerHeadObj::getPlayerHeadItem($this->skin->getSkinId(),$nameFinal,$param)];
     }
 }
