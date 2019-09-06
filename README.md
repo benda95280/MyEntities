@@ -7,7 +7,9 @@ https://github.com/Enes5519/PlayerHead/
 Gives a head item with skin to a player.   
   
 ## Commands  
-- **/pho [SkinName] : Give player headObj**
+- **/pho entity [SkinName] : Give player headObj**
+- **/pho item remover : Give item Remover**
+- **/pho item rotator : Give item Rotator**
   
 ## Screenshot 
 <img height=200 src="https://i.ibb.co/9wq4s7R/playerheadobj-V1.png" />
