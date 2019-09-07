@@ -17,7 +17,7 @@ skins:
       usable:
         #Number usable time
         time: 3
-        #New Skin when empty ? (Skin name must be ###)
+        #New Skin when empty ? (Skin name must be '*_empty.png')
         skinchange: 1
         #Automatic Reload in second ? 0 = Never / Max 300 (5min)
         reload: 0
