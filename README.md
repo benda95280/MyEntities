@@ -39,6 +39,23 @@ skins:
       size: 'small'
       health: 1
       unbreakable: 1
+      usable:
+        #Number usable time
+        time: 3
+        #New Skin when empty ? (Skin name must be ###)
+        skinchange: 1
+        #Automatic Reload in second ? 0 = Never / Max 300 (5min)
+        reload: 0
+        #Destruction when empty ? 0 = No
+        destruction: 0
+        #Message when using (Empty/remaining ...)?
+        use_msg: 1
+        #Custom message when descruction happen
+        destruction_msg: "Oups, sorry ..."
+        #When used, what it does ? (Heal 1 = Half Hearth)
+        action: '{"heal": 1, "teleport": "1;2;3", "effect": "1/1/30;2/1/60;3/1/80", "msg": "May the force be with you ..."}'
+        #choose one random action ?
+        action_random: 1
 ```
   
 ## Screenshot 
