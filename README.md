@@ -25,7 +25,6 @@ skins:
   book_1:
     type: 'head'
     name: 'Nice Book'
-    #RemoverTool can break it
     param:
       size: 'small'
       health: 1
