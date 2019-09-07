@@ -10,6 +10,16 @@ Features:
   * Health
   * Unbreakable
   * 3 Sizes: Small / Normal / Block
+  * Entity can be 'usable'
+    * Max time usable
+    * Actions: Message / Teleport / Heal / Effects
+    * ChangeSkin when no more usable
+    * AutoDestruction when no more usable
+    * Show message when used
+    * AutoDestruction message
+    * Infinite actions (Array)
+    * One random action from all actions possible
+
 * Item to help :
   * Remover (To remove unbreakable entity)
   * Rotator (Change orientation of entity: 45° or 90°)
