@@ -29,9 +29,15 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\entity\Human;
 use pocketmine\entity\Skin;
+use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
+use pocketmine\utils\TextFormat;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\level\particle\DestroyBlockParticle;
+use pocketmine\level\particle\HeartParticle;
+use pocketmine\level\Position;
 use pocketmine\Player;
 
 class HeadEntityObj extends Human{
@@ -84,11 +90,8 @@ class HeadEntityObj extends Human{
 	}
 }';
 
-    public $width = 0.5, $height = 0.6;
-
     protected function initEntity() : void{
 		$nbt = $this->namedtag;
-		// var_dump($nbt->getCompoundTag("Param"));		
 	    $this->setMaxHealth($nbt->getCompoundTag("Param")->getInt("health"));
         $this->setSkin($this->getSkin());
 	    parent::initEntity();
@@ -119,6 +122,52 @@ class HeadEntityObj extends Human{
 					$entity->respawnToAll();
 				}
 			}
+			else if ($nbt->getCompoundTag("Param")->hasTag("usable")) {
+				$usable_time = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("time");
+				$empty_remove = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("destruction");
+				$showMsg = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("use_msg");
+				$msgDestruction = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getString("destruction_msg");
+				$skinChange = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("skinchange");
+
+				if ($usable_time >= 1) {
+					//I'm usable item, so use it !
+					$actions = json_decode($nbt->getCompoundTag("Param")->getCompoundTag("usable")->getString("action"),true);
+					$randAction = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("action_random");
+					if ($randAction == 1) {
+						$randIndex = array_rand($actions);
+						self::doAction($randIndex,$actions[$randIndex],$player);
+					}
+					else {
+						foreach ($actions as $actionName => $actionValue) {
+							self::doAction($actionName,$actionValue,$player);
+						}
+					}
+					//After used, change value
+					$usable_time--;
+					if ($showMsg == 1 && $usable_time != 0) 
+						$player->sendMessage(TextFormat::colorize("Remaining: ".$usable_time));
+					else if ($showMsg == 1 && $usable_time == 0) 
+						$player->sendMessage(TextFormat::colorize("Nom it's empty ..."));	
+				}
+				else {
+					//Show message that is not usable for now ... (Or forever)
+					$player->sendMessage(TextFormat::colorize("Not usable ... Sorry"));
+				}
+				
+				//Do i need to be removed ?
+				if ($usable_time < 1 && $empty_remove == 1) {
+					$entity->kill();
+					if ($showMsg == 1) 
+						$player->sendMessage(TextFormat::colorize($msgDestruction));
+				}
+				else $nbt->getCompoundTag("Param")->getCompoundTag("usable")->setInt("time", $usable_time);	
+				
+				//Need new skin ?
+				if ($usable_time == 0 && $skinChange == 1) {
+					$entity->setSkin($this->getSkin());
+					$entity->respawnToAll();
+				}				
+			}
 			elseif ($nbt->getCompoundTag("Param")->getInt("unbreakable") == 1 && $item->getID() != 280 && $item->getCustomName() != "§6**Obj Remover**") {
 				//Nothing
 			}
@@ -131,14 +180,21 @@ class HeadEntityObj extends Human{
 
 	public function setSkin(Skin $skin) : void{
 		$nbt = $this->namedtag;
-		if ($nbt->getCompoundTag("Param")->getString("size") == "small") {
-			parent::setSkin(new Skin($skin->getSkinId(), $skin->getSkinData(), '', 'geometry.player_headObj_SMALL', self::HEAD_GEOMETRY_SMALL));
-		}
-		else if ($nbt->getCompoundTag("Param")->getString("size") == "block") {
-			parent::setSkin(new Skin($skin->getSkinId(), $skin->getSkinData(), '', 'geometry.player_headObj_BLOCK1', self::HEAD_GEOMETRY_BLOCK1));
+		if ($nbt->getCompoundTag("Param")->hasTag("usable") && $this->namedtag->getCompoundTag("Param")->getCompoundTag("usable")->getInt("skinchange") == 1 && $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("time") == 0) {
+			$skinToSet = $this->namedtag->getByteArray("Skin_empty");
 		}
 		else {
-			parent::setSkin(new Skin($skin->getSkinId(), $skin->getSkinData(), '', 'geometry.player_headObj_NORMAL', self::HEAD_GEOMETRY_NORMAL));
+			$skinToSet = $skin->getSkinData();
+		}
+
+		if ($nbt->getCompoundTag("Param")->getString("size") == "small") {
+			parent::setSkin(new Skin($skin->getSkinId(), $skinToSet, '', 'geometry.player_headObj_SMALL', self::HEAD_GEOMETRY_SMALL));
+		}
+		else if ($nbt->getCompoundTag("Param")->getString("size") == "block") {
+			parent::setSkin(new Skin($skin->getSkinId(), $skinToSet, '', 'geometry.player_headObj_BLOCK1', self::HEAD_GEOMETRY_BLOCK1));
+		}
+		else {
+			parent::setSkin(new Skin($skin->getSkinId(), $skinToSet, '', 'geometry.player_headObj_NORMAL', self::HEAD_GEOMETRY_NORMAL));
 		}
 
 	}
@@ -155,8 +211,36 @@ class HeadEntityObj extends Human{
 
 	public function getDrops() : array{
 		//TODO: What's happen if no more exist in config ?
-		$nameFinal = ucfirst(PlayerHeadObj::$skinsList[$this->skin->getSkinId()]['name']);
-		$param = PlayerHeadObj::$skinsList[$this->skin->getSkinId()]['param'];
-        return [PlayerHeadObj::getPlayerHeadItem($this->skin->getSkinId(),$nameFinal,$param)];
+		if (!$this->namedtag->getCompoundTag("Param")->hasTag("usable")) {
+			$nameFinal = ucfirst(PlayerHeadObj::$skinsList[$this->skin->getSkinId()]['name']);
+			$param = PlayerHeadObj::$skinsList[$this->skin->getSkinId()]['param'];
+			return [PlayerHeadObj::getPlayerHeadItem($this->skin->getSkinId(),$nameFinal,$param)];
+		}
+		else return [];
+    }
+	
+	private function doAction($actionName, $actionValue, $player): void {
+		//Do action
+		switch ($actionName) {
+			case "msg":
+				$player->sendMessage(TextFormat::colorize($actionValue));
+				break;
+			case "heal":
+				$player->heal(new EntityRegainHealthEvent($player, $actionValue, EntityRegainHealthEvent::CAUSE_CUSTOM));
+				$player->getLevel()->addParticle(new HeartParticle($player->add(0, 2), 4));
+				break;
+			case "teleport":
+				$pos = explode(";", $actionValue);
+				$player->teleport(new Position(intval($pos[0]), intval($pos[1]), intval($pos[2])));
+				break;
+			case "effect":
+				$effects = explode(";", $actionValue);
+				foreach ($effects as $indvEffect) {
+					$effectsExp = explode("/", $indvEffect);
+					$player->addEffect((new EffectInstance(Effect::getEffect(intval($effectsExp[0]))))->setAmplifier(intval($effectsExp[1]))->setDuration(20*intval($effectsExp[2]))->setVisible(false));
+				}
+				break;
+		}
+		
     }
 }
