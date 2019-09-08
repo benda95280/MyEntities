@@ -51,6 +51,8 @@ class PlayerHeadObj extends PluginBase implements Listener{
 	public static $skinsList;
 	/** @var array $miscList */
 	public static $miscList;
+	/** @var integer $loglevel */
+	public static $loglevel;
 
 	public const PREFIX = TextFormat::BLUE . 'PlayerHeadObj' . TextFormat::DARK_GRAY . '> '.TextFormat::WHITE;
 	
@@ -65,8 +67,9 @@ class PlayerHeadObj extends PluginBase implements Listener{
 		$data = $this->getConfig()->getAll();
 		self::$skinsList = $data["skins"];
 		self::$miscList = $data["misc"];
+		self::$loglevel = $data["misc"]["log-level"];
 		
-		if (self::$miscList["log-level"] > 0) $this->getLogger()->info("§aLoading ...");
+		self::logMessage("§aLoading ...",1);
 		
 		Entity::registerEntity(HeadEntityObj::class, true, ['PlayerHeadObj']);
 
@@ -83,19 +86,19 @@ class PlayerHeadObj extends PluginBase implements Listener{
 			
 			//Entity must have a skin file
 			if (!file_exists($pathSkinsHead.$skinName.'.png')) {
-				$this->getLogger()->info("§4'".$skinName."' Do not have any skin (png) file ! It has been removed from plugin.");
+				self::logMessage("'".$skinName."' Do not have any skin (png) file ! It has been removed from plugin.",0);
 				unset(self::$skinsList[$skinName]);
 				continue;
 			}
 			//Entity declaration cannot have white space and correct lenght
 			if (preg_match('/\s/',$skinName) || strlen($skinName) <= 4 || strlen($skinName) >= 16) {
-				$this->getLogger()->info("§4'".$skinName."' Entity declaration cannot contain space and have 4-16 Char ! It has been removed from plugin.");
+				self::logMessage("'".$skinName."' Entity declaration cannot contain space and have 4-16 Char ! It has been removed from plugin.",0);
 				unset(self::$skinsList[$skinName]);
 				continue;
 			}
 			//Entity must have a correct lenght	name
 			if (!isset($skinValue["name"]) || strlen($skinValue["name"]) <= 4 || strlen($skinValue["name"]) >= 16) {
-				$this->getLogger()->info("§4'".$skinName."' Name must have have 4-16 Char ! It has been removed from plugin.");
+				self::logMessage("'".$skinName."' Name must have have 4-16 Char ! It has been removed from plugin.",0);
 				unset(self::$skinsList[$skinName]);
 				continue;
 			}
@@ -104,19 +107,19 @@ class PlayerHeadObj extends PluginBase implements Listener{
 			
 			//Entity must have Param child
 			if (!isset($skinValue["param"])) {
-				$this->getLogger()->info("§4'".$skinName."' must have a param child ! It has been removed from plugin.");
+				self::logMessage("'".$skinName."' must have a param child ! It has been removed from plugin.",0);
 				unset(self::$skinsList[$skinName]);
 				continue;
 			}
 			//Entity must have a parameter Health in Param
 			if (!isset($skinValue["param"]["health"]) || !is_int($skinValue["param"]["health"]) || $skinValue["param"]["health"] < 1 || $skinValue["param"]["health"] > 75) {
-				$this->getLogger()->info("§4'".$skinName."' must have  1-75 (Int) Health-Param ! It has been removed from plugin.");
+				self::logMessage("'".$skinName."' must have  1-75 (Int) Health-Param ! It has been removed from plugin.",0);			
 				unset(self::$skinsList[$skinName]);
 				continue;
 			}
 			//Entity must have a parameter Unbreakable in Param
 			if (!isset($skinValue["param"]["unbreakable"]) || !is_int($skinValue["param"]["unbreakable"]) || !($skinValue["param"]["unbreakable"] == 1 || $skinValue["param"]["unbreakable"] == 0)) {
-				$this->getLogger()->info("§4'".$skinName."' must have 0 or 1 int Unbreakable-Param ! It has been removed from plugin.");
+				self::logMessage("'".$skinName."' must have 0 or 1 int Unbreakable-Param ! It has been removed from plugin.",0);								
 				unset(self::$skinsList[$skinName]);
 				continue;
 			}
@@ -129,61 +132,61 @@ class PlayerHeadObj extends PluginBase implements Listener{
 				
 				//Must be unbreakable to be usable !
 				if ($skinValue["param"]["unbreakable"] == 0) {
-					$this->getLogger()->info("§4'".$skinName."' must be unbreakable, because you set is usable ! It has been removed from plugin.");
+					self::logMessage("'".$skinName."' must be unbreakable, because you set is usable ! It has been removed from plugin.",0);
 					unset(self::$skinsList[$skinName]);
 					continue;
 				}					
 				//Check usable time (1-20)
 				if (!isset($skinValue["param"]["usable"]["time"]) || !is_int($skinValue["param"]["usable"]["time"]) || $skinValue["param"]["usable"]["time"] < 1 || $skinValue["param"]["usable"]["time"] > 20) {
-					$this->getLogger()->info("§4'".$skinName."' must have correct value for Time-Usable-Param (1-20) ! It has been removed from plugin.");
+					self::logMessage("'".$skinName."' must have correct value for Time-Usable-Param (1-20) ! It has been removed from plugin.",0);
 					unset(self::$skinsList[$skinName]);
 					continue;
 				}
 				//Check Reload Time (0-20)
 				if (!isset($skinValue["param"]["usable"]["reload"]) || !is_int($skinValue["param"]["usable"]["reload"]) || $skinValue["param"]["usable"]["reload"] < 0 || $skinValue["param"]["usable"]["reload"] > 300) {
-					$this->getLogger()->info("§4'".$skinName."' must have correct value for Reload-Usable-Param (0-300) ! It has been removed from plugin.");
+					self::logMessage("'".$skinName."' must have correct value for Reload-Usable-Param (0-300) ! It has been removed from plugin.",0);
 					unset(self::$skinsList[$skinName]);
 					continue;
 				}
 				//Check Skin change 
 				if (!isset($skinValue["param"]["usable"]["skinchange"]) || !is_int($skinValue["param"]["usable"]["skinchange"]) || !($skinValue["param"]["usable"]["skinchange"] == 1 || $skinValue["param"]["usable"]["skinchange"] == 0)) {
-					$this->getLogger()->info("§4'".$skinName."' must have 0 or 1 int for SkinChange-Usable-Param ! It has been removed from plugin.");
+					self::logMessage("'".$skinName."' must have 0 or 1 int for SkinChange-Usable-Param ! It has been removed from plugin.",0);
 					unset(self::$skinsList[$skinName]);
 					continue;
 				}
 				//Check Skin change, the skin has to exist
 				if (isset($skinValue["param"]["usable"]["skinchange"]) && $skinValue["param"]["usable"]["skinchange"] == 1 && !file_exists($pathSkinsHead.$skinName.'_empty.png') ) {
-					$this->getLogger()->info("§4'".$skinName."' have skinChange Set, but no skin available '".$skinName."_empty.png'! It has been removed from plugin.");
+					self::logMessage("'".$skinName."' have skinChange Set, but no skin available '".$skinName."_empty.png'! It has been removed from plugin.",0);
 					unset(self::$skinsList[$skinName]);
 					continue;
 				}
 				//Check Descruction 
 				if (!isset($skinValue["param"]["usable"]["destruction"]) || !is_int($skinValue["param"]["usable"]["destruction"]) || !($skinValue["param"]["usable"]["destruction"] == 1 || $skinValue["param"]["usable"]["destruction"] == 0)) {
-					$this->getLogger()->info("§4'".$skinName."' must have 0 or 1 int for Destruction-Usable-Param ! It has been removed from plugin.");
+					self::logMessage("'".$skinName."' must have 0 or 1 int for Destruction-Usable-Param ! It has been removed from plugin.",0);
 					unset(self::$skinsList[$skinName]);
 					continue;
 				}
 				//Check Destruction_MSG
 				if (!isset($skinValue["param"]["usable"]["destruction_msg"]) || !is_string($skinValue["param"]["usable"]["destruction_msg"])) {
-					$this->getLogger()->info("§4'".$skinName."' must have correct value for Destruction_msg-Usable-Param (String or empty) ! It has been removed from plugin.");
+					self::logMessage("'".$skinName."' must have correct value for Destruction_msg-Usable-Param (String or empty) ! It has been removed from plugin.",0);
 					unset(self::$skinsList[$skinName]);
 					continue;
 				}
 				//Check if message show up when used
 				if (!isset($skinValue["param"]["usable"]["use_msg"]) || !is_int($skinValue["param"]["usable"]["use_msg"]) || !($skinValue["param"]["usable"]["use_msg"] == 1 || $skinValue["param"]["usable"]["use_msg"] == 0)) {
-					$this->getLogger()->info("§4'".$skinName."' must have 0 or 1 int for use_msg-Usable-Param ! It has been removed from plugin.");
+					self::logMessage("'".$skinName."' must have 0 or 1 int for use_msg-Usable-Param ! It has been removed from plugin.",0);
 					unset(self::$skinsList[$skinName]);
 					continue;
 				}
 				//Check Action is set
 				if (!isset($skinValue["param"]["usable"]["action"]) || !is_string($skinValue["param"]["usable"]["action"])) {
-					$this->getLogger()->info("§4'".$skinName."' must be set or empty for action_random-Usable-Param ! It has been removed from plugin.");
+					self::logMessage("'".$skinName."' must be set or empty for action_random-Usable-Param ! It has been removed from plugin.",0);
 					unset(self::$skinsList[$skinName]);
 					continue;
 				}
 				//Check RandomAction change when empty
 				if (!isset($skinValue["param"]["usable"]["action_random"]) || !is_int($skinValue["param"]["usable"]["action_random"]) || !($skinValue["param"]["usable"]["action_random"] == 1 || $skinValue["param"]["usable"]["action_random"] == 0)) {
-					$this->getLogger()->info("§4'".$skinName."' must have 0 or 1 int for action_random-Usable-Param ! It has been removed from plugin.");
+					self::logMessage("'".$skinName."' must have 0 or 1 int for action_random-Usable-Param ! It has been removed from plugin.",0);
 					unset(self::$skinsList[$skinName]);
 					continue;
 				}
@@ -198,31 +201,28 @@ class PlayerHeadObj extends PluginBase implements Listener{
 			//TODO: Create missing parameter and save it
 			//TODO: Log error if unknown parameter
 			
-			if (isset($skinValue["type"]) || $skinValue["type"] == "head") {
+			if (isset($skinValue["type"]) && $skinValue["type"] == "head") {
 				//Head must have a size
 				if (isset($skinValue["param"]["size"]) && $skinValue["param"]["size"] === "small") $countFileSkinsHeadSmall++;
 				else if (isset($skinValue["param"]["size"]) && $skinValue["param"]["size"] === "normal") $countFileSkinsHeadNormal++;
 				else if (isset($skinValue["param"]["size"]) && $skinValue["param"]["size"] === "block") $countFileSkinsHeadBlock++;
 				else {
-					$this->getLogger()->info("§4'".$skinName."' Size error ! It has been removed from plugin.");
+					self::logMessage("'".$skinName."' Size error ! It has been removed from plugin.",0);
 					unset(self::$skinsList[$skinName]);
 					continue;
 				}
-				if (self::$miscList["log-level"] > 1)	$this->getLogger()->info("§b§lLoaded: §r§6Head Skin§r§f $skinName / Size: ".$skinValue["param"]["size"]." / name: '".$skinValue["name"]."'");
-
+				self::logMessage("§b§lLoaded: §r§6Head Skin§r§f $skinName / Size: ".$skinValue["param"]["size"]." / name: '".$skinValue["name"]."'",2);
 			}
 			else {
-				$this->getLogger()->info("§4'".$skinName."' Type do not exist ! It has been removed from plugin.");
+				self::logMessage($skinName." Type do not exist ! It has been removed from plugin.",0);
 				unset(self::$skinsList[$skinName]);
 				continue;
 			}
 		}
-		if (self::$miscList["log-level"] > 0) {
-			$this->getLogger()->info("§b§l$countFileSkinsHeadSmall §r§bHead skin small§r§f found");
-			$this->getLogger()->info("§b§l$countFileSkinsHeadNormal §r§bHead skin normal§r§f found");
-			$this->getLogger()->info("§b§l$countFileSkinsHeadBlock §r§bHead skin block§r§f found");
-			$this->getLogger()->info("§aActivated");
-		}
+		self::logMessage("§b§l$countFileSkinsHeadSmall §r§bHead skin small§r§f found",1);
+		self::logMessage("§b§l$countFileSkinsHeadNormal §r§bHead skin normal§r§f found",1);
+		self::logMessage("§b§l$countFileSkinsHeadBlock §r§bHead skin block§r§f found",1);
+		self::logMessage("§aActivated",1);
 	}
 	
     public static function getInstance() : PlayerHeadObj {
@@ -318,5 +318,14 @@ class PlayerHeadObj extends PluginBase implements Listener{
 		}
 		return $tag;
     }
+	
+    public static function logMessage(String $message, $level){
+		//Level 0 Only Error
+		if(self::$loglevel >= $level)		self::$instance->getLogger()->info("§4".$message);
+		//Level 1 Minimal thing
+		else if(self::$loglevel >= $level)	self::$instance->getLogger()->info($message);
+		//Level 2 Usless Thing
+		else if(self::$loglevel >= $level)	self::$instance->getLogger()->info($message);
+    }	
 	
 }

@@ -28,7 +28,8 @@ skins:
         #Custom message when descruction happen
         destruction_msg: "Oups, sorry ..."
         #When used, what it does ? (Heal 1 = Half Hearth)
-        action: '{"heal": 1, "teleport": "1;2;3", "effect": "1/1/30;2/1/60;3/1/80", "msg": "May the force be with you ..."}'
+        # action: '{"heal": 1, "teleport": "1;2;3", "effect": "1/1/30;2/1/60;3/1/80", "msg": "May the force be with you ..."}'
+        action: '{"heal": 1, "effect": "1/1/30;2/1/60;3/1/80", "msg": "May the force be with you ..."}'
         #choose one random action ?
         action_random: 1
   book_bible:
