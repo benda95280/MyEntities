@@ -61,6 +61,8 @@ skins:
 ## Screenshot 
 <img height=200 src="https://i.ibb.co/9wq4s7R/playerheadobj-V1.png" />
 <img height=200 src="https://i.ibb.co/wgQZ0m9/playerheadobj-V2.png" />
+<img height=200 src="https://i.ibb.co/dtpjQ8h/playerheadobj-V2-usable.png" />
+
 
 ## Skins
 Source / credits of the skin: https://minecraft-heads.com/
