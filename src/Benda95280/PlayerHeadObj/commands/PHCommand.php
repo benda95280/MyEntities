@@ -47,7 +47,7 @@ class PHCommand extends Command{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender) or !($sender instanceof Player)){
+		if(!$this->testPermission($sender)){
 			return true;
 		}
 
@@ -56,21 +56,42 @@ class PHCommand extends Command{
 		}
 		//Did we have any arguments ?
 		if (isset($args[0])) {
+			//Console need player specified
+			if (!($sender instanceof Player) && !isset($args[2])) {
+				PlayerHeadObj::logMessage("Sorry, from console, need a player to give it ...",0);
+				return true;
+			}
+			//Give it to who ?
+			if (isset ($args[2])) {
+				$player = $sender->getServer()->getPlayer($args[2]);
+				if($player instanceof Player){		
+					$giver = $player;
+				}
+				else {
+					$sender->sendMessage(PlayerHeadObj::PREFIX . TextFormat::colorize("&4Error: Player not online"));
+					return true;					
+				}						
+			}
+			else $giver = $sender;
 			
 			// Give item
 			if (strtolower($args[0]) == "item"){
 				unset ($args[0]);
-				$itemName = implode(' ', $args);
+				$itemName = $args[1];
+				
 				if (!empty($itemName)) {
 					if ($itemName == "rotator") {
 						$item = ItemFactory::get(280 /* ID */, 0 /* Item Damage/meta */, 1 /*Count*/);
 						$item->setCustomName("§6**Obj Rotation**");
-						$sender->getInventory()->addItem($item);
+						$giver->getInventory()->addItem($item);
+						$giver->sendMessage(TextFormat::colorize(sprintf($this->messages['message-head-added'], "Obj_Rotation")));
+
 					}
 					else if ($itemName == "remover") {
 						$item = ItemFactory::get(280 /* ID */, 0 /* Item Damage/meta */, 1 /*Count*/);
 						$item->setCustomName("§6**Obj Remover**");
-						$sender->getInventory()->addItem($item);
+						$giver->getInventory()->addItem($item);
+						$giver->sendMessage(TextFormat::colorize(sprintf($this->messages['message-head-added'], "Obj_Remover")));
 					}
 					else $sender->sendMessage(PlayerHeadObj::PREFIX ."Error: Item do not exist !");
 				}
@@ -80,13 +101,13 @@ class PHCommand extends Command{
 			//Else, is it a skin ?
 			elseif (strtolower($args[0]) == "entity") {
 				unset ($args[0]);
-				$skinName = implode(' ', $args);
+				$skinName = $args[1];
 				
 				if (isset(PlayerHeadObj::$skinsList[$skinName])) {
 					$nameFinal = ucfirst(PlayerHeadObj::$skinsList[$skinName]['name']);
 					$param = PlayerHeadObj::$skinsList[$skinName]['param'];
-					$sender->getInventory()->addItem(PlayerHeadObj::getPlayerHeadItem($skinName,$nameFinal,$param));
-					$sender->sendMessage(PlayerHeadObj::PREFIX . TextFormat::colorize(sprintf($this->messages['message-head-added'], $nameFinal)));
+					$giver->getInventory()->addItem(PlayerHeadObj::getPlayerHeadItem($skinName,$nameFinal,$param));
+					$giver->sendMessage(TextFormat::colorize(sprintf($this->messages['message-head-added'], $nameFinal)));
 
 				}
 				else {
@@ -96,6 +117,9 @@ class PHCommand extends Command{
 			}
 			else $sender->sendMessage(PlayerHeadObj::PREFIX ."Error: What do you say ? How may  help you ?");
 			
+		}
+		else {
+			$sender->sendMessage(PlayerHeadObj::PREFIX ."Error: What do you say ? How may  help you ?");
 		}
 		return true;
 	}
