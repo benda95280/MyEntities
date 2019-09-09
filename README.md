@@ -5,6 +5,8 @@ https://github.com/Enes5519/PlayerHead/
 
 # PlayerHeadObj
 Features:
+* Can be run from console
+* Item can be given to players
 * You can place entity with custom head texture
 * Custom parameters for entity:
   * Health
@@ -24,10 +26,12 @@ Features:
   * Remover (To remove unbreakable entity)
   * Rotator (Change orientation of entity: 45° or 90°)
   
-## Commands  
-- **/pho entity [SkinName] : Give player headObj**
-- **/pho item remover : Give item Remover**
-- **/pho item rotator : Give item Rotator**
+## Commands
+- **/pho entity [SkinName] {PlayerName} : Give player headObj**
+- **/pho item remover {PlayerName} : Give item Remover**
+- **/pho item rotator {PlayerName} : Give item Rotator**
+
+(PlayerName is optional)
 
 ## Config extract :
 ```
