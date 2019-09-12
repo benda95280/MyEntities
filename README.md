@@ -16,6 +16,7 @@ Do you need to add entity and manage it easily , and add more blocks/items to yo
 Want a life dispenser ? A small flower pot ? Or just some popcorn ?
 
 Features:
+* !! Some examples inclued !!
 * Can be run from console
 * Items/entities can be given to players
 * You can place entities with custom head texture EASILY
