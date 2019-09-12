@@ -1,17 +1,17 @@
-name: PlayerHeadObj
-version: 1.3
-main: Benda95280\PlayerHeadObj\PlayerHeadObj
+name: MyEntities
+version: 0.1
+main: Benda95280\MyEntities\MyEntities
 api: 3.0.0
 author: Benda95280
 
 permissions:
-  playerheadObj:
+  MyEntities:
     description: Main permission
     default: op
     children:
-      playerheadObj.give:
+      MyEntities.give:
         default: op
-      playerheadObj.spawn:
+      MyEntities.spawn:
         default: op
-      playerheadObj.attack:
+      MyEntities.attack:
         default: op

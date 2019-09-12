@@ -2,8 +2,8 @@
 
 /*	
  *  Original Source: https://github.com/Enes5519/PlayerHead 
- *  PlayerHeadObj - a Altay and PocketMine-MP plugin to add player head on server
- *  Copyright (C) 2018 Enes Yıldırım
+ *  MyEntities - a PocketMine-MP plugin to add player custom entities and support for custom Player Head on server
+ *  Copyright (C) 2019 Benda95280
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,9 +22,9 @@
 
 declare(strict_types=1);
 
-namespace Benda95280\PlayerHeadObj\entities;
+namespace Benda95280\MyEntities\entities;
 
-use Benda95280\PlayerHeadObj\PlayerHeadObj;
+use Benda95280\MyEntities\MyEntities;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\entity\Human;
@@ -40,9 +40,9 @@ use pocketmine\level\particle\HeartParticle;
 use pocketmine\level\Position;
 use pocketmine\Player;
 
-class HeadEntityObj extends Human{
+class MyCustomEntity extends Human{
     public const HEAD_GEOMETRY_NORMAL = '{
-	"geometry.player_headObj_NORMAL": {
+	"geometry.MyEntities_headObj_NORMAL": {
 		"texturewidth": 64,
 		"textureheight": 64,
 		"bones": [
@@ -58,7 +58,7 @@ class HeadEntityObj extends Human{
 	}
 }';
     public const HEAD_GEOMETRY_SMALL = '{
-	"geometry.player_headObj_SMALL": {
+	"geometry.MyEntities_headObj_SMALL": {
 		"texturewidth": 64,
 		"textureheight": 64,
 		"bones": [
@@ -74,7 +74,7 @@ class HeadEntityObj extends Human{
 	}
 }';
     public const HEAD_GEOMETRY_BLOCK1 = '{
-	"geometry.player_headObj_BLOCK1": {
+	"geometry.MyEntities_headObj_BLOCK1": {
 		"texturewidth": 64,
 		"textureheight": 64,
 		"bones": [
@@ -104,7 +104,7 @@ class HeadEntityObj extends Human{
     public function attack(EntityDamageEvent $source) : void{
         /** @var Player $player */ // #blameJetbrains
 		$nbt = $this->namedtag;
-		$attack = ($source instanceof EntityDamageByEntityEvent and ($player = $source->getDamager()) instanceof Player) ? $player->hasPermission('PlayerHeadObj.attack') : true;
+		$attack = ($source instanceof EntityDamageByEntityEvent and ($player = $source->getDamager()) instanceof Player) ? $player->hasPermission('MyEntities.attack') : true;
         if($attack) {
 			$player = $source->getDamager();
 			$entity = $source->getEntity();
@@ -146,8 +146,15 @@ class HeadEntityObj extends Human{
 					$usable_time--;
 					if ($showMsg == 1 && $usable_time != 0) 
 						$player->sendMessage(TextFormat::colorize("Remaining: ".$usable_time));
-					else if ($showMsg == 1 && $usable_time == 0) 
-						$player->sendMessage(TextFormat::colorize("Nom it's empty ..."));	
+					else if ($showMsg == 1 && $usable_time == 0){  
+						$player->sendMessage(TextFormat::colorize("Nom it's empty ..."));
+						//Need new skin ?
+						if ($skinChange == 1) {
+							$nbt->getCompoundTag("Param")->getCompoundTag("usable")->setInt("time", 0);	
+							$entity->setSkin($this->getSkin());
+							$entity->respawnToAll();
+						}						
+					}
 				}
 				else {
 					//Show message that is not usable for now ... (Or forever)
@@ -160,13 +167,7 @@ class HeadEntityObj extends Human{
 					if ($showMsg == 1) 
 						$player->sendMessage(TextFormat::colorize($msgDestruction));
 				}
-				else $nbt->getCompoundTag("Param")->getCompoundTag("usable")->setInt("time", $usable_time);	
-				
-				//Need new skin ?
-				if ($usable_time == 0 && $skinChange == 1) {
-					$entity->setSkin($this->getSkin());
-					$entity->respawnToAll();
-				}				
+				else $nbt->getCompoundTag("Param")->getCompoundTag("usable")->setInt("time", $usable_time);				
 			}
 			elseif ($nbt->getCompoundTag("Param")->getInt("unbreakable") == 1 && $item->getID() != 280 && $item->getCustomName() != "§6**Obj Remover**") {
 				//Nothing
@@ -180,21 +181,24 @@ class HeadEntityObj extends Human{
 
 	public function setSkin(Skin $skin) : void{
 		$nbt = $this->namedtag;
+		//Which Skin i need to set ?
 		if ($nbt->getCompoundTag("Param")->hasTag("usable") && $this->namedtag->getCompoundTag("Param")->getCompoundTag("usable")->getInt("skinchange") == 1 && $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("time") == 0) {
 			$skinToSet = $this->namedtag->getByteArray("Skin_empty");
 		}
 		else {
 			$skinToSet = $skin->getSkinData();
+		}		
+		if ($nbt->hasTag("Geometry")) {
+			parent::setSkin(new Skin($skin->getSkinId(), $skinToSet, '', $nbt->getCompoundTag("Param")->getString("geometryName"), $nbt->getString("Geometry")));			
 		}
-
-		if ($nbt->getCompoundTag("Param")->getString("size") == "small") {
-			parent::setSkin(new Skin($skin->getSkinId(), $skinToSet, '', 'geometry.player_headObj_SMALL', self::HEAD_GEOMETRY_SMALL));
+		else if ($nbt->getCompoundTag("Param")->getString("size") == "small") {
+			parent::setSkin(new Skin($skin->getSkinId(), $skinToSet, '', 'geometry.MyEntities_headObj_SMALL', self::HEAD_GEOMETRY_SMALL));
 		}
 		else if ($nbt->getCompoundTag("Param")->getString("size") == "block") {
-			parent::setSkin(new Skin($skin->getSkinId(), $skinToSet, '', 'geometry.player_headObj_BLOCK1', self::HEAD_GEOMETRY_BLOCK1));
+			parent::setSkin(new Skin($skin->getSkinId(), $skinToSet, '', 'geometry.MyEntities_headObj_BLOCK1', self::HEAD_GEOMETRY_BLOCK1));
 		}
 		else {
-			parent::setSkin(new Skin($skin->getSkinId(), $skinToSet, '', 'geometry.player_headObj_NORMAL', self::HEAD_GEOMETRY_NORMAL));
+			parent::setSkin(new Skin($skin->getSkinId(), $skinToSet, '', 'geometry.MyEntities_headObj_NORMAL', self::HEAD_GEOMETRY_NORMAL));
 		}
 
 	}
@@ -212,9 +216,9 @@ class HeadEntityObj extends Human{
 	public function getDrops() : array{
 		//TODO: What's happen if no more exist in config ?
 		if (!$this->namedtag->getCompoundTag("Param")->hasTag("usable")) {
-			$nameFinal = ucfirst(PlayerHeadObj::$skinsList[$this->skin->getSkinId()]['name']);
-			$param = PlayerHeadObj::$skinsList[$this->skin->getSkinId()]['param'];
-			return [PlayerHeadObj::getPlayerHeadItem($this->skin->getSkinId(),$nameFinal,$param)];
+			$nameFinal = ucfirst(MyEntities::$skinsList[$this->skin->getSkinId()]['name']);
+			$param = MyEntities::$skinsList[$this->skin->getSkinId()]['param'];
+			return [MyEntities::getPlayerHeadItem($this->skin->getSkinId(),$nameFinal,$param)];
 		}
 		else return [];
     }

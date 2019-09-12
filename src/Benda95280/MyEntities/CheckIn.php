@@ -2,8 +2,8 @@
 
 /*	
  *  Original Source: https://github.com/Enes5519/PlayerHead 
- *  PlayerHeadObj - a Altay and PocketMine-MP plugin to add player head on server
- *  Copyright (C) 2018 Enes Yıldırım
+ *  MyEntities - a PocketMine-MP plugin to add player custom entities and support for custom Player Head on server
+ *  Copyright (C) 2019 Benda95280
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,67 +19,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-declare(strict_types=1);
-
-namespace Benda95280\PlayerHeadObj;
-
-use Benda95280\PlayerHeadObj\commands\PHCommand;
-use Benda95280\PlayerHeadObj\entities\HeadEntityObj;
-use pocketmine\entity\Entity;
-use pocketmine\entity\Skin;
-use pocketmine\event\block\BlockPlaceEvent;
-use pocketmine\event\Listener;
-use pocketmine\event\player\PlayerDeathEvent;
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\StringTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ByteArrayTag;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\plugin\PluginBase;
-use pocketmine\utils\TextFormat;
-
-
-
-class PlayerHeadObj extends PluginBase implements Listener{
-	/** @var PlayerHeadObj  */
-    private static $instance;
-	/** @var array $skinsList */
-	public static $skinsList;
-	/** @var array $miscList */
-	public static $miscList;
-	/** @var integer $loglevel */
-	public static $loglevel;
-
-	public const PREFIX = TextFormat::BLUE . 'PlayerHeadObj' . TextFormat::DARK_GRAY . '> '.TextFormat::WHITE;
-	
-	public function onEnable() : void{
-
-        if (self::$instance === null) {
-            self::$instance = $this;
-        }
-		
-		//Load configuration file
-		$this->saveDefaultConfig();
-		$data = $this->getConfig()->getAll();
-		self::$skinsList = $data["skins"];
-		self::$miscList = $data["misc"];
-		self::$loglevel = $data["misc"]["log-level"];
-		
-		self::logMessage("§aLoading ...",1);
-		
-		Entity::registerEntity(HeadEntityObj::class, true, ['PlayerHeadObj']);
-
-		$this->getServer()->getCommandMap()->register('PlayerHeadObj', new PHCommand($data["message"]));
-		$this->getServer()->getPluginManager()->registerEvents($this, $this);
-		//Count skins available
-		$pathSkinsHead = $this->getDataFolder() . "skins" . DIRECTORY_SEPARATOR;
-		$countFileSkinsHeadSmall = 0;
-		$countFileSkinsHeadNormal = 0;
-		$countFileSkinsHeadBlock = 0;
+ 
 		foreach(self::$skinsList as $skinName => $skinValue) {
 			
 			// ** BASIC CHECK ** //
@@ -213,6 +153,37 @@ class PlayerHeadObj extends PluginBase implements Listener{
 				}
 				self::logMessage("§b§lLoaded: §r§6Head Skin§r§f $skinName / Size: ".$skinValue["param"]["size"]." / name: '".$skinValue["name"]."'",2);
 			}
+			else if (isset($skinValue["type"]) && $skinValue["type"] == "custom") {
+				//CustomSkin must have json geometry file
+				if (file_exists($pathSkinsHead.$skinName.'.json')) {
+					$decodedGeometry = json_decode(file_get_contents($pathSkinsHead.$skinName.'.json'));
+					//Test json Validity
+					if (!is_null($decodedGeometry)) {
+						$countFileSkinsCustom++;
+					}
+					else {
+						self::logMessage("'".$skinName."' Geometry, JSON is incorrect ! It has been removed from plugin.",0);
+						unset(self::$skinsList[$skinName]);
+						continue;
+					}
+					if (!isset($skinValue["param"]["geometryName"])){
+						self::logMessage("'".$skinName."' Geometry Name of JSON is missing ! It has been removed from plugin.",0);
+						unset(self::$skinsList[$skinName]);
+						continue;
+					}
+					if (isset($skinValue["param"]["size"])) {
+						self::logMessage("'".$skinName."' Custom entity cannot have a size ! It has been removed from plugin.",0);
+						unset(self::$skinsList[$skinName]);
+						continue;						
+					}
+				}
+				else {
+					self::logMessage("'".$skinName."' Geometry JSON Missing ! It has been removed from plugin.",0);
+					unset(self::$skinsList[$skinName]);
+					continue;
+				}
+				self::logMessage("§b§lLoaded: §r§6Custom Skin§r§f $skinName / name: '".$skinValue["name"]."'",2);
+			}
 			else {
 				self::logMessage($skinName." Type do not exist ! It has been removed from plugin.",0);
 				unset(self::$skinsList[$skinName]);
@@ -222,110 +193,7 @@ class PlayerHeadObj extends PluginBase implements Listener{
 		self::logMessage("§b§l$countFileSkinsHeadSmall §r§bHead skin small§r§f found",1);
 		self::logMessage("§b§l$countFileSkinsHeadNormal §r§bHead skin normal§r§f found",1);
 		self::logMessage("§b§l$countFileSkinsHeadBlock §r§bHead skin block§r§f found",1);
+		self::logMessage("§b§l$countFileSkinsCustom §r§bCustom skink§r§f found",1);
 		self::logMessage("§aActivated",1);
-	}
-	
-    public static function getInstance() : PlayerHeadObj {
-        return self::$instance;
-    }
 
-	public function onPlace(BlockPlaceEvent $event) : void{
-		$player = $event->getPlayer();
-		if($player->hasPermission('PlayerHeadObj.spawn') and ($item = $player->getInventory()->getItemInHand())->getId() === Item::MOB_HEAD and ($blockData = $item->getCustomBlockData()) !== null){
-			$nbt = Entity::createBaseNBT($event->getBlock()->add(0.5, 0, 0.5), null, self::getYaw($event->getBlock()->add(0.5, 0, 0.5), $player)); // Add 0.5 because block center is at half coordinate
-			if ($blockData->hasTag("skin_empty")) 
-				$nbt->setByteArray("Skin_empty", $blockData->getByteArray("skin_empty"));
-			$blockDataSkin = $blockData->getCompoundTag("skin");
-			$blockDataParam = $blockData->getCompoundTag("param");
-			$blockDataSkin->setName('Skin');
-			$blockDataParam->setName('Param');
-			$nbt->setTag($blockDataSkin);
-			$nbt->setTag($blockDataParam);
-            (new HeadEntityObj($player->level, $nbt))->spawnToAll();
-			if(!$player->isCreative()){
-				$player->getInventory()->setItemInHand($item->setCount($item->getCount() - 1));
-			}
-			$event->setCancelled();
-		}
-	}
-
-	private static function getYaw(Vector3 $pos, Vector3 $target) : float{
-		//Entity must rotate 90° cause of block
-		//TODO: Handle 45° for other block
-		$yaw = atan2($target->z - $pos->z, $target->x - $pos->x) / M_PI * 180 - 90;
-		if($yaw < 0){
-			$yaw += 360.0;
-		}
-		// Round to nearest multiple of 45
-		return round($yaw / 90) * 90;
-	}
-
-	/**
-	 * @param string $name
-	 * @param string $nameFinal
-	 * @param array $param
-	 * @return Item
-	 */
-	public static function getPlayerHeadItem(string $name,string $nameFinal,array $param) : Item{
-		if (isset($param["usable"]["skinchange"]) && $param["usable"]["skinchange"] == 1) 
-			$item = (ItemFactory::get(Item::MOB_HEAD, 3))
-			->setCustomBlockData(new CompoundTag("", [
-				new CompoundTag('skin', [
-					new StringTag('Name', $name),
-					new ByteArrayTag('Data', PlayerHeadObj::createSkin($name)),
-				]),
-				new ByteArrayTag('skin_empty', PlayerHeadObj::createSkin($name."_empty")),
-				PlayerHeadObj::arrayToCompTag($param,"param")
-				]))
-			->setCustomName(TextFormat::colorize('&r'.$nameFinal, '&'));
-		else
-			$item = (ItemFactory::get(Item::MOB_HEAD, 3))
-			->setCustomBlockData(new CompoundTag("", [
-				new CompoundTag('skin', [
-					new StringTag('Name', $name),
-					new ByteArrayTag('Data', PlayerHeadObj::createSkin($name)),
-				]),
-				PlayerHeadObj::arrayToCompTag($param,"param")
-				]))
-			->setCustomName(TextFormat::colorize('&r'.$nameFinal, '&'));
-		return $item;
-	}
-
-    public static function createSkin($skinName){
-			$path = PlayerHeadObj::getInstance()->getDataFolder()."skins\\{$skinName}.png";
-			$img = @imagecreatefrompng($path);
-			$bytes = '';
-			$l = (int) @getimagesize($path)[1];
-			for ($y = 0; $y < $l; $y++) {
-				for ($x = 0; $x < 64; $x++) {
-					$rgba = @imagecolorat($img, $x, $y);
-					$a = ((~((int)($rgba >> 24))) << 1) & 0xff;
-					$r = ($rgba >> 16) & 0xff;
-					$g = ($rgba >> 8) & 0xff;
-					$b = $rgba & 0xff;
-					$bytes .= chr($r) . chr($g) . chr($b) . chr($a);
-				}
-			}
-			@imagedestroy($img);
-			return $bytes;
-    }
-    public static function arrayToCompTag($array,String $arrayname){
-		$tag = new CompoundTag($arrayname, []);
-		foreach($array as $key => $value){
-			if (is_int($value)) $tag->setTag(new IntTag($key, $value));
-			elseif (is_string($value)) $tag->setTag(new StringTag($key, $value));
-			elseif (is_array($value)) $tag->setTag(PlayerHeadObj::arrayToCompTag($value,$key));
-		}
-		return $tag;
-    }
-	
-    public static function logMessage(String $message, $level){
-		//Level 0 Only Error
-		if(self::$loglevel >= $level)		self::$instance->getLogger()->info("§4".$message);
-		//Level 1 Minimal thing
-		else if(self::$loglevel >= $level)	self::$instance->getLogger()->info($message);
-		//Level 2 Usless Thing
-		else if(self::$loglevel >= $level)	self::$instance->getLogger()->info($message);
-    }	
-	
-}
+?>

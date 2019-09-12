@@ -2,8 +2,8 @@
 
 /*	
  *  Original Source: https://github.com/Enes5519/PlayerHead 
- *  PlayerHeadObj - a Altay and PocketMine-MP plugin to add player head on server
- *  Copyright (C) 2018 Enes Yıldırım
+ *  MyEntities - a PocketMine-MP plugin to add player custom entities and support for custom Player Head on server
+ *  Copyright (C) 2019 Benda95280
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,9 +22,9 @@
 
 declare(strict_types=1);
 
-namespace Benda95280\PlayerHeadObj\commands;
+namespace Benda95280\MyEntities\commands;
 
-use Benda95280\PlayerHeadObj\PlayerHeadObj;
+use Benda95280\MyEntities\MyEntities;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
@@ -42,8 +42,8 @@ class PHCommand extends Command{
 
 	public function __construct(array $messages){
 		$this->messages = $messages;
-		parent::__construct('PlayerHeadObj', 'Give a player headObj', '/PlayerHeadObj <playerName:string>', ['pho']);
-		$this->setPermission('PlayerHeadObj.give');
+		parent::__construct('MyEntities', 'Give an entity to a player', '/MyEntities [entity/item] [name] <playerName:string>', ['mye']);
+		$this->setPermission('MyEntities.give');
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -58,7 +58,7 @@ class PHCommand extends Command{
 		if (isset($args[0])) {
 			//Console need player specified
 			if (!($sender instanceof Player) && !isset($args[2])) {
-				PlayerHeadObj::logMessage("Sorry, from console, need a player to give it ...",0);
+				MyEntities::logMessage("Sorry, from console, need a player to give it ...",0);
 				return true;
 			}
 			//Give it to who ?
@@ -68,7 +68,7 @@ class PHCommand extends Command{
 					$giver = $player;
 				}
 				else {
-					$sender->sendMessage(PlayerHeadObj::PREFIX . TextFormat::colorize("&4Error: Player not online"));
+					$sender->sendMessage(MyEntities::PREFIX . TextFormat::colorize("&4Error: Player not online"));
 					return true;					
 				}						
 			}
@@ -93,9 +93,9 @@ class PHCommand extends Command{
 						$giver->getInventory()->addItem($item);
 						$giver->sendMessage(TextFormat::colorize(sprintf($this->messages['message-head-added'], "Obj_Remover")));
 					}
-					else $sender->sendMessage(PlayerHeadObj::PREFIX ."Error: Item do not exist !");
+					else $sender->sendMessage(MyEntities::PREFIX ."Error: Item do not exist !");
 				}
-				else $sender->sendMessage(PlayerHeadObj::PREFIX ."Error: Item error !");
+				else $sender->sendMessage(MyEntities::PREFIX ."Error: Item error !");
 			}
 			
 			//Else, is it a skin ?
@@ -103,23 +103,29 @@ class PHCommand extends Command{
 				unset ($args[0]);
 				$skinName = $args[1];
 				
-				if (isset(PlayerHeadObj::$skinsList[$skinName])) {
-					$nameFinal = ucfirst(PlayerHeadObj::$skinsList[$skinName]['name']);
-					$param = PlayerHeadObj::$skinsList[$skinName]['param'];
-					$giver->getInventory()->addItem(PlayerHeadObj::getPlayerHeadItem($skinName,$nameFinal,$param));
+				if (isset(MyEntities::$skinsList[$skinName])) {
+					$nameFinal = ucfirst(MyEntities::$skinsList[$skinName]['name']);
+					$param = MyEntities::$skinsList[$skinName]['param'];
+					//Checker si l'entity est custom ...  
+					if (MyEntities::$skinsList[$skinName]['type'] = "custom") {
+						$giver->getInventory()->addItem(MyEntities::getPlayerCustomItem($skinName,$nameFinal,$param));
+					}
+					else {
+						$giver->getInventory()->addItem(MyEntities::getPlayerHeadItem($skinName,$nameFinal,$param));
+					}
 					$giver->sendMessage(TextFormat::colorize(sprintf($this->messages['message-head-added'], $nameFinal)));
 
 				}
 				else {
-					$sender->sendMessage(PlayerHeadObj::PREFIX ."Error: Entity do not exist !");
+					$sender->sendMessage(MyEntities::PREFIX ."Error: Entity do not exist !");
 				}			
 
 			}
-			else $sender->sendMessage(PlayerHeadObj::PREFIX ."Error: What do you say ? How may  help you ?");
+			else $sender->sendMessage(MyEntities::PREFIX ."Error: What do you say ? How may  help you ?");
 			
 		}
 		else {
-			$sender->sendMessage(PlayerHeadObj::PREFIX ."Error: What do you say ? How may  help you ?");
+			$sender->sendMessage(MyEntities::PREFIX ."Error: What do you say ? How may  help you ?");
 		}
 		return true;
 	}
