@@ -20,6 +20,32 @@
  *
  */
  
+		//CHECK IF WE HAVE NEW SKIN not yet added
+		
+		$files = glob($pathSkinsHead.'*.{png}', GLOB_BRACE);
+		foreach($files as $file) {
+		  $filename = pathinfo($file)['filename'];
+		  $filename_explode = explode("_", $filename);
+		  $filename_exp_end = end($filename_explode);
+		  if (strtolower($filename_exp_end) != "empty") {
+			  if(!isset(self::$skinsList[$filename])) {
+				  self::$skinsList[$filename]["type"] = "head";
+				  self::$skinsList[$filename]["name"] = $filename;
+				  self::$skinsList[$filename]["param"]["size"] = "normal";
+				  self::$skinsList[$filename]["param"]["health"] = 1;
+				  self::$skinsList[$filename]["param"]["unbreakable"] = 0;
+			  }
+		  }
+		}
+		self::$configData["skins"] = self::$skinsList;
+		self::$instance->getConfig()->setAll(self::$configData);
+		self::$instance->getConfig()->save();
+
+		
+		
+		
+		//CHECK SKIN CONFIGURATION
+
 		foreach(self::$skinsList as $skinName => $skinValue) {
 			
 			// ** BASIC CHECK ** //
@@ -31,14 +57,14 @@
 				continue;
 			}
 			//Entity declaration cannot have white space and correct lenght
-			if (preg_match('/\s/',$skinName) || strlen($skinName) <= 4 || strlen($skinName) >= 16) {
-				self::logMessage("'".$skinName."' Entity declaration cannot contain space and have 4-16 Char ! It has been removed from plugin.",0);
+			if (preg_match('/\s/',$skinName) || strlen($skinName) <= 4 || strlen($skinName) >= 22) {
+				self::logMessage("'".$skinName."' Entity declaration cannot contain space and have 4-22 Char ! It has been removed from plugin.",0);
 				unset(self::$skinsList[$skinName]);
 				continue;
 			}
 			//Entity must have a correct lenght	name
-			if (!isset($skinValue["name"]) || strlen($skinValue["name"]) <= 4 || strlen($skinValue["name"]) >= 16) {
-				self::logMessage("'".$skinName."' Name must have have 4-16 Char ! It has been removed from plugin.",0);
+			if (!isset($skinValue["name"]) || strlen($skinValue["name"]) <= 4 || strlen($skinValue["name"]) >= 22) {
+				self::logMessage("'".$skinName."' Name must have have 4-22 Char ! It has been removed from plugin.",0);
 				unset(self::$skinsList[$skinName]);
 				continue;
 			}
@@ -193,7 +219,7 @@
 		self::logMessage("§b§l$countFileSkinsHeadSmall §r§bHead skin small§r§f found",1);
 		self::logMessage("§b§l$countFileSkinsHeadNormal §r§bHead skin normal§r§f found",1);
 		self::logMessage("§b§l$countFileSkinsHeadBlock §r§bHead skin block§r§f found",1);
-		self::logMessage("§b§l$countFileSkinsCustom §r§bCustom skink§r§f found",1);
+		self::logMessage("§b§l$countFileSkinsCustom §r§bCustom skin§r§f found",1);
 		self::logMessage("§aActivated",1);
 
 ?>

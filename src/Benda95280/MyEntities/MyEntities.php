@@ -53,6 +53,8 @@ class MyEntities extends PluginBase implements Listener{
 	public static $miscList;
 	/** @var integer $loglevel */
 	public static $loglevel;
+	/** @var array $configData */
+	public static $configData;
 
 	public const PREFIX = TextFormat::BLUE . 'MyEntities' . TextFormat::DARK_GRAY . '> '.TextFormat::WHITE;
 	
@@ -66,6 +68,7 @@ class MyEntities extends PluginBase implements Listener{
 		$this->saveDefaultConfig();
 		$data = $this->getConfig()->getAll();
 		self::$skinsList = $data["skins"];
+		self::$configData = $data;
 		self::$miscList = $data["misc"];
 		self::$loglevel = $data["misc"]["log-level"];
 		
