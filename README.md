@@ -11,6 +11,7 @@ https://github.com/Enes5519/PlayerHead/
 -----------------
 
 # MyEntities
+[![HitCount](http://hits.dwyl.io/benda95280/MyEntities.svg)](http://hits.dwyl.io/benda95280/MyEntities)
 
 Do you need to add entity and manage it easily , and add more blocks/items to your server ?
 Want a life dispenser ? A small flower pot ? Or just some popcorn ?
