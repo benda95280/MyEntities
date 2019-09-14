@@ -41,9 +41,9 @@ Features:
   * Rotator (Change orientation of entity: 45° or 90°)
   
 ## Commands
-- **/pho entity [SkinName] {PlayerName} : Give player headObj**
-- **/pho item remover {PlayerName} : Give item Remover**
-- **/pho item rotator {PlayerName} : Give item Rotator**
+- **/mye entity [SkinName] {PlayerName} : Give player headObj**
+- **/mye item remover {PlayerName} : Give item Remover**
+- **/mye item rotator {PlayerName} : Give item Rotator**
 
 (PlayerName is optional)
 
