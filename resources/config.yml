@@ -39,6 +39,13 @@ skins:
       size: 'normal'
       health: 10
       unbreakable: 0
+  crate:
+    type: 'head'
+    name: 'Crate'
+    param:
+      size: 'block'
+      health: 1
+      unbreakable: 0
   bowl_pasta:
     type: 'head'
     name: 'Pasta bowl'
