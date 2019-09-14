@@ -51,8 +51,6 @@ class MyEntities extends PluginBase implements Listener{
 	public static $skinsList;
 	/** @var array $miscList */
 	public static $miscList;
-	/** @var integer $loglevel */
-	public static $loglevel;
 	/** @var array $configData */
 	public static $configData;
 
@@ -67,10 +65,10 @@ class MyEntities extends PluginBase implements Listener{
 		//Load configuration file
 		$this->saveDefaultConfig();
 		$data = $this->getConfig()->getAll();
-		self::$skinsList = $data["skins"];
+		//Define Public Var Data-Config File
 		self::$configData = $data;
+		self::$skinsList = $data["skins"];
 		self::$miscList = $data["misc"];
-		self::$loglevel = $data["misc"]["log-level"];
 		
 		self::logMessage("§aLoading ...",1);
 		
@@ -217,11 +215,11 @@ class MyEntities extends PluginBase implements Listener{
 	
 	public static function logMessage(String $message, $level){
 		//Level 0 Only Error
-		if(self::$loglevel >= $level)		self::$instance->getLogger()->info("§4".$message);
+		if(self::$miscList["log-level"] >= $level)		self::$instance->getLogger()->info("§4".$message);
 		//Level 1 Minimal thing
-		else if(self::$loglevel >= $level)	self::$instance->getLogger()->info($message);
+		else if(self::$miscList["log-level"] >= $level)	self::$instance->getLogger()->info($message);
 		//Level 2 Usless Thing
-		else if(self::$loglevel >= $level)	self::$instance->getLogger()->info($message);
+		else if(self::$miscList["log-level"] >= $level)	self::$instance->getLogger()->info($message);
     }
 	
 }

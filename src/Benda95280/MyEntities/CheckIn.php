@@ -34,6 +34,7 @@
 				  self::$skinsList[$filename]["param"]["size"] = "normal";
 				  self::$skinsList[$filename]["param"]["health"] = 1;
 				  self::$skinsList[$filename]["param"]["unbreakable"] = 0;
+				  self::logMessage("'".$filename."' Has been added to your config file as 'Head' type",1);
 			  }
 		  }
 		}
