@@ -107,7 +107,7 @@ class PHCommand extends Command{
 					$nameFinal = ucfirst(MyEntities::$skinsList[$skinName]['name']);
 					$param = MyEntities::$skinsList[$skinName]['param'];
 					//Checker si l'entity est custom ...  
-					if (MyEntities::$skinsList[$skinName]['type'] = "custom") {
+					if (MyEntities::$skinsList[$skinName]['type'] == "custom") {
 						$giver->getInventory()->addItem(MyEntities::getPlayerCustomItem($skinName,$nameFinal,$param));
 					}
 					else {
