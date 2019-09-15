@@ -19,9 +19,11 @@ Want a life dispenser ? A small flower pot ? Or just some popcorn ?
 Features:
 * !! Some examples inclued !!
 * Can be run from console
+* Automatic creation of entity in config file when not exist (I'm so lazy ...)
 * Items/entities can be given to players
 * You can place entities with custom head texture EASILY
-* You can place custom entities, with geometry.
+* You can place custom entities, with geometry
+* Powerful automatic verification of your config file (See Screeshot)
 * Custom parameters for entity:
   * Health
   * Unbreakable
@@ -30,7 +32,7 @@ Features:
     * Max time usable
     * Actions (Infinite - Array): Message / Teleport / Heal / Effects / Give items
     * One random action from all actions possible
-	* Support set of action (Set 1: Message + item / Set2: Message + item + effect ...) when random action enabled
+      * Support set of action (Set 1: Message + item / Set2: Message + item + effect ...) when random action enabled
     * Change skin when no more usable
     * Auto destruction when no more usable
     * Auto destruction message
@@ -42,9 +44,9 @@ Features:
   * Rotator (Change orientation of entity: 45° or 90°)
   
 ## Commands
-- **/pho entity [SkinName] {PlayerName} : Give player headObj**
-- **/pho item remover {PlayerName} : Give item Remover**
-- **/pho item rotator {PlayerName} : Give item Rotator**
+- **/mye entity [SkinName] {PlayerName} : Give player headObj**
+- **/mye item remover {PlayerName} : Give item Remover**
+- **/mye item rotator {PlayerName} : Give item Rotator**
 
 (PlayerName is optional)
 
@@ -84,6 +86,7 @@ skins:
 ## Screenshot 
 <img height=200 src="https://i.ibb.co/9wq4s7R/playerheadobj-V1.png" />
 <img height=200 src="https://i.ibb.co/wgQZ0m9/playerheadobj-V2.png" /><img height=200 src="https://i.ibb.co/dtpjQ8h/playerheadobj-V2-usable.png" />
+<img height=200 src="https://i.ibb.co/kmLfxqn/playerheadobj-Log-Example.png" />
 
 ![](https://raw.githubusercontent.com/benda95280/MyEntities/master/LifeDispenser.gif)
 
