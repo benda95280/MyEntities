@@ -28,7 +28,7 @@ Features:
   * 3 Sizes (Head Entity): Small / Normal / Block
   * Entity can be 'usable'
     * Max time usable
-    * Actions (Infinite - Array): Message / Teleport / Heal / Effects
+    * Actions (Infinite - Array): Message / Teleport / Heal / Effects / Give items
     * One random action from all actions possible
     * Change skin when no more usable
     * Auto destruction when no more usable
@@ -70,8 +70,10 @@ skins:
         use_msg: 1
         #Custom message when descruction happen
         destruction_msg: "Oups, sorry ..."
-        #When used, what it does ? (Heal 1 = Half Hearth)
-        # action: '{"heal": 1, "teleport": "1;2;3", "effect": "1/1/30;2/1/60;3/1/80", "msg": "May the force be with you ..."}'
+        #When used, what it does ?
+		# Heal 1 = Half Hearth
+		# Effects: EFFECT/Amplifier/Duration   |   Items: ID/meta/count
+        # action: '{"heal": 1, "teleport": "1;2;3", "effect": "1/1/30;2/1/60;3/1/80", "item": "1/1/30;2/1/60;3/1/20", "msg": "May the force be with you ..."}'
         action: '{"heal": 1, "effect": "1/1/30;2/1/60;3/1/80", "msg": "May the force be with you ..."}'
         #choose one random action ?
         action_random: 1

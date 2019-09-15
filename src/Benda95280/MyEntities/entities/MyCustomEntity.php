@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace Benda95280\MyEntities\entities;
 
 use Benda95280\MyEntities\MyEntities;
+use pocketmine\item\Item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\entity\Human;
@@ -238,10 +239,19 @@ class MyCustomEntity extends Human{
 				$player->teleport(new Position(intval($pos[0]), intval($pos[1]), intval($pos[2])));
 				break;
 			case "effect":
+				//  EFFECT/Amplifier/Duration
 				$effects = explode(";", $actionValue);
 				foreach ($effects as $indvEffect) {
 					$effectsExp = explode("/", $indvEffect);
 					$player->addEffect((new EffectInstance(Effect::getEffect(intval($effectsExp[0]))))->setAmplifier(intval($effectsExp[1]))->setDuration(20*intval($effectsExp[2]))->setVisible(false));
+				}
+				break;
+			case "item":
+				//  ID/meta/count
+				$toGive = explode(";", $actionValue);
+				foreach ($toGive as $indvtoGive) {
+					$toGiveExp = explode("/", $indvtoGive);
+					$player->getInventory()->addItem(Item::get(intval($toGiveExp[0]), intval($toGiveExp[1]), intval($toGiveExp[2])));
 				}
 				break;
 		}
