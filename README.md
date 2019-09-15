@@ -89,6 +89,7 @@ skins:
 <img height=200 src="https://i.ibb.co/kmLfxqn/playerheadobj-Log-Example.png" />
 
 ![](https://raw.githubusercontent.com/benda95280/MyEntities/master/LifeDispenser.gif)
+(Inspired from ... HalfLife, please send me a new model/skin if you can ...)
 
 
 ## Skins
