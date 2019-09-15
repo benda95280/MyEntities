@@ -23,7 +23,7 @@ Features:
 * Items/entities can be given to players
 * You can place entities with custom head texture EASILY
 * You can place custom entities, with geometry
-* Powerful automatic verification of your config file (See Screenshot)
+* Powerful automatic verification of your config file (See Screenshot) -> Change 'log-level' in config file for more informations
 * Custom parameters for entity:
   * Health
   * Unbreakable
