@@ -119,6 +119,7 @@ bible: https://minecraft-heads.com/custom-heads/decoration/603-bible
 - [ ] New actions : item/block dropping - Money (Later)
 - [ ] Prevent spam of the entity (per player) - (Thinking to use Tick number + Array NBT)
 - [ ] Prevent spam of the entity (per Entity) - (Thinking to use Tick number)
+- [ ] Looking how to add custom sound on use and empty (I like HalfLife sound :) )
 
 
 #### I'm stuck on (Help needed):
