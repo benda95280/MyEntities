@@ -19,11 +19,11 @@ Want a life dispenser ? A small flower pot ? Or just some popcorn ?
 Features:
 * !! Some examples inclued !!
 * Can be run from console
-* Automatic creation of entity in config file when not exist (I'm so lazy ...)
+* Automatic creation of entity in config file when Skin in folder and not exist (I'm so lazy ...)
 * Items/entities can be given to players
 * You can place entities with custom head texture EASILY
 * You can place custom entities, with geometry
-* Powerful automatic verification of your config file (See Screeshot)
+* Powerful automatic verification of your config file (See Screenshot)
 * Custom parameters for entity:
   * Health
   * Unbreakable
