@@ -30,6 +30,7 @@ Features:
     * Max time usable
     * Actions (Infinite - Array): Message / Teleport / Heal / Effects / Give items
     * One random action from all actions possible
+	* Support set of action (Set 1: Message + item / Set2: Message + item + effect ...) when random action enabled
     * Change skin when no more usable
     * Auto destruction when no more usable
     * Auto destruction message
@@ -74,7 +75,8 @@ skins:
 		# Heal 1 = Half Hearth
 		# Effects: EFFECT/Amplifier/Duration   |   Items: ID/meta/count
         # action: '{"heal": 1, "teleport": "1;2;3", "effect": "1/1/30;2/1/60;3/1/80", "item": "1/1/30;2/1/60;3/1/20", "msg": "May the force be with you ..."}'
-        action: '{"heal": 1, "effect": "1/1/30;2/1/60;3/1/80", "msg": "May the force be with you ..."}'
+        # action: '{"Set1":{"heal": 4, "item": "1/1/30;2/1/60;3/1/80"}, "Set2":{"heal":8,"msg":"Big Heal;Dude;You like that ?" }}'
+		action: '{"heal": 1, "effect": "1/1/30;2/1/60;3/1/80", "msg": "May the force be with you ..."}'
         #choose one random action ?
         action_random: 1
 ```

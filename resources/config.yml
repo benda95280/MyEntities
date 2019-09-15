@@ -2,7 +2,7 @@ misc:
   #0 = No useless thing
   #1 = Just in console, when load
   #2 = Anything that can be useless !
-  log-level: 0
+  log-level: 2
 message:
   message-head-added: '&a%s''s &aitem added in your inventory.'
 skins:
@@ -28,7 +28,9 @@ skins:
         #Custom message when descruction happen
         destruction_msg: "Oups, sorry ..."
         #When used, what it does ? (Heal 1 = Half Hearth)
-        # action: '{"heal": 1, "teleport": "1;2;3", "effect": "1/1/30;2/1/60;3/1/80", "msg": "May the force be with you ..."}'
+        #(Heal 1 = Half Hearth)		Effects: EFFECT/Amplifier/Duration      Items: ID/meta/count
+        #Example for Set of actions (In case of rand)
+        #action: '{"Set1":{"heal": 4, "item": "1/1/30;2/1/60;3/1/80"}, "Set2":{"heal":8,"msg":"Big Heal;Dude;You like that ?" }}'
         action: '{"heal": 1, "effect": "1/1/30;2/1/60;3/1/80", "msg": "May the force be with you ..."}'
         #choose one random action ?
         action_random: 1

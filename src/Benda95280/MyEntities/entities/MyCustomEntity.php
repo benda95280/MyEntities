@@ -103,80 +103,85 @@ class MyCustomEntity extends Human{
     }
 
     public function attack(EntityDamageEvent $source) : void{
-        /** @var Player $player */ // #blameJetbrains
-		$nbt = $this->namedtag;
-		$attack = ($source instanceof EntityDamageByEntityEvent and ($player = $source->getDamager()) instanceof Player) ? $player->hasPermission('MyEntities.attack') : true;
-        if($attack) {
+        if($source instanceof EntityDamageByEntityEvent AND $source->getDamager() instanceof Player) {
 			$player = $source->getDamager();
-			$entity = $source->getEntity();
-			$item = $player->getInventory()->getItemInHand();
-			if ($item->getID() == 280 && $item->getCustomName() == "§6**Obj Rotation**") {
-				if ($nbt->getCompoundTag("Param")->getString("size") == "block") {
-					//Block must rotate 90°
-					$newYaw = ($entity->getYaw() + 90) % 360;
-					$entity->setRotation($newYaw, 0);
-					$entity->respawnToAll();
-				}
-				else{
-					$newYaw = ($entity->getYaw() + 45) % 360;
-					$entity->setRotation($newYaw, 0);
-					$entity->respawnToAll();
-				}
-			}
-			else if ($nbt->getCompoundTag("Param")->hasTag("usable")) {
-				$usable_time = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("time");
-				$empty_remove = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("destruction");
-				$showMsg = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("use_msg");
-				$msgDestruction = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getString("destruction_msg");
-				$skinChange = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("skinchange");
-
-				if ($usable_time >= 1) {
-					//I'm usable item, so use it !
-					$actions = json_decode($nbt->getCompoundTag("Param")->getCompoundTag("usable")->getString("action"),true);
-					$randAction = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("action_random");
-					if ($randAction == 1) {
-						$randIndex = array_rand($actions);
-						self::doAction($randIndex,$actions[$randIndex],$player);
+			if ($player->hasPermission('MyEntities.attack')) {
+				$nbt = $this->namedtag;
+				$entity = $source->getEntity();
+				$item = $player->getInventory()->getItemInHand();
+				if ($item->getID() == 280 && $item->getCustomName() == "§6**Obj Rotation**") {
+					if ($nbt->getCompoundTag("Param")->getString("size") == "block") {
+						//Block must rotate 90°
+						$newYaw = ($entity->getYaw() + 90) % 360;
+						$entity->setRotation($newYaw, 0);
+						$entity->respawnToAll();
 					}
-					else {
-						foreach ($actions as $actionName => $actionValue) {
-							self::doAction($actionName,$actionValue,$player);
+					else{
+						$newYaw = ($entity->getYaw() + 45) % 360;
+						$entity->setRotation($newYaw, 0);
+						$entity->respawnToAll();
+					}
+				}
+				else if ($nbt->getCompoundTag("Param")->hasTag("usable")) {
+					$usable_time = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("time");
+					$empty_remove = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("destruction");
+					$showMsg = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("use_msg");
+					$msgDestruction = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getString("destruction_msg");
+					$skinChange = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("skinchange");
+
+					if ($usable_time >= 1) {
+						//I'm usable item, so use it !
+						$actions = json_decode($nbt->getCompoundTag("Param")->getCompoundTag("usable")->getString("action"),true);
+						$randAction = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("action_random");
+						if ($randAction == 1) {
+							$randIndex = array_rand($actions);
+							if (is_array($actions[$randIndex])) {
+								foreach ($actions[$randIndex] as $actionName => $actionValue) {
+									self::doAction($actionName,$actionValue,$player);
+								}
+							}
+							else self::doAction($randIndex,$actions[$randIndex],$player);
+						}
+						else {
+							foreach ($actions as $actionName => $actionValue) {
+								self::doAction($actionName,$actionValue,$player);
+							}
+						}
+						//After used, change value
+						$usable_time--;
+						if ($showMsg == 1 && $usable_time != 0)
+							$player->sendMessage(TextFormat::colorize("Remaining: ".$usable_time));
+						else if ($showMsg == 1 && $usable_time == 0){  
+							$player->sendMessage(TextFormat::colorize("Nom it's empty ..."));
+							//Need new skin ?
+							if ($skinChange == 1) {
+								$nbt->getCompoundTag("Param")->getCompoundTag("usable")->setInt("time", 0);	
+								$entity->setSkin($this->getSkin());
+								$entity->respawnToAll();
+							}						
 						}
 					}
-					//After used, change value
-					$usable_time--;
-					if ($showMsg == 1 && $usable_time != 0) 
-						$player->sendMessage(TextFormat::colorize("Remaining: ".$usable_time));
-					else if ($showMsg == 1 && $usable_time == 0){  
-						$player->sendMessage(TextFormat::colorize("Nom it's empty ..."));
-						//Need new skin ?
-						if ($skinChange == 1) {
-							$nbt->getCompoundTag("Param")->getCompoundTag("usable")->setInt("time", 0);	
-							$entity->setSkin($this->getSkin());
-							$entity->respawnToAll();
-						}						
+					else {
+						//Show message that is not usable for now ... (Or forever)
+						$player->sendMessage(TextFormat::colorize("Not usable ... Sorry"));
 					}
+					
+					//Do i need to be removed ?
+					if ($usable_time < 1 && $empty_remove == 1) {
+						$entity->kill();
+						if ($showMsg == 1) 
+							$player->sendMessage(TextFormat::colorize($msgDestruction));
+					}
+					else $nbt->getCompoundTag("Param")->getCompoundTag("usable")->setInt("time", $usable_time);				
 				}
-				else {
-					//Show message that is not usable for now ... (Or forever)
-					$player->sendMessage(TextFormat::colorize("Not usable ... Sorry"));
+				elseif ($nbt->getCompoundTag("Param")->getInt("unbreakable") == 1 && $item->getID() != 280 && $item->getCustomName() != "§6**Obj Remover**") {
+					//Nothing
 				}
-				
-				//Do i need to be removed ?
-				if ($usable_time < 1 && $empty_remove == 1) {
+				else if ($item->getID() == 280 && $item->getCustomName() == "§6**Obj Remover**") {
 					$entity->kill();
-					if ($showMsg == 1) 
-						$player->sendMessage(TextFormat::colorize($msgDestruction));
 				}
-				else $nbt->getCompoundTag("Param")->getCompoundTag("usable")->setInt("time", $usable_time);				
+				else parent::attack($source);
 			}
-			elseif ($nbt->getCompoundTag("Param")->getInt("unbreakable") == 1 && $item->getID() != 280 && $item->getCustomName() != "§6**Obj Remover**") {
-				//Nothing
-			}
-			else if ($item->getID() == 280 && $item->getCustomName() == "§6**Obj Remover**") {
-				$entity->kill();
-			}
-			else parent::attack($source);
 		}
     }
 
@@ -228,7 +233,10 @@ class MyCustomEntity extends Human{
 		//Do action
 		switch ($actionName) {
 			case "msg":
-				$player->sendMessage(TextFormat::colorize($actionValue));
+				$msgs = explode(";", $actionValue);
+				foreach ($msgs as $indvMsg) {
+					$player->sendMessage(TextFormat::colorize($indvMsg));
+				}
 				break;
 			case "heal":
 				$player->heal(new EntityRegainHealthEvent($player, $actionValue, EntityRegainHealthEvent::CAUSE_CUSTOM));

@@ -222,4 +222,67 @@ class MyEntities extends PluginBase implements Listener{
 		else if(self::$miscList["log-level"] >= $level)	self::$instance->getLogger()->info($message);
     }
 	
+	private function checkAction($actions) {
+		foreach ($actions as $actionName => $actionValue) {
+			if (is_object($actionValue)) {
+				foreach ($actionValue as $actionName1 => $actionValue1) {
+					//This actions is a set of actions
+					if (!self::checkActionDetail($actionName1, $actionValue1)) {
+						self::logMessage("Invalid action SET for '$actionName1' -> action-Usable-Param ! It has been removed from plugin.",0);
+						return false;		
+					}
+				}
+			}
+			else {
+				//No set of actions
+				if (!self::checkActionDetail($actionName, $actionValue)) {
+					self::logMessage("Invalid action for '$actionName' -> action-Usable-Param ! It has been removed from plugin.",0);
+					unset(self::$skinsList[$skinName]);
+					return false;
+				}
+			}
+				
+		}
+		return true;
+	}
+	
+	private function checkActionDetail($actionName, $actionValue) {
+		//Check action
+		switch ($actionName) {
+			case "msg":
+				if (is_string($actionValue)) return true;
+				else return false;
+				break;
+			case "heal":
+				if (is_integer($actionValue)) return true;
+				else return false;				
+				break;
+			case "teleport":
+				$pos = explode(";", $actionValue);
+				if (isset($pos[0]) AND isset($pos[1]) AND isset($pos[2]) AND !isset($pos[3])) return true;
+				else return false;				
+				break;
+			case "effect":
+				//  EFFECT/Amplifier/Duration
+				$effects = explode(";", $actionValue);
+				foreach ($effects as $indvEffect) {
+					$effectsExp = explode("/", $indvEffect);
+					if (!isset($effectsExp[0]) OR !isset($effectsExp[1]) OR !isset($effectsExp[2]) OR isset($effectsExp[3])) return false;
+				}
+				return true;
+				break;
+			case "item":
+				//  ID/meta/count
+				$toGive = explode(";", $actionValue);
+				foreach ($toGive as $indvtoGive) {
+					$toGiveExp = explode("/", $indvtoGive);
+					if (!isset($toGiveExp[0]) OR !isset($toGiveExp[1]) OR !isset($toGiveExp[2]) OR isset($toGiveExp[3])) return false;
+				}
+				return true;
+				break;
+			default: return false;
+		}
+		
+    }
+	
 }

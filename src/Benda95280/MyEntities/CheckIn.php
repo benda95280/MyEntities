@@ -147,10 +147,23 @@
 				}
 				//Check Action is set
 				if (!isset($skinValue["param"]["usable"]["action"]) || !is_string($skinValue["param"]["usable"]["action"])) {
-					self::logMessage("'".$skinName."' must be set or empty for action_random-Usable-Param ! It has been removed from plugin.",0);
+					self::logMessage("'".$skinName."' must be set for action_random-Usable-Param ! It has been removed from plugin.",0);
 					unset(self::$skinsList[$skinName]);
 					continue;
 				}
+				//Check Action validity
+				if (!json_decode($skinValue["param"]["usable"]["action"])) {
+					self::logMessage("'".$skinName."' invalid JSON for action-Usable-Param ! It has been removed from plugin.",0);
+					unset(self::$skinsList[$skinName]);
+					continue;					
+				}
+				//Check Action validity in details
+				if (!self::checkAction(json_decode($skinValue["param"]["usable"]["action"]))) {
+					self::logMessage("'".$skinName."' invalid ACTIONS in action-Usable-Param ! It has been removed from plugin.",0);
+					unset(self::$skinsList[$skinName]);
+					continue;										
+				}
+				
 				//Check RandomAction change when empty
 				if (!isset($skinValue["param"]["usable"]["action_random"]) || !is_int($skinValue["param"]["usable"]["action_random"]) || !($skinValue["param"]["usable"]["action_random"] == 1 || $skinValue["param"]["usable"]["action_random"] == 0)) {
 					self::logMessage("'".$skinName."' must have 0 or 1 int for action_random-Usable-Param ! It has been removed from plugin.",0);
