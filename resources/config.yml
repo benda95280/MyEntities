@@ -2,7 +2,7 @@ misc:
   #0 = No useless thing
   #1 = Just in console, when load
   #2 = Anything that can be useless !
-  log-level: 2
+  log-level: 0
 message:
   message-head-added: '&a%s''s &aitem added in your inventory.'
 skins:
