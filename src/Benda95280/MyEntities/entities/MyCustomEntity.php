@@ -43,7 +43,7 @@ use pocketmine\Player;
 
 class MyCustomEntity extends Human{
     public const HEAD_GEOMETRY_NORMAL = '{
-	"geometry.MyEntities_headObj_NORMAL": {
+	"geometry.MyEntities_head_NORMAL": {
 		"texturewidth": 64,
 		"textureheight": 64,
 		"bones": [
@@ -51,15 +51,15 @@ class MyCustomEntity extends Human{
 				"name": "head",
 				"pivot": [0, 0, 0],
 				"cubes": [
-					{"origin": [-4, 0.5, -4], "size": [8, 8, 8], "uv": [0, 0], "mirror": true},
-					{"origin": [-4, 0.5, -4], "size": [8, 8, 8], "uv": [32, 0], "inflate": 0.5, "mirror": true}
+					{"origin": [-4, 0.5, -4], "size": [8, 8, 8], "uv": [0, 0]},
+					{"origin": [-4, 0.5, -4], "size": [8, 8, 8], "uv": [32, 0], "inflate": 0.5}
 				]
 			}
 		]
 	}
 }';
     public const HEAD_GEOMETRY_SMALL = '{
-	"geometry.MyEntities_headObj_SMALL": {
+	"geometry.MyEntities_head_SMALL": {
 		"texturewidth": 64,
 		"textureheight": 64,
 		"bones": [
@@ -67,15 +67,15 @@ class MyCustomEntity extends Human{
 				"name": "head",
 				"pivot": [0, 0, 0],
 				"cubes": [
-					{"origin": [-4, -1.5, -4], "size": [8, 8, 8], "uv": [0, 0], "inflate": -2, "mirror": true},
-					{"origin": [-4, -1.5, -4], "size": [8, 8, 8], "uv": [32, 0], "inflate": -1.5, "mirror": true}
+					{"origin": [-4, -1.5, -4], "size": [8, 8, 8], "uv": [0, 0], "inflate": -2},
+					{"origin": [-4, -1.5, -4], "size": [8, 8, 8], "uv": [32, 0], "inflate": -1.5}
 				]
 			}
 		]
 	}
 }';
-    public const HEAD_GEOMETRY_BLOCK1 = '{
-	"geometry.MyEntities_headObj_BLOCK1": {
+    public const HEAD_GEOMETRY_BLOCK = '{
+	"geometry.MyEntities_head_BLOCK": {
 		"texturewidth": 64,
 		"textureheight": 64,
 		"bones": [
@@ -83,8 +83,8 @@ class MyCustomEntity extends Human{
 				"name": "head",
 				"pivot": [0, 0, 0],
 				"cubes": [
-					{"origin": [-4, 4, -4], "size": [8, 8, 8], "uv": [0, 0], "inflate": 3.5, "mirror": true},
-					{"origin": [-4, 4, -4], "size": [8, 8, 8], "uv": [32, 0], "inflate": 4, "mirror": true}
+					{"origin": [-4, 4, -4], "size": [8, 8, 8], "uv": [0, 0], "inflate": 3.5},
+					{"origin": [-4, 4, -4], "size": [8, 8, 8], "uv": [32, 0], "inflate": 4}
 				]
 			}
 		]
@@ -198,13 +198,13 @@ class MyCustomEntity extends Human{
 			parent::setSkin(new Skin($skin->getSkinId(), $skinToSet, '', $nbt->getCompoundTag("Param")->getString("geometryName"), $nbt->getString("Geometry")));			
 		}
 		else if ($nbt->getCompoundTag("Param")->getString("size") == "small") {
-			parent::setSkin(new Skin($skin->getSkinId(), $skinToSet, '', 'geometry.MyEntities_headObj_SMALL', self::HEAD_GEOMETRY_SMALL));
+			parent::setSkin(new Skin($skin->getSkinId(), $skinToSet, '', 'geometry.MyEntities_head_SMALL', self::HEAD_GEOMETRY_SMALL));
 		}
 		else if ($nbt->getCompoundTag("Param")->getString("size") == "block") {
-			parent::setSkin(new Skin($skin->getSkinId(), $skinToSet, '', 'geometry.MyEntities_headObj_BLOCK1', self::HEAD_GEOMETRY_BLOCK1));
+			parent::setSkin(new Skin($skin->getSkinId(), $skinToSet, '', 'geometry.MyEntities_head_BLOCK', self::HEAD_GEOMETRY_BLOCK));
 		}
 		else {
-			parent::setSkin(new Skin($skin->getSkinId(), $skinToSet, '', 'geometry.MyEntities_headObj_NORMAL', self::HEAD_GEOMETRY_NORMAL));
+			parent::setSkin(new Skin($skin->getSkinId(), $skinToSet, '', 'geometry.MyEntities_head_NORMAL', self::HEAD_GEOMETRY_NORMAL));
 		}
 
 	}
