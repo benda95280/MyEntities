@@ -112,6 +112,7 @@ bible: https://minecraft-heads.com/custom-heads/decoration/603-bible
 ## Thanks for help to:
 - HimbeersaftLP
 - Kenn Fatt
+- XenialDan
 
 -----------------
 
