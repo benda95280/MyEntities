@@ -57,7 +57,6 @@ class MyEntities extends PluginBase implements Listener
      */
     public function onEnable(): void
     {
-
         if (self::$instance === null) {
             self::$instance = $this;
         }
@@ -83,6 +82,7 @@ class MyEntities extends PluginBase implements Listener
         $this->getServer()->getPluginManager()->registerEvents(new EventListener(), $this);
         //Count skins available
         $pathSkinsHead = $this->getDataFolder() . "skins" . DIRECTORY_SEPARATOR;
+        @mkdir($pathSkinsHead);
         $countFileSkinsHeadSmall = 0;
         $countFileSkinsHeadNormal = 0;
         $countFileSkinsHeadBlock = 0;
@@ -173,7 +173,7 @@ class MyEntities extends PluginBase implements Listener
 
     public static function createSkin($skinName)
     {
-        $path = MyEntities::getInstance()->getDataFolder() . "skins\\{$skinName}.png";
+        $path = MyEntities::getInstance()->getDataFolder() . "skins" . DIRECTORY_SEPARATOR . "{$skinName}.png";
         $img = @imagecreatefrompng($path);
         $bytes = '';
         $l = (int)@getimagesize($path)[1];
