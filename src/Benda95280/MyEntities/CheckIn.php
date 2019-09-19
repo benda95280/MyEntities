@@ -235,5 +235,3 @@
 		self::logMessage("§b§l$countFileSkinsHeadBlock §r§bHead skin block§r§f found",1);
 		self::logMessage("§b§l$countFileSkinsCustom §r§bCustom skin§r§f found",1);
 		self::logMessage("§aActivated",1);
-
-?>
