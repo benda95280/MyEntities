@@ -4,4 +4,7 @@ branches:
 projects:
   MyEntities:
     path: ""
+    libs:
+    - src: CortexPE/Commando/Commando
+      version: ^0.3.1
 ...
