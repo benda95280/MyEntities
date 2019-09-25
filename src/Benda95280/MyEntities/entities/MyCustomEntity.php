@@ -319,6 +319,28 @@ class MyCustomEntity extends Human
                     $player->getInventory()->addItem(Item::get(intval($toGiveExp[0]), intval($toGiveExp[1]), intval($toGiveExp[2])));
                 }
                 break;
+			case "repair":
+				//Repair item in hand
+				$index = $player->getInventory()->getHeldItemIndex();
+				$item = $player->getInventory()->getItem($index);
+				if($item instanceof Tool || $item instanceof Armor){
+					if($item->getDamage() > 0){
+						$player->getInventory()->setItem($index, $item->setDamage(0));
+						$player->sendMessage(TextFormat::GREEN . "Item successfully repaired.");
+					}else{
+						$player->sendMessage(TextFormat::RED . "[Error]" . TextFormat::DARK_RED . " Item does not have any damage.");
+					}
+				}else{
+					$player->sendMessage(TextFormat::RED . "[Error]" . TextFormat::DARK_RED . " This item cannot be repaired.");
+				}
+				break;
+			case "cmd":
+				//Execute command / actionValue = console,player;command 1;command 2 ...
+				//How to Handle Error
+				break;
+
+			
+			//TODO: DEFAULT ? ERROR ?
         }
 
     }

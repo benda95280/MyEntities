@@ -48,6 +48,9 @@ class MyEntities extends PluginBase implements Listener
     public static $miscList;
     /** @var array $configData */
     public static $configData;
+    /** @var String $pathSkins */
+	public static $pathSkins;
+
 
     public const PREFIX = TextFormat::BLUE . 'MyEntities' . TextFormat::DARK_GRAY . '> ' . TextFormat::WHITE;
 
@@ -63,16 +66,14 @@ class MyEntities extends PluginBase implements Listener
         if (!PacketHooker::isRegistered()) {
             PacketHooker::register($this);
         }
-
-        //Load configuration file
-        $this->saveDefaultConfig();
-        $data = $this->getConfig()->getAll();
-        //Define Public Var Data-Config File
-        self::$configData = $data;
-        self::$skinsList = $data["skins"];
-        self::$miscList = $data["misc"];
-
+		
+        self::$instance->saveDefaultConfig();
+		self::loadConfig();
+		
         self::logMessage("§aLoading ...", 1);
+		
+		//Set Folder Skins
+		self::$pathSkins = $this->getDataFolder() . "skins" . DIRECTORY_SEPARATOR;
 
         Entity::registerEntity(MyCustomEntity::class, true, ['MyEntities']);
         $this->getServer()->getCommandMap()->registerAll("MyEntities", [
@@ -81,17 +82,26 @@ class MyEntities extends PluginBase implements Listener
         ]);
         $this->getServer()->getPluginManager()->registerEvents(new EventListener(), $this);
         //Count skins available
-        $pathSkinsHead = $this->getDataFolder() . "skins" . DIRECTORY_SEPARATOR;
-        @mkdir($pathSkinsHead);
+        @mkdir(self::$pathSkins);
         $countFileSkinsHeadSmall = 0;
         $countFileSkinsHeadNormal = 0;
         $countFileSkinsHeadBlock = 0;
         $countFileSkinsCustom = 0;
 
         try {
-            CheckIn::check($pathSkinsHead, $countFileSkinsHeadSmall, $countFileSkinsHeadNormal, $countFileSkinsHeadBlock, $countFileSkinsCustom);
+            CheckIn::check($countFileSkinsHeadSmall, $countFileSkinsHeadNormal, $countFileSkinsHeadBlock, $countFileSkinsCustom);
         } catch (\InvalidStateException $e) {
         }
+    }
+	
+    public static function loadConfig()
+    {
+        //Load configuration file
+        $data = self::getInstance()->getConfig()->getAll();
+        //Define Public Var Data-Config File
+        self::$configData = $data;
+        self::$skinsList = $data["skins"];
+        self::$miscList = $data["misc"];
     }
 
     public static function getInstance(): MyEntities

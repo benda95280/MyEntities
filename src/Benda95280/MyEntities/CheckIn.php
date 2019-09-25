@@ -28,18 +28,17 @@ class CheckIn
 {
 
     /**
-     * @param string $pathSkinsHead
      * @param $countFileSkinsHeadSmall
      * @param $countFileSkinsHeadNormal
      * @param $countFileSkinsHeadBlock
      * @param $countFileSkinsCustom
      * @throws \InvalidStateException
      */
-    public static function check(string $pathSkinsHead, $countFileSkinsHeadSmall, $countFileSkinsHeadNormal, $countFileSkinsHeadBlock, $countFileSkinsCustom): void
+    public static function check($countFileSkinsHeadSmall, $countFileSkinsHeadNormal, $countFileSkinsHeadBlock, $countFileSkinsCustom): void
     {
 //CHECK IF WE HAVE NEW SKIN not yet added
 
-        $files = glob($pathSkinsHead . '*.{png}', GLOB_BRACE);
+        $files = glob(MyEntities::$pathSkins . '*.{png}', GLOB_BRACE);
         foreach ($files as $file) {
             $filename = pathinfo($file)['filename'];
             $filename_explode = explode("_", $filename);
@@ -66,7 +65,7 @@ class CheckIn
             // ** BASIC CHECK ** //
 
             //Entity must have a skin file
-            if (!file_exists($pathSkinsHead . $skinName . '.png')) {
+            if (!file_exists(MyEntities::$pathSkins . $skinName . '.png')) {
                 MyEntities::logMessage("'" . $skinName . "' Do not have any skin (png) file ! It has been removed from plugin.", 0);
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;
@@ -135,7 +134,7 @@ class CheckIn
                     continue;
                 }
                 //Check Skin change, the skin has to exist
-                if (isset($skinValue["param"]["usable"]["skinchange"]) && $skinValue["param"]["usable"]["skinchange"] == 1 && !file_exists($pathSkinsHead . $skinName . '_empty.png')) {
+                if (isset($skinValue["param"]["usable"]["skinchange"]) && $skinValue["param"]["usable"]["skinchange"] == 1 && !file_exists(MyEntities::$pathSkins . $skinName . '_empty.png')) {
                     MyEntities::logMessage("'" . $skinName . "' have skinChange Set, but no skin available '" . $skinName . "_empty.png'! It has been removed from plugin.", 0);
                     unset(MyEntities::$skinsList[$skinName]);
                     continue;
@@ -206,8 +205,8 @@ class CheckIn
                 MyEntities::logMessage("§b§lLoaded: §r§6Head Skin§r§f $skinName / Size: " . $skinValue["param"]["size"] . " / name: '" . $skinValue["name"] . "'", 2);
             } else if (isset($skinValue["type"]) && $skinValue["type"] == "custom") {
                 //CustomSkin must have json geometry file
-                if (file_exists($pathSkinsHead . $skinName . '.json')) {
-                    $decodedGeometry = json_decode(file_get_contents($pathSkinsHead . $skinName . '.json'));
+                if (file_exists(MyEntities::$pathSkins . $skinName . '.json')) {
+                    $decodedGeometry = json_decode(file_get_contents(MyEntities::$pathSkins . $skinName . '.json'));
                     //Test json Validity
                     if (!is_null($decodedGeometry)) {
                         $countFileSkinsCustom++;

@@ -44,6 +44,7 @@ class PHCommand extends BaseCommand
         $this->setPermission("MyEntities");
         $this->registerSubCommand(new PHItemCommand("item", "Give item"));
         $this->registerSubCommand(new PHEntityCommand("entity", "Give player headObj"));
+		$this->registerSubCommand(new PHReloadCommand("reload", "Reload configuration"));
     }
 
     /**
