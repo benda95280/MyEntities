@@ -353,8 +353,18 @@ class MyCustomEntity extends Human
                 }
                 break;
             case "cmd":
-                //Execute command / actionValue = console,player;command 1;command 2 ...
-                //How to Handle Error
+                //Execute command / actionValue = {console/player};command 1;command 2 ...
+                //TODO: How to Handle Error
+                $toExecute = explode(";", $actionValue);
+				$whoExecute = $toExecute[0];
+				unset($toExecute[0]);
+				
+				foreach ($toExecute as $indvtoExecute) {
+					if ($whoExecute == "console") 
+						$this->getPlugin()->getServer()->dispatchCommand(new ConsoleCommandSender(), $command);
+					else if ($whoExecute == "player")
+						$this->getPlugin()->getServer()->dispatchCommand($player, $command);
+				}
                 break;
 
             //TODO: DEFAULT ? ERROR ?

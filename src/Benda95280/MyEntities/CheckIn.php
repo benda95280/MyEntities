@@ -170,7 +170,7 @@ class CheckIn
                     continue;
                 }
                 //Check Action validity in details
-                if (!MyEntities::getInstance()->checkAction(json_decode($skinValue["param"]["usable"]["action"]))) {
+                if (!self::checkAction(json_decode($skinValue["param"]["usable"]["action"]))) {
                     MyEntities::logMessage("'" . $skinName . "' invalid ACTIONS in action-Usable-Param ! It has been removed from plugin.", 0);
                     unset(MyEntities::$skinsList[$skinName]);
                     continue;
@@ -242,5 +242,81 @@ class CheckIn
         MyEntities::logMessage("§b§l$countFileSkinsHeadBlock §r§bHead skin block§r§f found", 1);
         MyEntities::logMessage("§b§l$countFileSkinsCustom §r§bCustom skin§r§f found", 1);
         MyEntities::logMessage("§aActivated", 1);
+    }
+	
+	private static function checkAction($actions)
+    {
+        foreach ($actions as $actionName => $actionValue) {
+            if (is_object($actionValue)) {
+                foreach ($actionValue as $actionName1 => $actionValue1) {
+                    //This actions is a set of actions
+                    if (!self::checkActionDetail($actionName1, $actionValue1)) {
+                        MyEntities::logMessage("Invalid action SET for '$actionName1' -> action-Usable-Param ! It has been removed from plugin.", 0);
+                        return false;
+                    }
+                }
+            } else {
+                //No set of actions
+                if (!self::checkActionDetail($actionName, $actionValue)) {
+                    MyEntities::logMessage("Invalid action for '$actionName' -> action-Usable-Param ! It has been removed from plugin.", 0);
+                    unset(self::$skinsList[$actionName]);
+                    return false;
+                }
+            }
+
+        }
+        return true;
+    }
+
+    private static function checkActionDetail($actionName, $actionValue)
+    {
+        //Check action
+        switch ($actionName) {
+            case "msg":
+                if (is_string($actionValue)) return true;
+                else return false;
+                break;
+            case "heal":
+                if (is_integer($actionValue)) return true;
+                else return false;
+                break;
+            case "teleport":
+                $pos = explode(";", $actionValue);
+                if (isset($pos[0]) AND isset($pos[1]) AND isset($pos[2]) AND !isset($pos[3])) return true;
+                else return false;
+                break;
+            case "effect":
+                //  EFFECT/Amplifier/Duration
+                $effects = explode(";", $actionValue);
+                foreach ($effects as $indvEffect) {
+                    $effectsExp = explode("/", $indvEffect);
+                    if (!isset($effectsExp[0]) OR !isset($effectsExp[1]) OR !isset($effectsExp[2]) OR isset($effectsExp[3])) return false;
+                }
+                return true;
+                break;
+            case "item":
+                //  ID/meta/count
+                $toGive = explode(";", $actionValue);
+                foreach ($toGive as $indvtoGive) {
+                    $toGiveExp = explode("/", $indvtoGive);
+                    if (!isset($toGiveExp[0]) OR !isset($toGiveExp[1]) OR !isset($toGiveExp[2]) OR isset($toGiveExp[3])) return false;
+                }
+                return true;
+                break;
+            case "repair":
+                if (is_integer($actionValue)) return true;
+                else return false;
+                break;
+            case "cmd":
+                $toExecute = explode(";", $actionValue);
+				$whoExecute = $toExecute[0];
+				if (!isset($toExecute[0]) OR ($whoExecute != "console" AND $whoExecute != "player") OR !$toExecute[1] OR $toExecute[1] == "")
+					return false;
+				else
+					return true;
+            default:
+                return false;
+        }
+
     }
 }
