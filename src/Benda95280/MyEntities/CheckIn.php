@@ -50,7 +50,7 @@ class CheckIn
                     MyEntities::$skinsList[$filename]["param"]["size"] = "normal";
                     MyEntities::$skinsList[$filename]["param"]["health"] = 1;
                     MyEntities::$skinsList[$filename]["param"]["unbreakable"] = 0;
-                    MyEntities::logMessage("'" . $filename . "' Has been added to your config file as 'Head' type", 1);
+                    MyEntities::logMessage(sprintf(MyEntities::$language['checkin_newadded'], $filename), 1);
                 }
             }
         }
@@ -66,19 +66,19 @@ class CheckIn
 
             //Entity must have a skin file
             if (!file_exists(MyEntities::$pathSkins . $skinName . '.png')) {
-                MyEntities::logMessage("'" . $skinName . "' Do not have any skin (png) file ! It has been removed from plugin.", 0);
+                MyEntities::logMessage(sprintf(MyEntities::$language['checkin_noskinpng'], $skinName), 0);
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;
             }
             //Entity declaration cannot have white space and correct lenght
             if (preg_match('/\s/', $skinName) || strlen($skinName) <= 4 || strlen($skinName) >= 22) {
-                MyEntities::logMessage("'" . $skinName . "' Entity declaration cannot contain space and have 4-22 Char ! It has been removed from plugin.", 0);
+                MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entspaceorchar'], $skinName), 0);
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;
             }
             //Entity must have a correct lenght	name
             if (!isset($skinValue["name"]) || strlen($skinValue["name"]) <= 4 || strlen($skinValue["name"]) >= 22) {
-                MyEntities::logMessage("'" . $skinName . "' Name must have have 4-22 Char ! It has been removed from plugin.", 0);
+                MyEntities::logMessage(sprintf(MyEntities::$language['checkin_namespaceorchar'], $skinName), 0);				
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;
             }
@@ -87,19 +87,19 @@ class CheckIn
 
             //Entity must have Param child
             if (!isset($skinValue["param"])) {
-                MyEntities::logMessage("'" . $skinName . "' must have a param child ! It has been removed from plugin.", 0);
+                MyEntities::logMessage(sprintf(MyEntities::$language['checkin_paramchildmissing'], $skinName), 0);				
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;
             }
             //Entity must have a parameter Health in Param
             if (!isset($skinValue["param"]["health"]) || !is_int($skinValue["param"]["health"]) || $skinValue["param"]["health"] < 1 || $skinValue["param"]["health"] > 75) {
-                MyEntities::logMessage("'" . $skinName . "' must have  1-75 (Int) Health-Param ! It has been removed from plugin.", 0);
+                MyEntities::logMessage(sprintf(MyEntities::$language['checkin_health'], $skinName), 0);				
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;
             }
             //Entity must have a parameter Unbreakable in Param
             if (!isset($skinValue["param"]["unbreakable"]) || !is_int($skinValue["param"]["unbreakable"]) || !($skinValue["param"]["unbreakable"] == 1 || $skinValue["param"]["unbreakable"] == 0)) {
-                MyEntities::logMessage("'" . $skinName . "' must have 0 or 1 int Unbreakable-Param ! It has been removed from plugin.", 0);
+                MyEntities::logMessage(sprintf(MyEntities::$language['checkin_unbreakable'], $skinName), 0);				
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;
             }
@@ -111,75 +111,75 @@ class CheckIn
 
                 //Must be unbreakable to be usable !
                 if ($skinValue["param"]["unbreakable"] == 0) {
-                    MyEntities::logMessage("'" . $skinName . "' must be unbreakable, because you set is usable ! It has been removed from plugin.", 0);
+					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_unbreakablenotset'], $skinName), 0);				
                     unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check usable time (1-20)
                 if (!isset($skinValue["param"]["usable"]["time"]) || !is_int($skinValue["param"]["usable"]["time"]) || $skinValue["param"]["usable"]["time"] < 1 || $skinValue["param"]["usable"]["time"] > 20) {
-                    MyEntities::logMessage("'" . $skinName . "' must have correct value for Time-Usable-Param (1-20) ! It has been removed from plugin.", 0);
-                    unset(MyEntities::$skinsList[$skinName]);
+					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_timeusable'], $skinName), 0);				
+					unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check Reload Time (0-20)
                 if (!isset($skinValue["param"]["usable"]["reload"]) || !is_int($skinValue["param"]["usable"]["reload"]) || $skinValue["param"]["usable"]["reload"] < 0 || $skinValue["param"]["usable"]["reload"] > 300) {
-                    MyEntities::logMessage("'" . $skinName . "' must have correct value for Reload-Usable-Param (0-300) ! It has been removed from plugin.", 0);
+					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_reloadtime'], $skinName), 0);				
                     unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check Skin change
                 if (!isset($skinValue["param"]["usable"]["skinchange"]) || !is_int($skinValue["param"]["usable"]["skinchange"]) || !($skinValue["param"]["usable"]["skinchange"] == 1 || $skinValue["param"]["usable"]["skinchange"] == 0)) {
-                    MyEntities::logMessage("'" . $skinName . "' must have 0 or 1 int for SkinChange-Usable-Param ! It has been removed from plugin.", 0);
-                    unset(MyEntities::$skinsList[$skinName]);
+					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_skinchange'], $skinName), 0);				
+					unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check Skin change, the skin has to exist
                 if (isset($skinValue["param"]["usable"]["skinchange"]) && $skinValue["param"]["usable"]["skinchange"] == 1 && !file_exists(MyEntities::$pathSkins . $skinName . '_empty.png')) {
-                    MyEntities::logMessage("'" . $skinName . "' have skinChange Set, but no skin available '" . $skinName . "_empty.png'! It has been removed from plugin.", 0);
-                    unset(MyEntities::$skinsList[$skinName]);
+					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_missingskinempty'], $skinName, $skinName), 0);				
+					unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check Descruction
                 if (!isset($skinValue["param"]["usable"]["destruction"]) || !is_int($skinValue["param"]["usable"]["destruction"]) || !($skinValue["param"]["usable"]["destruction"] == 1 || $skinValue["param"]["usable"]["destruction"] == 0)) {
-                    MyEntities::logMessage("'" . $skinName . "' must have 0 or 1 int for Destruction-Usable-Param ! It has been removed from plugin.", 0);
-                    unset(MyEntities::$skinsList[$skinName]);
+					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_destruction'], $skinName), 0);				
+					unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check Destruction_MSG
                 if (!isset($skinValue["param"]["usable"]["destruction_msg"]) || !is_string($skinValue["param"]["usable"]["destruction_msg"])) {
-                    MyEntities::logMessage("'" . $skinName . "' must have correct value for Destruction_msg-Usable-Param (String or empty) ! It has been removed from plugin.", 0);
-                    unset(MyEntities::$skinsList[$skinName]);
+					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_destructionmsg'], $skinName), 0);				
+					unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check if message show up when used
                 if (!isset($skinValue["param"]["usable"]["use_msg"]) || !is_int($skinValue["param"]["usable"]["use_msg"]) || !($skinValue["param"]["usable"]["use_msg"] == 1 || $skinValue["param"]["usable"]["use_msg"] == 0)) {
-                    MyEntities::logMessage("'" . $skinName . "' must have 0 or 1 int for use_msg-Usable-Param ! It has been removed from plugin.", 0);
-                    unset(MyEntities::$skinsList[$skinName]);
+					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_messagewhenused'], $skinName), 0);				
+					unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check Action is set
                 if (!isset($skinValue["param"]["usable"]["action"]) || !is_string($skinValue["param"]["usable"]["action"])) {
-                    MyEntities::logMessage("'" . $skinName . "' must be set for action_random-Usable-Param ! It has been removed from plugin.", 0);
+					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_missingaction'], $skinName), 0);				
                     unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
-                //Check Action validity
+                //Check Action validity JSON
                 if (!json_decode($skinValue["param"]["usable"]["action"])) {
-                    MyEntities::logMessage("'" . $skinName . "' invalid JSON for action-Usable-Param ! It has been removed from plugin.", 0);
+					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_actionJSON'], $skinName), 0);				
                     unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check Action validity in details
                 if (!self::checkAction(json_decode($skinValue["param"]["usable"]["action"]))) {
-                    MyEntities::logMessage("'" . $skinName . "' invalid ACTIONS in action-Usable-Param ! It has been removed from plugin.", 0);
+					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_actioninvalid'], $skinName), 0);				
                     unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
 
                 //Check RandomAction change when empty
                 if (!isset($skinValue["param"]["usable"]["action_random"]) || !is_int($skinValue["param"]["usable"]["action_random"]) || !($skinValue["param"]["usable"]["action_random"] == 1 || $skinValue["param"]["usable"]["action_random"] == 0)) {
-                    MyEntities::logMessage("'" . $skinName . "' must have 0 or 1 int for action_random-Usable-Param ! It has been removed from plugin.", 0);
-                    unset(MyEntities::$skinsList[$skinName]);
+					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_actionrandom'], $skinName), 0);				
+					unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
             }
@@ -198,12 +198,13 @@ class CheckIn
                 else if (isset($skinValue["param"]["size"]) && $skinValue["param"]["size"] === "normal") $countFileSkinsHeadNormal++;
                 else if (isset($skinValue["param"]["size"]) && $skinValue["param"]["size"] === "block") $countFileSkinsHeadBlock++;
                 else {
-                    MyEntities::logMessage("'" . $skinName . "' Size error ! It has been removed from plugin.", 0);
+					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_head_size'], $skinName), 0);				
                     unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
-                MyEntities::logMessage("§b§lLoaded: §r§6Head Skin§r§f $skinName / Size: " . $skinValue["param"]["size"] . " / name: '" . $skinValue["name"] . "'", 2);
-            } else if (isset($skinValue["type"]) && $skinValue["type"] == "custom") {
+				MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_head_loaded'], $skinName, $skinValue["param"]["size"], $skinValue["name"]), 2);				
+            
+			} else if (isset($skinValue["type"]) && $skinValue["type"] == "custom") {
                 //CustomSkin must have json geometry file
                 if (file_exists(MyEntities::$pathSkins . $skinName . '.json')) {
                     $decodedGeometry = json_decode(file_get_contents(MyEntities::$pathSkins . $skinName . '.json'));
@@ -211,37 +212,37 @@ class CheckIn
                     if (!is_null($decodedGeometry)) {
                         $countFileSkinsCustom++;
                     } else {
-                        MyEntities::logMessage("'" . $skinName . "' Geometry, JSON is incorrect ! It has been removed from plugin.", 0);
+						MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_custom_geometryjson'], $skinName), 0);				
                         unset(MyEntities::$skinsList[$skinName]);
                         continue;
                     }
                     if (!isset($skinValue["param"]["geometryName"])) {
-                        MyEntities::logMessage("'" . $skinName . "' Geometry Name of JSON is missing ! It has been removed from plugin.", 0);
+						MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_custom_geometryname'], $skinName), 0);				
                         unset(MyEntities::$skinsList[$skinName]);
                         continue;
                     }
                     if (isset($skinValue["param"]["size"])) {
-                        MyEntities::logMessage("'" . $skinName . "' Custom entity cannot have a size ! It has been removed from plugin.", 0);
-                        unset(MyEntities::$skinsList[$skinName]);
+						MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_custom_size'], $skinName), 0);				
+						unset(MyEntities::$skinsList[$skinName]);
                         continue;
                     }
                 } else {
-                    MyEntities::logMessage("'" . $skinName . "' Geometry JSON Missing ! It has been removed from plugin.", 0);
+					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_custom_missingjsonfile'], $skinName), 0);				
                     unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
-                MyEntities::logMessage("§b§lLoaded: §r§6Custom Skin§r§f $skinName / name: '" . $skinValue["name"] . "'", 2);
+				MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_custom_loaded'], $skinName, $skinValue["name"]), 2);				
             } else {
-                MyEntities::logMessage($skinName . " Type do not exist ! It has been removed from plugin.", 0);
+				MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_error_typenotexist'], $skinName), 0);				
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;
             }
         }
-        MyEntities::logMessage("§b§l$countFileSkinsHeadSmall §r§bHead skin small§r§f found", 1);
-        MyEntities::logMessage("§b§l$countFileSkinsHeadNormal §r§bHead skin normal§r§f found", 1);
-        MyEntities::logMessage("§b§l$countFileSkinsHeadBlock §r§bHead skin block§r§f found", 1);
-        MyEntities::logMessage("§b§l$countFileSkinsCustom §r§bCustom skin§r§f found", 1);
-        MyEntities::logMessage("§aActivated", 1);
+		MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_loaded_headsmall'], $countFileSkinsHeadSmall), 1);				
+		MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_loaded_headnormal'], $countFileSkinsHeadNormal), 1);				
+		MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_loaded_headblock'], $countFileSkinsHeadBlock), 1);				
+		MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_loaded_custom'], $countFileSkinsCustom), 1);				
+		MyEntities::logMessage(MyEntities::$language['checkin_activated'], 1);				
     }
 	
 	private static function checkAction($actions)
@@ -251,15 +252,15 @@ class CheckIn
                 foreach ($actionValue as $actionName1 => $actionValue1) {
                     //This actions is a set of actions
                     if (!self::checkActionDetail($actionName1, $actionValue1)) {
-                        MyEntities::logMessage("Invalid action SET for '$actionName1' -> action-Usable-Param ! It has been removed from plugin.", 0);
-                        return false;
+						MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_checkaction_actionset'], $actionName1), 1);				
+						return false;
                     }
                 }
             } else {
                 //No set of actions
                 if (!self::checkActionDetail($actionName, $actionValue)) {
-                    MyEntities::logMessage("Invalid action for '$actionName' -> action-Usable-Param ! It has been removed from plugin.", 0);
-                    unset(self::$skinsList[$actionName]);
+					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_checkaction_action'], $actionName), 1);				
+					unset(self::$skinsList[$actionName]);
                     return false;
                 }
             }

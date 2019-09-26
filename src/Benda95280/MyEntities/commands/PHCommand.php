@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace Benda95280\MyEntities\commands;
 
+use Benda95280\MyEntities\MyEntities;
 use CortexPE\Commando\args\BaseArgument;
 use CortexPE\Commando\BaseCommand;
 use pocketmine\command\CommandSender;
@@ -44,10 +45,10 @@ class PHCommand extends BaseCommand
          * /mye reload : Reload configuration
          */
         $this->setPermission("MyEntities");
-        $this->registerSubCommand(new PHItemCommand("item", "Give item"));
-        $this->registerSubCommand(new PHEntityCommand("entity", "Give player headObj"));
-        $this->registerSubCommand(new PHHeadCommand("head", "Give a player's head"));
-		$this->registerSubCommand(new PHReloadCommand("reload", "Reload configuration"));
+        $this->registerSubCommand(new PHItemCommand("item",		MyEntities::$language['cmd_giveitem']));
+        $this->registerSubCommand(new PHEntityCommand("entity",	MyEntities::$language['cmd_giveentity']));
+        $this->registerSubCommand(new PHHeadCommand("head",		MyEntities::$language['cmd_givehead']));
+		$this->registerSubCommand(new PHReloadCommand("reload",	MyEntities::$language['cmd_reload']));
     }
 
     /**

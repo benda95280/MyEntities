@@ -50,6 +50,8 @@ class MyEntities extends PluginBase implements Listener
     public static $configData;
     /** @var String $pathSkins */
     public static $pathSkins;
+    /** @var Array $pathSkins */
+    public static $language;
 
     public const PREFIX = TextFormat::BLUE . 'MyEntities' . TextFormat::DARK_GRAY . '> ' . TextFormat::WHITE;
 
@@ -68,8 +70,9 @@ class MyEntities extends PluginBase implements Listener
 
         self::$instance->saveDefaultConfig();
         self::loadConfig();
-
-        self::logMessage("§aLoading ...", 1);
+		self::initializeLanguage();
+		
+        self::logMessage("§a".self::$language['init_loading']." ...", 1);
 
         //Set Folder Skins
         self::$pathSkins = $this->getDataFolder() . "skins";
@@ -83,7 +86,7 @@ class MyEntities extends PluginBase implements Listener
 
         Entity::registerEntity(MyCustomEntity::class, true, ['MyEntities']);
         $this->getServer()->getCommandMap()->registerAll("MyEntities", [
-            new PHCommand("myentities", "Give an entity or item to a player", ["mye"]),
+            new PHCommand("myentities", self::$language['cmd_myentities'], ["mye"]),
         ]);
         $this->getServer()->getPluginManager()->registerEvents(new EventListener(), $this);
         //Count skins available
@@ -195,6 +198,31 @@ class MyEntities extends PluginBase implements Listener
                 ->setCustomName(TextFormat::colorize('&r' . $nameFinal, '&'));
         return $item;
     }
+	
+	private function initializeLanguage(){
+		if (!isset(self::$miscList['language'])) {
+			self::logMessage("Language not set, English applied", 0);
+			self::$miscList['language'] == 'en';
+			//TODO: Error here if language is missing:
+			//[Server thread/CRITICAL]: ErrorException: "Undefined index: language" (EXCEPTION) in "plugins/MyEntities/src/Benda95280/MyEntities/MyEntities" at line 205
+		}
+		$languageSet = self::$miscList['language'];
+		//Get all language file
+		$language = [];
+		foreach($this->getResources() as $resource){
+			if($resource->isFile() and substr(($filename = $resource->getFilename()), 0, 5) === "lang_"){
+				$language[substr($filename, 5, -4)] = yaml_parse(file_get_contents($resource->getPathname()));
+			}
+		}
+		//Check if language exist, has set in config
+		if (isset($language[$languageSet])) {
+			self::$language = $language[$languageSet];
+		}
+		else {
+			self::$language = $language["en"];
+			self::logMessage(sprintf(self::$language['init_lang_notexist'], $languageSet), 0);
+		}
+	}
 
     public static function createSkin($skinName)
     {

@@ -3,6 +3,7 @@ misc:
   #1 = Just in console, when load
   #2 = Anything that can be useless !
   log-level: 0
+  language: en
 message:
   message-head-added: '&a%s''s &aitem added in your inventory.'
 skins:

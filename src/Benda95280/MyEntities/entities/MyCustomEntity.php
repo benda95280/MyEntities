@@ -344,12 +344,12 @@ class MyCustomEntity extends Human
                 if ($item instanceof Durable) {
                     if ($item->getDamage() > 0) {
                         $player->getInventory()->setItem($index, $item->setDamage(0));
-                        $player->sendMessage(TextFormat::GREEN . "Item successfully repaired.");
+                        $player->sendMessage(TextFormat::GREEN ." ". MyEntities::$language['action_repair_success']);
                     } else {
-                        $player->sendMessage(TextFormat::RED . "[Error]" . TextFormat::DARK_RED . " Item does not have any damage.");
+                        $player->sendMessage(TextFormat::RED . "[Error]" . TextFormat::DARK_RED ." ". MyEntities::$language['action_repair_nodmg']);
                     }
                 } else {
-                    $player->sendMessage(TextFormat::RED . "[Error]" . TextFormat::DARK_RED . " This item cannot be repaired.");
+                    $player->sendMessage(TextFormat::RED . "[Error]" . TextFormat::DARK_RED ." ". MyEntities::$language['action_repair_cannot']);
                 }
                 break;
             case "cmd":
