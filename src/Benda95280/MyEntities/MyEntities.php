@@ -134,6 +134,16 @@ class MyEntities extends PluginBase implements Listener
                     MyEntities::arrayToCompTag($param, "param")
                 ]))
                 ->setCustomName(TextFormat::colorize('&r' . $nameFinal, '&'));
+        else if (isset($param["data"]))
+            $item = (ItemFactory::get(Item::MOB_HEAD, 3))
+                ->setCustomBlockData(new CompoundTag("", [
+                    new CompoundTag('skin', [
+                        new StringTag('Name', $name),
+                        new ByteArrayTag('Data', $param["data"]),
+                    ]),
+                    MyEntities::arrayToCompTag($param, "param")
+                ]))
+                ->setCustomName(TextFormat::colorize(sprintf('&r&6%s\'s Head', $nameFinal), '&'));
         else
             $item = (ItemFactory::get(Item::MOB_HEAD, 3))
                 ->setCustomBlockData(new CompoundTag("", [

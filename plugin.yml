@@ -1,7 +1,7 @@
 name: MyEntities
 version: 0.1
 main: Benda95280\MyEntities\MyEntities
-api: 3.0.0
+api: 3.0.1
 author: Benda95280
 
 permissions:
@@ -10,6 +10,8 @@ permissions:
     default: op
     children:
       MyEntities.give:
+        default: op
+      MyEntities.head:
         default: op
       MyEntities.spawn:
         default: op

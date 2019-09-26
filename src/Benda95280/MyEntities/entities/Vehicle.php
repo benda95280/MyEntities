@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Benda95280\MyEntities\entities;
 
-use pocketmine\Player;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityIds;
 use pocketmine\entity\Skin;
-use pocketmine\event\entity\EntityDamageByEntityEvent;
-use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
@@ -19,6 +16,7 @@ use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\SetEntityLinkPacket;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\Player;
 use pocketmine\utils\UUID;
 
 abstract class Vehicle extends \pocketmine\entity\Vehicle{
@@ -67,12 +65,15 @@ abstract class Vehicle extends \pocketmine\entity\Vehicle{
 		return $this->rider instanceof Player;
 	}
 
-	public function ride(Player $player){
+    public function ride(Player $player): void
+    {
 		if(isset(self::$ridingEntities[$player->getName()])){
-			return $player->sendPopup("§cYou are now riding");
+            $player->sendPopup("§cYou are now riding");
+            return;
 		}
 		if($this->rider instanceof Player){
-			return $player->sendPopup("§cSomeone is already riding");
+            $player->sendPopup("§cSomeone is already riding");
+            return;
 		}
 		$this->rider = $player;
 		self::$ridingEntities[$player->getName()] = $this;

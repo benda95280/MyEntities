@@ -34,6 +34,7 @@ use pocketmine\entity\Skin;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
+use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\level\particle\DestroyBlockParticle;
@@ -101,19 +102,17 @@ class MyCustomEntity extends Human
 
     protected function initEntity(): void
     {
-        $nbt = $this->namedtag;
-        $this->setMaxHealth($nbt->getCompoundTag("Param")->getInt("health"));
+        $this->setMaxHealth($this->namedtag->getCompoundTag("Param")->getInt("health", 1));
         parent::initEntity();
-        #$this->setGenericFlag(self::DATA_FLAG_HAS_COLLISION, true);
-        $this->setGenericFlag(self::DATA_FLAG_STACKABLE, true);
-        $this->setSkin($this->getSkin());//see setSkil for custom geometry collision hack
-        $this->refreshBoundingBoxProperties();
         $this->setNameTagVisible(false);
         $this->setNameTagAlwaysVisible(false);
+        #$this->setGenericFlag(self::DATA_FLAG_HAS_COLLISION, true);
+        $this->setGenericFlag(self::DATA_FLAG_STACKABLE, true);
         $this->setGenericFlag(self::DATA_FLAG_AFFECTED_BY_GRAVITY, false);
         $this->setImmobile(true);
         $this->setGenericFlag(self::DATA_FLAG_SILENT, true);//TODO custom sounds
-        $this->setPositionAndRotation($this->asVector3(), $this->yaw, $this->pitch);
+        #$this->setPositionAndRotation($this->asVector3(), $this->yaw, $this->pitch);
+        $this->setSkin($this->getSkin());//see setSkin for custom geometry collision hack
     }
 
     protected function applyGravity(): void
@@ -203,10 +202,23 @@ class MyCustomEntity extends Human
                             $player->sendMessage(TextFormat::colorize($msgDestruction));
                     } else $nbt->getCompoundTag("Param")->getCompoundTag("usable")->setInt("time", $usable_time);
                 } else {
+                    $source->setKnockBack(0.0);
+                    $source->setBaseDamage(1.0);
+                    $source->setAttackCooldown(0);//TODO custom cooldown?
                     parent::attack($source);
                 }
             }
         }
+    }
+
+    protected function doHitAnimation(): void
+    {
+        var_dump($this->getHealth() . "/" . $this->getMaxHealth());//TODO book_bible has 5 health and 1 health twice? wtf
+        //TODO custom particles/animation when hit?
+    }
+
+    public function applyDamageModifiers(EntityDamageEvent $source): void
+    {
     }
 
     public function setSkin(Skin $skin): void
@@ -270,8 +282,14 @@ class MyCustomEntity extends Human
         //TODO: What's happen if no more exist in config ?
         try {
             if (!$this->namedtag->getCompoundTag("Param")->hasTag("usable")) {
-                $nameFinal = ucfirst(MyEntities::$skinsList[$this->skin->getSkinId()]['name']);
-                $param = MyEntities::$skinsList[$this->skin->getSkinId()]['param'];
+                if (isset(MyEntities::$skinsList[$this->skin->getSkinId()])) {
+                    $nameFinal = ucfirst(MyEntities::$skinsList[$this->skin->getSkinId()]['name']);
+                    $param = MyEntities::$skinsList[$this->skin->getSkinId()]['param'];
+                } else {
+                    $nameFinal = $this->skin->getSkinId();
+                    $param = ['size' => 'normal', 'health' => 1, 'unbreakable' => 0, 'data' => $this->getSkin()->getSkinData()];
+                }
+
                 return [MyEntities::getPlayerHeadItem($this->skin->getSkinId(), $nameFinal, $param)];
             } else return [];
         } catch (\InvalidArgumentException $exception) {
@@ -319,28 +337,27 @@ class MyCustomEntity extends Human
                     $player->getInventory()->addItem(Item::get(intval($toGiveExp[0]), intval($toGiveExp[1]), intval($toGiveExp[2])));
                 }
                 break;
-			case "repair":
-				//Repair item in hand
-				$index = $player->getInventory()->getHeldItemIndex();
-				$item = $player->getInventory()->getItem($index);
-				if($item instanceof Tool || $item instanceof Armor){
-					if($item->getDamage() > 0){
-						$player->getInventory()->setItem($index, $item->setDamage(0));
-						$player->sendMessage(TextFormat::GREEN . "Item successfully repaired.");
-					}else{
-						$player->sendMessage(TextFormat::RED . "[Error]" . TextFormat::DARK_RED . " Item does not have any damage.");
-					}
-				}else{
-					$player->sendMessage(TextFormat::RED . "[Error]" . TextFormat::DARK_RED . " This item cannot be repaired.");
-				}
-				break;
-			case "cmd":
-				//Execute command / actionValue = console,player;command 1;command 2 ...
-				//How to Handle Error
-				break;
+            case "repair":
+                //Repair item in hand
+                $index = $player->getInventory()->getHeldItemIndex();
+                $item = $player->getInventory()->getItem($index);
+                if ($item instanceof Durable) {
+                    if ($item->getDamage() > 0) {
+                        $player->getInventory()->setItem($index, $item->setDamage(0));
+                        $player->sendMessage(TextFormat::GREEN . "Item successfully repaired.");
+                    } else {
+                        $player->sendMessage(TextFormat::RED . "[Error]" . TextFormat::DARK_RED . " Item does not have any damage.");
+                    }
+                } else {
+                    $player->sendMessage(TextFormat::RED . "[Error]" . TextFormat::DARK_RED . " This item cannot be repaired.");
+                }
+                break;
+            case "cmd":
+                //Execute command / actionValue = console,player;command 1;command 2 ...
+                //How to Handle Error
+                break;
 
-			
-			//TODO: DEFAULT ? ERROR ?
+            //TODO: DEFAULT ? ERROR ?
         }
 
     }

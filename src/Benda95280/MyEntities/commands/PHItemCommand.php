@@ -45,7 +45,6 @@ class PHItemCommand extends BaseSubCommand
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
-        $sender->sendMessage(print_r($args, true));
         $player = $args["player"] ?? $sender;
         if (!$player instanceof Player) return;
 

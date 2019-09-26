@@ -40,10 +40,13 @@ class PHCommand extends BaseCommand
          * /mye entity [SkinName] {PlayerName} : Give player headObj
          * /mye item remover {PlayerName} : Give item Remover
          * /mye item rotator {PlayerName} : Give item Rotator
+         * /mye head {PlayerName} : Give a player's head
+         * /mye reload : Reload configuration
          */
         $this->setPermission("MyEntities");
         $this->registerSubCommand(new PHItemCommand("item", "Give item"));
         $this->registerSubCommand(new PHEntityCommand("entity", "Give player headObj"));
+        $this->registerSubCommand(new PHHeadCommand("head", "Give a player's head"));
 		$this->registerSubCommand(new PHReloadCommand("reload", "Reload configuration"));
     }
 
