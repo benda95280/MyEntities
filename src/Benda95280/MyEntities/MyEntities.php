@@ -100,6 +100,7 @@ class MyEntities extends PluginBase implements Listener
 
     public static function loadConfig()
     {
+        self::getInstance()->reloadConfig();
         //Load configuration file
         $data = self::getInstance()->getConfig()->getAll();
         //Define Public Var Data-Config File
