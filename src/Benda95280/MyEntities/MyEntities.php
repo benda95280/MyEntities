@@ -49,8 +49,7 @@ class MyEntities extends PluginBase implements Listener
     /** @var array $configData */
     public static $configData;
     /** @var String $pathSkins */
-	public static $pathSkins;
-
+    public static $pathSkins;
 
     public const PREFIX = TextFormat::BLUE . 'MyEntities' . TextFormat::DARK_GRAY . '> ' . TextFormat::WHITE;
 
@@ -66,23 +65,28 @@ class MyEntities extends PluginBase implements Listener
         if (!PacketHooker::isRegistered()) {
             PacketHooker::register($this);
         }
-		
+
         self::$instance->saveDefaultConfig();
-		self::loadConfig();
-		
+        self::loadConfig();
+
         self::logMessage("§aLoading ...", 1);
-		
-		//Set Folder Skins
-		self::$pathSkins = $this->getDataFolder() . "skins" . DIRECTORY_SEPARATOR;
+
+        //Set Folder Skins
+        self::$pathSkins = $this->getDataFolder() . "skins";
+        //Save default skins on first load
+        if (!is_dir(self::$pathSkins)) {
+            foreach ($this->getResources() as $resource) {
+                $this->saveResource("skins" . DIRECTORY_SEPARATOR . $resource->getFilename());
+            }
+        }
+        self::$pathSkins .= DIRECTORY_SEPARATOR;
 
         Entity::registerEntity(MyCustomEntity::class, true, ['MyEntities']);
         $this->getServer()->getCommandMap()->registerAll("MyEntities", [
             new PHCommand("myentities", "Give an entity or item to a player", ["mye"]),
-            #new PHCommand($data["message"])
         ]);
         $this->getServer()->getPluginManager()->registerEvents(new EventListener(), $this);
         //Count skins available
-        @mkdir(self::$pathSkins);
         $countFileSkinsHeadSmall = 0;
         $countFileSkinsHeadNormal = 0;
         $countFileSkinsHeadBlock = 0;
@@ -93,7 +97,7 @@ class MyEntities extends PluginBase implements Listener
         } catch (\InvalidStateException $e) {
         }
     }
-	
+
     public static function loadConfig()
     {
         //Load configuration file
