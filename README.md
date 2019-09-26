@@ -1,23 +1,24 @@
-## My little message to you
+## About it
 If you use this plugin, please consider to share (By opening an issue) your entities, skins or model.
 It will encourage me to continue and try to put new functionalities.
-* *Main use for the plugin was for my child* *, i continue only for **you**
+* *Main use for the plugin was for my child* , i continue only for **you**
 If you wanna help me, you will find on what i'm stuck at the bottom of the page
 
 
-## Main idea and code - Thanks to Enes5519
+**Main idea and code - Thanks to Enes5519**
+
 https://github.com/Enes5519/PlayerHead/
 
 -----------------
 
-# MyEntities
+## MyEntities
 [![HitCount](http://hits.dwyl.io/benda95280/MyEntities.svg)](http://hits.dwyl.io/benda95280/MyEntities)
 Download: https://poggit.pmmp.io/ci/benda95280/MyEntities
 
 Do you need to add entity and manage it easily , and add more blocks/items to your server ?
 Want a life dispenser ? A small flower pot ? Or just some popcorn ?
 
-Features:
+# Features:
 * !! Some examples inclued !!
 * Can be run from console
 * Automatic creation of entity in config file when Skin in folder and not exist (I'm so lazy ...)
@@ -94,7 +95,7 @@ skins:
 
 
 
-## Skins
+## Skins Credits
 Source / credits of the skin: https://minecraft-heads.com/
 
 book: https://minecraft-heads.com/custom-heads/decoration/30771-old-book
@@ -109,14 +110,19 @@ bible: https://minecraft-heads.com/custom-heads/decoration/603-bible
 
 -----------------
 
-## Thanks for help to:
+## Thanks to
+
+A big thanks to :
+
 - HimbeersaftLP
 - Kenn Fatt
 - XenialDan (Major ReWrite)
 
 -----------------
 
-#### I'm working on:
+# Working On
+
+## I'm working on:
 - [ ] Control what's dropped when entity is killed
 - [ ] New actions : item/block dropping - Money (Later)
 - [ ] Prevent spam of the entity (per player) - (Thinking to use Tick number + Array NBT)
@@ -124,12 +130,12 @@ bible: https://minecraft-heads.com/custom-heads/decoration/603-bible
 - [ ] Looking how to add custom sound on use and empty (I like HalfLife sound :) )
 
 
-#### I'm stuck on (Help needed):
+## I'm stuck on (Help needed):
 - [x] Looking for information about: Entity act as a Block (Collision, breaking ...)
 - [ ] Is it possible to added floating effect to the entity ? (Like a cloud)
 - [ ] Looking for help for the reload function. I've to use a Task, but i want a task that check ALL of my entity that need to be updated, and not a task per entity
 - [ ] Looking to the right way to have the file CheckIn.php loaded
 
 
-#### Known BUG
+## Known BUG
 - [ ] Orientation of normal and small entity when created is 90° instead of 45° (Don't know how to fix now, will check later)
