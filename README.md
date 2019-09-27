@@ -134,7 +134,7 @@ A big thanks to :
 - [x] Looking for information about: Entity act as a Block (Collision, breaking ...)
 - [ ] Is it possible to added floating effect to the entity ? (Like a cloud)
 - [ ] Looking for help for the reload function. I've to use a Task, but i want a task that check ALL of my entity that need to be updated, and not a task per entity
-- [ ] Looking to the right way to have the file CheckIn.php loaded
+- [x] Looking to the right way to have the file CheckIn.php loaded
 
 
 ## Known BUG
