@@ -1,4 +1,4 @@
-## About it
+# About it
 If you use this plugin, please consider to share (By opening an issue) your entities, skins or model.
 It will encourage me to continue and try to put new functionalities.
 * *Main use for the plugin was for my child* , i continue only for **you**
@@ -11,14 +11,14 @@ https://github.com/Enes5519/PlayerHead/
 
 -----------------
 
-## MyEntities
+# MyEntities
 [![HitCount](http://hits.dwyl.io/benda95280/MyEntities.svg)](http://hits.dwyl.io/benda95280/MyEntities)
 Download: https://poggit.pmmp.io/ci/benda95280/MyEntities
 
 Do you need to add entity and manage it easily , and add more blocks/items to your server ?
 Want a life dispenser ? A small flower pot ? Or just some popcorn ?
 
-# Features:
+## Features:
 * !! Some examples inclued !!
 * Can be run from console
 * Automatic creation of entity in config file when Skin in folder and not exist (I'm so lazy ...)
@@ -45,14 +45,14 @@ Want a life dispenser ? A small flower pot ? Or just some popcorn ?
   * Remover (To remove unbreakable entity)
   * Rotator (Change orientation of entity: 45° or 90°)
   
-## Commands
+# Commands
 - **/mye entity [SkinName] {PlayerName} : Give player headObj**
 - **/mye item remover {PlayerName} : Give item Remover**
 - **/mye item rotator {PlayerName} : Give item Rotator**
 
 (PlayerName is optional)
 
-## Config extract :
+# Config extract :
 ```
 skins:
   book_1:
@@ -85,7 +85,7 @@ skins:
         action_random: 1
 ```
   
-## Screenshot 
+# Screenshot 
 <img height=200 src="https://i.ibb.co/9wq4s7R/playerheadobj-V1.png" />
 <img height=200 src="https://i.ibb.co/wgQZ0m9/playerheadobj-V2.png" /><img height=200 src="https://i.ibb.co/dtpjQ8h/playerheadobj-V2-usable.png" />
 <img height=200 src="https://i.ibb.co/kmLfxqn/playerheadobj-Log-Example.png" />
@@ -95,7 +95,7 @@ skins:
 
 
 
-## Skins Credits
+# Skins Credits
 Source / credits of the skin: https://minecraft-heads.com/
 
 book: https://minecraft-heads.com/custom-heads/decoration/30771-old-book
@@ -110,7 +110,7 @@ bible: https://minecraft-heads.com/custom-heads/decoration/603-bible
 
 -----------------
 
-## Thanks to
+# Thanks to
 
 A big thanks to :
 
