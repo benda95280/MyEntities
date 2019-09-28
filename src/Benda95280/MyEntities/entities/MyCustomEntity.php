@@ -41,7 +41,10 @@ use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\HeartParticle;
 use pocketmine\level\Position;
 use pocketmine\Player;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\utils\TextFormat;
+use pocketmine\Server;
+
 
 class MyCustomEntity extends Human
 {
@@ -149,51 +152,64 @@ class MyCustomEntity extends Human
                         $entity->setRotation($newYaw, 0);
                         $entity->respawnToAll();
                     }
-                } else if ($nbt->getCompoundTag("Param")->getInt("unbreakable") == 1 && $item->getID() != ItemIds::STICK && $item->getCustomName() != "§6**Obj Remover**") {
-                    //Nothing
-                    $player->sendMessage(TextFormat::colorize("§4Unbreakable"));
-                } else if ($item->getID() == ItemIds::STICK && $item->getCustomName() == "§6**Obj Remover**") {
+                }
+				else if ($item->getID() == ItemIds::STICK && $item->getCustomName() == "§6**Obj Remover**") {
                     $entity->kill();
-                } else if ($nbt->getCompoundTag("Param")->hasTag("usable")) {
+                }
+				else if ($nbt->getCompoundTag("Param")->hasTag("usable")) {
                     $usable_time = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("time");
                     $empty_remove = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("destruction");
                     $showMsg = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("use_msg");
                     $msgDestruction = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getString("destruction_msg");
                     $skinChange = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("skinchange");
+					
+					if ($usable_time >= 1) {
+						//I'm usable item, so use it !
+						
+						//Create var to prevent spamming entity
+						if (!$nbt->getCompoundTag("Param")->hasTag("last_used")) {
+							//Remove 41 ticks, so i can use it now ...
+							$nbt->getCompoundTag("Param")->setTag(new IntTag("last_used", Server::getInstance()->getTick() - 21));
+						}	
+						
+						//Prevent Spamming entity
+						//ABS prevent if ticket get reseted ex: (10-360) = -350 ---> abs(-350) = 350 --- 350 > 20 == Working :)
+						if ($nbt->getCompoundTag("Param")->hasTag("last_used") && abs((Server::getInstance()->getTick() - $nbt->getCompoundTag("Param")->getInt("last_used"))) > 20) {
+							$nbt->getCompoundTag("Param")->setInt("last_used", Server::getInstance()->getTick());
 
-                    if ($usable_time >= 1) {
-                        //I'm usable item, so use it !
-                        $actions = json_decode($nbt->getCompoundTag("Param")->getCompoundTag("usable")->getString("action"), true);
-                        $randAction = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("action_random");
-                        if ($randAction == 1) {
-                            $randIndex = array_rand($actions);
-                            if (is_array($actions[$randIndex])) {
-                                foreach ($actions[$randIndex] as $actionName => $actionValue) {
-                                    self::doAction($actionName, $actionValue, $player);
-                                }
-                            } else self::doAction($randIndex, $actions[$randIndex], $player);
-                        } else {
-                            foreach ($actions as $actionName => $actionValue) {
-                                self::doAction($actionName, $actionValue, $player);
-                            }
-                        }
-                        //After used, change value
-                        $usable_time--;
-                        if ($showMsg == 1 && $usable_time != 0)
-                            $player->sendMessage(TextFormat::colorize("Remaining: " . $usable_time));
-                        else if ($showMsg == 1 && $usable_time == 0) {
-                            $player->sendMessage(TextFormat::colorize("Nom it's empty ..."));
-                            //Need new skin ?
-                            if ($skinChange == 1) {
-                                $nbt->getCompoundTag("Param")->getCompoundTag("usable")->setInt("time", 0);
-                                $entity->setSkin($this->getSkin());
-                                $entity->respawnToAll();
-                            }
-                        }
-                    } else {
-                        //Show message that is not usable for now ... (Or forever)
-                        $player->sendMessage(TextFormat::colorize("Not usable ... Sorry"));
-                    }
+							$actions = json_decode($nbt->getCompoundTag("Param")->getCompoundTag("usable")->getString("action"), true);
+							$randAction = $nbt->getCompoundTag("Param")->getCompoundTag("usable")->getInt("action_random");
+							if ($randAction == 1) {
+								$randIndex = array_rand($actions);
+								if (is_array($actions[$randIndex])) {
+									foreach ($actions[$randIndex] as $actionName => $actionValue) {
+										self::doAction($actionName, $actionValue, $player);
+									}
+								} else self::doAction($randIndex, $actions[$randIndex], $player);
+							} else {
+								foreach ($actions as $actionName => $actionValue) {
+									self::doAction($actionName, $actionValue, $player);
+								}
+							}
+							//After used, change value
+							$usable_time--;
+							if ($showMsg == 1 && $usable_time != 0)
+								$player->sendMessage(TextFormat::colorize(MyEntities::$language['ent_remaining']. ": ". $usable_time));
+							else if ($showMsg == 1 && $usable_time == 0) {
+								$player->sendMessage(TextFormat::colorize(MyEntities::$language['ent_empty']));
+								//Need new skin ?
+								if ($skinChange == 1) {
+									$nbt->getCompoundTag("Param")->getCompoundTag("usable")->setInt("time", 0);
+									$entity->setSkin($this->getSkin());
+									$entity->respawnToAll();
+								}
+							}
+						}
+						else $player->sendMessage(TextFormat::colorize(MyEntities::$language['ent_donotspam']));
+
+					}
+					else $player->sendMessage(TextFormat::colorize(MyEntities::$language['ent_notusable']));
+					//Show message that is not usable for now ... (Or forever)
 
                     //Do i need to be removed ?
                     if ($usable_time < 1 && $empty_remove == 1) {
@@ -201,7 +217,8 @@ class MyCustomEntity extends Human
                         if ($showMsg == 1)
                             $player->sendMessage(TextFormat::colorize($msgDestruction));
                     } else $nbt->getCompoundTag("Param")->getCompoundTag("usable")->setInt("time", $usable_time);
-                } else {
+                }
+				else {
                     $source->setKnockBack(0.0);
                     $source->setBaseDamage(1.0);
                     $source->setAttackCooldown(0);//TODO custom cooldown?

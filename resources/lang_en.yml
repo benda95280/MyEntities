@@ -3,6 +3,11 @@
 #Generic init message
 init_loading: "Loading"
 init_lang_notexist: "Language '%s' do not exist, English used instead"
+#Generic entity message
+ent_donotspam: Do not spam ...
+ent_notusable: Not usable ... Sorry
+ent_remaining: Remaining
+ent_empty: Now it's empty ...
 #Checkin message
 checkin_newadded: "'%s' Has been added to your config file as 'Head' type"
 checkin_noskinpng: "'%s' Do not have any skin (png) file ! It has been removed from plugin"
