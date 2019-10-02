@@ -50,7 +50,7 @@ class MyEntities extends PluginBase implements Listener
     public static $configData;
     /** @var String $pathSkins */
     public static $pathSkins;
-    /** @var Array $pathSkins */
+    /** @var array $pathSkins */
     public static $language;
 
     public const PREFIX = TextFormat::BLUE . 'MyEntities' . TextFormat::DARK_GRAY . '> ' . TextFormat::WHITE;
