@@ -229,9 +229,8 @@ class MyEntities extends PluginBase implements Listener
         $path = MyEntities::getInstance()->getDataFolder() . "skins" . DIRECTORY_SEPARATOR . "{$skinName}.png";
         $img = @imagecreatefrompng($path);
         $bytes = '';
-        $l = (int)@getimagesize($path)[1];
-        for ($y = 0; $y < $l; $y++) {
-            for ($x = 0; $x < 64; $x++) {
+        for ($y = 0; $y < imagesy($img); $y++) {
+            for ($x = 0; $x < imagesx($img); $x++) {
                 $rgba = @imagecolorat($img, $x, $y);
                 $a = ((~((int)($rgba >> 24))) << 1) & 0xff;
                 $r = ($rgba >> 16) & 0xff;
