@@ -31,9 +31,9 @@ use pocketmine\entity\Entity;
 use pocketmine\event\Listener;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\TextFormat;
@@ -247,17 +247,12 @@ class MyEntities extends PluginBase implements Listener
      * @param $array
      * @param String $arrayname
      * @return CompoundTag
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
      */
     public static function arrayToCompTag($array, String $arrayname)
     {
-        $tag = new CompoundTag($arrayname, []);
-        foreach ($array as $key => $value) {
-            if (is_int($value)) $tag->setTag(new IntTag($key, $value));
-            else if (is_string($value)) $tag->setTag(new StringTag($key, $value));
-            else if (is_array($value)) $tag->setTag(MyEntities::arrayToCompTag($value, $key));
-        }
+        $nbt = new BigEndianNBTStream();
+        $tag = $nbt::fromArray($array);
+        $tag->setName($arrayname);
         return $tag;
     }
 
@@ -267,7 +262,7 @@ class MyEntities extends PluginBase implements Listener
         if (self::$miscList["log-level"] >= $level) self::$instance->getLogger()->info("§4" . $message);
         //Level 1 Minimal thing
         else if (self::$miscList["log-level"] >= $level) self::$instance->getLogger()->info($message);
-        //Level 2 Usless Thing
+        //Level 2 Useless Thing
         else if (self::$miscList["log-level"] >= $level) self::$instance->getLogger()->info($message);
     }
 
