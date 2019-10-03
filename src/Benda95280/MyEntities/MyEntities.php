@@ -202,7 +202,7 @@ class MyEntities extends PluginBase implements Listener
 	private function initializeLanguage(){
 		if (!isset(self::$miscList['language'])) {
 			self::logMessage("Language not set, English applied", 0);
-			self::$miscList['language'] == 'en';
+            self::$miscList['language'] = 'en';
 			//TODO: Error here if language is missing:
 			//[Server thread/CRITICAL]: ErrorException: "Undefined index: language" (EXCEPTION) in "plugins/MyEntities/src/Benda95280/MyEntities/MyEntities" at line 205
 		}
