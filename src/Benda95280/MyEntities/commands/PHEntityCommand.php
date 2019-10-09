@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Benda95280\MyEntities\commands;
 
+use Benda95280\MyEntities\entities\entity\CustomEntityProperties;
+use Benda95280\MyEntities\entities\head\HeadProperties;
+use Benda95280\MyEntities\entities\Properties;
+use Benda95280\MyEntities\entities\vehicle\VehicleProperties;
 use Benda95280\MyEntities\MyEntities;
 use CortexPE\Commando\BaseSubCommand;
 use pocketmine\command\CommandSender;
+use pocketmine\entity\Skin;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
@@ -40,13 +45,47 @@ class PHEntityCommand extends BaseSubCommand
 
         if (!empty($skinName = ($args["skin"] ?? ""))) {
             if (isset(MyEntities::$skinsList[$skinName])) {
+                $pathSkinsHead = MyEntities::getInstance()->getDataFolder() . "skins" . DIRECTORY_SEPARATOR;
                 $nameFinal = ucfirst(MyEntities::$skinsList[$skinName]['name']);
                 $param = MyEntities::$skinsList[$skinName]['param'];
                 //Checker si l'entity est custom ...
                 if (MyEntities::$skinsList[$skinName]['type'] == "custom") {
-                    $player->getInventory()->addItem(MyEntities::getPlayerCustomItem($skinName, $nameFinal, $param));
+                    $properties = new CustomEntityProperties(MyEntities::arrayToCompTag($param, Properties::PROPERTY_TAG));
+                    $properties->name = $nameFinal;
+                    $properties->skin = new Skin(
+                        $skinName,
+                        MyEntities::createSkin($skinName),
+                        "",
+                        $properties->geometryName,
+                        file_get_contents($pathSkinsHead . $skinName . '.json')
+                    );
+                    $player->getInventory()->addItem(MyEntities::getPlayerCustomItem2($properties));
+                    #$player->getInventory()->addItem(MyEntities::getPlayerCustomItem($skinName, $nameFinal, $param));
+                }
+                if (MyEntities::$skinsList[$skinName]['type'] == "vehicle") {
+                    $properties = new VehicleProperties(MyEntities::arrayToCompTag($param, Properties::PROPERTY_TAG));
+                    $properties->name = $nameFinal;
+                    $properties->skin = new Skin(
+                        $skinName,
+                        MyEntities::createSkin($skinName),
+                        "",
+                        $properties->geometryName,
+                        file_get_contents($pathSkinsHead . $skinName . '.json')
+                    );
+                    $player->getInventory()->addItem(MyEntities::getPlayerCustomItemVehicle($properties));
+                    #$player->getInventory()->addItem(MyEntities::getPlayerCustomItem($skinName, $nameFinal, $param));
                 } else {
-                    $player->getInventory()->addItem(MyEntities::getPlayerHeadItem($skinName, $nameFinal, $param));
+                    $properties = new HeadProperties(MyEntities::arrayToCompTag($param, Properties::PROPERTY_TAG));
+                    $properties->name = $nameFinal;
+                    $properties->skin = new Skin(
+                        $skinName,
+                        MyEntities::createSkin($skinName),
+                        "",
+                        HeadProperties::GEOMETRY_NAME,
+                        HeadProperties::GEOMETRY
+                    );
+                    $player->getInventory()->addItem(MyEntities::getPlayerHeadItem2($properties));
+                    #$player->getInventory()->addItem(MyEntities::getPlayerHeadItem($skinName, $nameFinal, $param));
                 }
                 $player->sendMessage(TextFormat::colorize(sprintf(MyEntities::getInstance()->getConfig()->get("messages")['message-head-added'], $nameFinal)));
 

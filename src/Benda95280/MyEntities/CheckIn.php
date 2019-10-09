@@ -202,9 +202,9 @@ class CheckIn
                     unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
-				MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_head_loaded'], $skinName, $skinValue["param"]["size"], $skinValue["name"]), 2);				
-            
-			} else if (isset($skinValue["type"]) && $skinValue["type"] == "custom") {
+				MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_head_loaded'], $skinName, $skinValue["param"]["size"], $skinValue["name"]), 2);
+
+            } else if (isset($skinValue["type"]) && ($skinValue["type"] == "custom" || $skinValue["type"] == "vehicle")) {
                 //CustomSkin must have json geometry file
                 if (file_exists(MyEntities::$pathSkins . $skinName . '.json')) {
                     $decodedGeometry = json_decode(file_get_contents(MyEntities::$pathSkins . $skinName . '.json'));

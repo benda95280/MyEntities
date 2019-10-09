@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Benda95280\MyEntities\commands;
 
+use Benda95280\MyEntities\entities\head\HeadProperties;
 use Benda95280\MyEntities\MyEntities;
 use CortexPE\Commando\BaseSubCommand;
 use pocketmine\command\CommandSender;
@@ -35,10 +36,12 @@ class PHHeadCommand extends BaseSubCommand
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
         $player = $args["player"] ?? $sender;
-        if (!$player instanceof Player) return;
-
-        $param = ['size' => 'normal', 'health' => 1, 'unbreakable' => 0, 'data' => $player->getSkin()->getSkinData()];
-        $player->getInventory()->addItem(MyEntities::getPlayerHeadItem($player->getName(), $player->getName(), $param));
-        $player->sendMessage(TextFormat::colorize(sprintf(MyEntities::getInstance()->getConfig()->get("messages")['message-head-added'], $player->getName())));
+        if (!$player instanceof Player || !$sender instanceof Player) return;
+        $properties = new HeadProperties();
+        $properties->skin = $player->getSkin();
+        $properties->userName = $player->getName();
+        $properties->name = TextFormat::colorize(sprintf('&r&6%s\'s Head', $player->getName()), '&');
+        $sender->getInventory()->addItem(MyEntities::getPlayerHeadItem2($properties));
+        $sender->sendMessage(TextFormat::colorize(sprintf(MyEntities::getInstance()->getConfig()->get("messages")['message-head-added'], $player->getName())));
     }
 }

@@ -27,6 +27,7 @@ namespace Benda95280\MyEntities\entities;
 use Benda95280\MyEntities\MyEntities;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\command\ConsoleCommandSender;
 use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Human;
@@ -40,11 +41,10 @@ use pocketmine\item\ItemIds;
 use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\HeartParticle;
 use pocketmine\level\Position;
-use pocketmine\Player;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\utils\TextFormat;
+use pocketmine\Player;
 use pocketmine\Server;
-
+use pocketmine\utils\TextFormat;
 
 class MyCustomEntity extends Human
 {
@@ -228,9 +228,12 @@ class MyCustomEntity extends Human
         }
     }
 
+    protected function doFoodTick(int $tickDiff = 1): void
+    {
+    }
+
     protected function doHitAnimation(): void
     {
-        var_dump($this->getHealth() . "/" . $this->getMaxHealth());//TODO book_bible has 5 health and 1 health twice? wtf
         //TODO custom particles/animation when hit?
     }
 
@@ -377,10 +380,10 @@ class MyCustomEntity extends Human
 				unset($toExecute[0]);
 				
 				foreach ($toExecute as $indvtoExecute) {
-					if ($whoExecute == "console") 
-						$this->getPlugin()->getServer()->dispatchCommand(new ConsoleCommandSender(), $command);
+					if ($whoExecute == "console")
+                        $this->getPlugin()->getServer()->dispatchCommand(new ConsoleCommandSender(), $indvtoExecute);
 					else if ($whoExecute == "player")
-						$this->getPlugin()->getServer()->dispatchCommand($player, $command);
+                        $this->getPlugin()->getServer()->dispatchCommand($player, $indvtoExecute);
 				}
                 break;
 

@@ -25,15 +25,22 @@ declare(strict_types=1);
 namespace Benda95280\MyEntities;
 
 use Benda95280\MyEntities\commands\PHCommand;
+use Benda95280\MyEntities\entities\entity\CustomEntity;
+use Benda95280\MyEntities\entities\entity\CustomEntityProperties;
+use Benda95280\MyEntities\entities\head\HeadEntity;
+use Benda95280\MyEntities\entities\head\HeadProperties;
 use Benda95280\MyEntities\entities\MyCustomEntity;
+use Benda95280\MyEntities\entities\vehicle\CustomVehicle;
+use Benda95280\MyEntities\entities\vehicle\VehicleProperties;
 use CortexPE\Commando\PacketHooker;
 use pocketmine\entity\Entity;
 use pocketmine\event\Listener;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\nbt\BigEndianNBTStream;
+use pocketmine\nbt\NBTStream;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\TextFormat;
@@ -70,9 +77,9 @@ class MyEntities extends PluginBase implements Listener
 
         self::$instance->saveDefaultConfig();
         self::loadConfig();
-		self::initializeLanguage();
-		
-        self::logMessage("§a".self::$language['init_loading']." ...", 1);
+        self::initializeLanguage();
+
+        self::logMessage("§a" . self::$language['init_loading'] . " ...", 1);
 
         //Set Folder Skins
         self::$pathSkins = $this->getDataFolder() . "skins";
@@ -85,6 +92,10 @@ class MyEntities extends PluginBase implements Listener
         self::$pathSkins .= DIRECTORY_SEPARATOR;
 
         Entity::registerEntity(MyCustomEntity::class, true, ['MyEntities']);
+        Entity::registerEntity(HeadEntity::class, true);
+        Entity::registerEntity(CustomEntity::class, true);
+        Entity::registerEntity(CustomVehicle::class, true);
+
         $this->getServer()->getCommandMap()->registerAll("MyEntities", [
             new PHCommand("myentities", self::$language['cmd_myentities'], ["mye"]),
         ]);
@@ -162,6 +173,28 @@ class MyEntities extends PluginBase implements Listener
     }
 
     /**
+     * @param HeadProperties $properties
+     * @return Item
+     * @throws \InvalidArgumentException
+     */
+    public static function getPlayerHeadItem2(HeadProperties $properties): Item
+    {
+        $item = (ItemFactory::get(Item::MOB_HEAD, 3))
+            ->setCustomBlockData(new CompoundTag("", [
+                new CompoundTag("Skin", [
+                    new StringTag("Name", $properties->skin->getSkinId()),
+                    new ByteArrayTag("Data", $properties->skin->getSkinData()),
+                    new ByteArrayTag("CapeData", ""),
+                    new StringTag("GeometryName", "geometry.MyEntities_head"),
+                    new ByteArrayTag("GeometryData", $properties::GEOMETRY)
+                ]),
+                self::arrayToCompTag((array)$properties, "MyEntities")
+            ]))
+            ->setCustomName(TextFormat::colorize('&r' . $properties->name, '&'));
+        return $item;
+    }
+
+    /**
      * @param string $name
      * @param string $nameFinal
      * @param array $param
@@ -198,31 +231,83 @@ class MyEntities extends PluginBase implements Listener
                 ->setCustomName(TextFormat::colorize('&r' . $nameFinal, '&'));
         return $item;
     }
-	
-	private function initializeLanguage(){
-		if (!isset(self::$miscList['language'])) {
-			self::logMessage("Language not set, English applied", 0);
+
+    /**
+     * @param CustomEntityProperties $properties
+     * @return Item
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     */
+    public static function getPlayerCustomItem2(CustomEntityProperties $properties): Item
+    {
+        $item = (ItemFactory::get(Item::MOB_HEAD));
+        $compoundTag = new CompoundTag("", [
+            new CompoundTag("Skin", [
+                new StringTag("Name", $properties->skin->getSkinId()),
+                new ByteArrayTag("Data", $properties->skin->getSkinData()),
+                new ByteArrayTag("CapeData", ""),
+                new StringTag("GeometryName", $properties->skin->getGeometryName()),
+                new ByteArrayTag("GeometryData", $properties->skin->getGeometryData())
+            ]),
+            self::arrayToCompTag((array)$properties, "MyEntities"),
+        ]);
+        if ($properties->usable && $properties->usable["skinchange"] == 1) {
+            $compoundTag->setTag(new ByteArrayTag('skin_empty', MyEntities::createSkin($properties->skin->getSkinId() . "_empty")));
+        }
+        return $item->setCustomBlockData($compoundTag)
+            ->setCustomName(TextFormat::colorize('&r' . $properties->name, '&'));
+    }
+
+    /**
+     * @param CustomEntityProperties $properties
+     * @return Item
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     */
+    public static function getPlayerCustomItemVehicle(VehicleProperties $properties): Item
+    {
+        $item = (ItemFactory::get(Item::BOOKSHELF));
+        $compoundTag = new CompoundTag("", [
+            new CompoundTag("Skin", [
+                new StringTag("Name", $properties->skin->getSkinId()),
+                new ByteArrayTag("Data", $properties->skin->getSkinData()),
+                new ByteArrayTag("CapeData", ""),
+                new StringTag("GeometryName", $properties->skin->getGeometryName()),
+                new ByteArrayTag("GeometryData", $properties->skin->getGeometryData())
+            ]),
+            self::arrayToCompTag((array)$properties, "MyEntities"),
+        ]);
+        if ($properties->usable && $properties->usable["skinchange"] == 1) {
+            $compoundTag->setTag(new ByteArrayTag('skin_empty', MyEntities::createSkin($properties->skin->getSkinId() . "_empty")));
+        }
+        return $item->setCustomBlockData($compoundTag)
+            ->setCustomName(TextFormat::colorize('&r' . $properties->name, '&'));
+    }
+
+    private function initializeLanguage()
+    {
+        if (!isset(self::$miscList['language'])) {
+            self::logMessage("Language not set, English applied", 0);
             self::$miscList['language'] = 'en';
-			//TODO: Error here if language is missing:
-			//[Server thread/CRITICAL]: ErrorException: "Undefined index: language" (EXCEPTION) in "plugins/MyEntities/src/Benda95280/MyEntities/MyEntities" at line 205
-		}
-		$languageSet = self::$miscList['language'];
-		//Get all language file
-		$language = [];
-		foreach($this->getResources() as $resource){
-			if($resource->isFile() and substr(($filename = $resource->getFilename()), 0, 5) === "lang_"){
-				$language[substr($filename, 5, -4)] = yaml_parse(file_get_contents($resource->getPathname()));
-			}
-		}
-		//Check if language exist, has set in config
-		if (isset($language[$languageSet])) {
-			self::$language = $language[$languageSet];
-		}
-		else {
-			self::$language = $language["en"];
-			self::logMessage(sprintf(self::$language['init_lang_notexist'], $languageSet), 0);
-		}
-	}
+            //TODO: Error here if language is missing:
+            //[Server thread/CRITICAL]: ErrorException: "Undefined index: language" (EXCEPTION) in "plugins/MyEntities/src/Benda95280/MyEntities/MyEntities" at line 205
+        }
+        $languageSet = self::$miscList['language'];
+        //Get all language file
+        $language = [];
+        foreach ($this->getResources() as $resource) {
+            if ($resource->isFile() and substr(($filename = $resource->getFilename()), 0, 5) === "lang_") {
+                $language[substr($filename, 5, -4)] = yaml_parse(file_get_contents($resource->getPathname()));
+            }
+        }
+        //Check if language exist, has set in config
+        if (isset($language[$languageSet])) {
+            self::$language = $language[$languageSet];
+        } else {
+            self::$language = $language["en"];
+            self::logMessage(sprintf(self::$language['init_lang_notexist'], $languageSet), 0);
+        }
+    }
 
     public static function createSkin($skinName)
     {
@@ -247,11 +332,20 @@ class MyEntities extends PluginBase implements Listener
      * @param $array
      * @param String $arrayname
      * @return CompoundTag
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public static function arrayToCompTag($array, String $arrayname)
     {
-        $nbt = new BigEndianNBTStream();
-        $tag = $nbt::fromArray($array);
+        $tag = new CompoundTag($arrayname, []);
+        foreach ($array as $key => $value) {
+            if (is_int($value)) $tag->setTag(new IntTag($key, $value));
+            else if (is_string($value)) $tag->setTag(new StringTag($key, $value));
+            else if (is_array($value)) $tag->setTag(MyEntities::arrayToCompTag($value, $key));
+        }
+        return $tag;
+        //This sadly does not work correctly (because of weird property issue) #blamepmmp
+        $tag = NBTStream::fromArray($array);
         $tag->setName($arrayname);
         return $tag;
     }
