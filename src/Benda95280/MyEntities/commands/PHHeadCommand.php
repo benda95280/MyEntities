@@ -41,7 +41,7 @@ class PHHeadCommand extends BaseSubCommand
         $properties->skin = $player->getSkin();
         $properties->userName = $player->getName();
         $properties->name = TextFormat::colorize(sprintf('&r&6%s\'s Head', $player->getName()), '&');
-        $sender->getInventory()->addItem(MyEntities::getPlayerHeadItem2($properties));
+        $sender->getInventory()->addItem(MyEntities::getPlayerHeadItem($properties));
         $sender->sendMessage(TextFormat::colorize(sprintf(MyEntities::getInstance()->getConfig()->get("messages")['message-head-added'], $player->getName())));
     }
 }

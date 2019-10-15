@@ -122,56 +122,12 @@ class MyEntities extends PluginBase implements Listener
     }
 
     /**
-     * @param string $name
-     * @param string $nameFinal
-     * @param array $param
-     * @return Item
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
-     */
-    public static function getPlayerHeadItem(string $name, string $nameFinal, array $param): Item
-    {
-        if (isset($param["usable"]["skinchange"]) && $param["usable"]["skinchange"] == 1)
-            $item = (ItemFactory::get(Item::MOB_HEAD, 3))
-                ->setCustomBlockData(new CompoundTag("", [
-                    new CompoundTag('skin', [
-                        new StringTag('Name', $name),
-                        new ByteArrayTag('Data', MyEntities::createSkin($name)),
-                    ]),
-                    new ByteArrayTag('skin_empty', MyEntities::createSkin($name . "_empty")),
-                    MyEntities::arrayToCompTag($param, "param")
-                ]))
-                ->setCustomName(TextFormat::colorize('&r' . $nameFinal, '&'));
-        else if (isset($param["data"]))
-            $item = (ItemFactory::get(Item::MOB_HEAD, 3))
-                ->setCustomBlockData(new CompoundTag("", [
-                    new CompoundTag('skin', [
-                        new StringTag('Name', $name),
-                        new ByteArrayTag('Data', $param["data"]),
-                    ]),
-                    MyEntities::arrayToCompTag($param, "param")
-                ]))
-                ->setCustomName(TextFormat::colorize(sprintf('&r&6%s\'s Head', $nameFinal), '&'));
-        else
-            $item = (ItemFactory::get(Item::MOB_HEAD, 3))
-                ->setCustomBlockData(new CompoundTag("", [
-                    new CompoundTag('skin', [
-                        new StringTag('Name', $name),
-                        new ByteArrayTag('Data', MyEntities::createSkin($name)),
-                    ]),
-                    MyEntities::arrayToCompTag($param, "param")
-                ]))
-                ->setCustomName(TextFormat::colorize('&r' . $nameFinal, '&'));
-        return $item;
-    }
-
-    /**
      * @param HeadProperties $properties
      * @return Item
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public static function getPlayerHeadItem2(HeadProperties $properties): Item
+    public static function getPlayerHeadItem(HeadProperties $properties): Item
     {
         $item = (ItemFactory::get(Item::MOB_HEAD, 3))
             ->setCustomBlockData(new CompoundTag("", [
@@ -189,50 +145,12 @@ class MyEntities extends PluginBase implements Listener
     }
 
     /**
-     * @param string $name
-     * @param string $nameFinal
-     * @param array $param
-     * @return Item
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
-     */
-    public static function getPlayerCustomItem(string $name, string $nameFinal, array $param): Item
-    {
-        $pathSkinsHead = self::$instance->getDataFolder() . "skins" . DIRECTORY_SEPARATOR;
-        if (isset($param["usable"]["skinchange"]) && $param["usable"]["skinchange"] == 1)
-            $item = (ItemFactory::get(Item::END_PORTAL_FRAME))
-                ->setCustomBlockData(new CompoundTag("", [
-                    new CompoundTag('skin', [
-                        new StringTag('Name', $name),
-                        new ByteArrayTag('Data', MyEntities::createSkin($name)),
-                    ]),
-                    new ByteArrayTag('skin_empty', MyEntities::createSkin($name . "_empty")),
-                    MyEntities::arrayToCompTag($param, "param"),
-                    new StringTag('Geometry', file_get_contents($pathSkinsHead . $name . '.json'))
-                ]))
-                ->setCustomName(TextFormat::colorize('&r' . $nameFinal, '&'));
-        else
-            $item = (ItemFactory::get(Item::END_PORTAL_FRAME))
-                ->setCustomBlockData(new CompoundTag("", [
-                    new CompoundTag('skin', [
-                        new StringTag('Name', $name),
-                        new ByteArrayTag('Data', MyEntities::createSkin($name)),
-                    ]),
-                    MyEntities::arrayToCompTag($param, "param"),
-                    new StringTag('Geometry', file_get_contents($pathSkinsHead . $name . '.json'))
-
-                ]))
-                ->setCustomName(TextFormat::colorize('&r' . $nameFinal, '&'));
-        return $item;
-    }
-
-    /**
      * @param CustomEntityProperties $properties
      * @return Item
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public static function getPlayerCustomItem2(CustomEntityProperties $properties): Item
+    public static function getPlayerCustomItem(CustomEntityProperties $properties): Item
     {
         $item = (ItemFactory::get(Item::MOB_HEAD));
         $compoundTag = new CompoundTag("", [
@@ -260,7 +178,7 @@ class MyEntities extends PluginBase implements Listener
      */
     public static function getPlayerCustomItemVehicle(VehicleProperties $properties): Item
     {
-        $item = (ItemFactory::get(Item::BOOKSHELF));
+        $item = (ItemFactory::get(Item::BOOKSHELF));//TODO different item (minecart)
         $compoundTag = new CompoundTag("", [
             new CompoundTag("Skin", [
                 new StringTag("Name", $properties->skin->getSkinId()),

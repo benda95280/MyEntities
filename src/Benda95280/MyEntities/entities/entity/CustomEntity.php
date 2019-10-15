@@ -52,6 +52,6 @@ class CustomEntity extends BaseEntity
 
     public function getDrops(): array
     {
-        return [MyEntities::getPlayerCustomItem2($this->properties)];
+        return [MyEntities::getPlayerCustomItem($this->properties)];
     }
 }

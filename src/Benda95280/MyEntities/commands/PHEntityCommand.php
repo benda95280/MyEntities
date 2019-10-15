@@ -58,7 +58,7 @@ class PHEntityCommand extends BaseSubCommand
                         $properties->geometryName,
                         file_get_contents($pathSkinsHead . $skinName . '.json')
                     );
-                    $player->getInventory()->addItem(MyEntities::getPlayerCustomItem2($properties));
+                    $player->getInventory()->addItem(MyEntities::getPlayerCustomItem($properties));
                     #$player->getInventory()->addItem(MyEntities::getPlayerCustomItem($skinName, $nameFinal, $param));
                 }
                 if (MyEntities::$skinsList[$skinName]['type'] === "vehicle") {
@@ -83,7 +83,7 @@ class PHEntityCommand extends BaseSubCommand
                         HeadProperties::GEOMETRY_NAME,
                         HeadProperties::GEOMETRY
                     );
-                    $player->getInventory()->addItem(MyEntities::getPlayerHeadItem2($properties));
+                    $player->getInventory()->addItem(MyEntities::getPlayerHeadItem($properties));
                     #$player->getInventory()->addItem(MyEntities::getPlayerHeadItem($skinName, $nameFinal, $param));
                 }
                 $player->sendMessage(TextFormat::colorize(sprintf(MyEntities::getInstance()->getConfig()->get("messages")['message-head-added'], $nameFinal)));

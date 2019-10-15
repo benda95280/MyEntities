@@ -52,6 +52,6 @@ class HeadEntity extends BaseEntity
 
     public function getDrops(): array
     {
-        return [MyEntities::getPlayerHeadItem2($this->properties)];
+        return [MyEntities::getPlayerHeadItem($this->properties)];
     }
 }
