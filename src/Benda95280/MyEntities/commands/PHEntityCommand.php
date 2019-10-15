@@ -48,8 +48,7 @@ class PHEntityCommand extends BaseSubCommand
                 $pathSkinsHead = MyEntities::getInstance()->getDataFolder() . "skins" . DIRECTORY_SEPARATOR;
                 $nameFinal = ucfirst(MyEntities::$skinsList[$skinName]['name']);
                 $param = MyEntities::$skinsList[$skinName]['param'];
-                //Checker si l'entity est custom ...
-                if (MyEntities::$skinsList[$skinName]['type'] == "custom") {
+                if (MyEntities::$skinsList[$skinName]['type'] === "custom") {
                     $properties = new CustomEntityProperties(MyEntities::arrayToCompTag($param, Properties::PROPERTY_TAG));
                     $properties->name = $nameFinal;
                     $properties->skin = new Skin(
@@ -62,7 +61,7 @@ class PHEntityCommand extends BaseSubCommand
                     $player->getInventory()->addItem(MyEntities::getPlayerCustomItem2($properties));
                     #$player->getInventory()->addItem(MyEntities::getPlayerCustomItem($skinName, $nameFinal, $param));
                 }
-                if (MyEntities::$skinsList[$skinName]['type'] == "vehicle") {
+                if (MyEntities::$skinsList[$skinName]['type'] === "vehicle") {
                     $properties = new VehicleProperties(MyEntities::arrayToCompTag($param, Properties::PROPERTY_TAG));
                     $properties->name = $nameFinal;
                     $properties->skin = new Skin(

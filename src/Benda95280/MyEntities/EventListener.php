@@ -86,7 +86,7 @@ class EventListener implements Listener
                 break;
             case PlayerInputPacket::NETWORK_ID:
                 /** @var PlayerInputPacket $packet */
-                if ($packet->motionX == 0 and $packet->motionY == 0) return; // ignore non-input
+                if ($packet->motionX === 0 and $packet->motionY === 0) return; // ignore non-input
                 if (isset(CustomVehicle::$ridingEntities[$event->getPlayer()->getName()])) {
                     $riding = CustomVehicle::$ridingEntities[$event->getPlayer()->getName()];
                     $riding->input($packet->motionX, $packet->motionY);

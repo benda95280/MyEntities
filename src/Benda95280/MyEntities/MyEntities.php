@@ -29,7 +29,6 @@ use Benda95280\MyEntities\entities\entity\CustomEntity;
 use Benda95280\MyEntities\entities\entity\CustomEntityProperties;
 use Benda95280\MyEntities\entities\head\HeadEntity;
 use Benda95280\MyEntities\entities\head\HeadProperties;
-use Benda95280\MyEntities\entities\MyCustomEntity;
 use Benda95280\MyEntities\entities\vehicle\CustomVehicle;
 use Benda95280\MyEntities\entities\vehicle\VehicleProperties;
 use CortexPE\Commando\PacketHooker;
@@ -37,7 +36,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\Listener;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\nbt\NBTStream;
+use pocketmine\lang\BaseLang;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -49,15 +48,13 @@ class MyEntities extends PluginBase implements Listener
 {
     /** @var MyEntities */
     private static $instance;
-    /** @var array $skinsList */
+    /** @var array */
     public static $skinsList;
-    /** @var array $miscList */
+    /** @var array */
     public static $miscList;
-    /** @var array $configData */
-    public static $configData;
-    /** @var String $pathSkins */
+    /** @var string */
     public static $pathSkins;
-    /** @var array $pathSkins */
+    /** @var BaseLang */
     public static $language;
 
     public const PREFIX = TextFormat::BLUE . 'MyEntities' . TextFormat::DARK_GRAY . '> ' . TextFormat::WHITE;
@@ -68,18 +65,17 @@ class MyEntities extends PluginBase implements Listener
      */
     public function onEnable(): void
     {
-        if (self::$instance === null) {
-            self::$instance = $this;
-        }
+        self::$instance = $this;
         if (!PacketHooker::isRegistered()) {
             PacketHooker::register($this);
         }
 
         self::$instance->saveDefaultConfig();
         self::loadConfig();
-        self::initializeLanguage();
+        $lang = $this->getConfig()->get("misc.language", "en");
+        self::$language = new BaseLang((string)$lang, $this->getFile() . "resources/lang/", "en");
 
-        self::logMessage("§a" . self::$language['init_loading'] . " ...", 1);
+        self::logMessage("§a" . self::$language->translateString('init_loading') . " ...", 1);
 
         //Set Folder Skins
         self::$pathSkins = $this->getDataFolder() . "skins";
@@ -91,13 +87,12 @@ class MyEntities extends PluginBase implements Listener
         }
         self::$pathSkins .= DIRECTORY_SEPARATOR;
 
-        Entity::registerEntity(MyCustomEntity::class, true, ['MyEntities']);
-        Entity::registerEntity(HeadEntity::class, true);
-        Entity::registerEntity(CustomEntity::class, true);
-        Entity::registerEntity(CustomVehicle::class, true);
+        Entity::registerEntity(HeadEntity::class, true, ['mye_head']);
+        Entity::registerEntity(CustomEntity::class, true, ['mye_entity']);
+        Entity::registerEntity(CustomVehicle::class, true, ['mye_vehicle']);
 
         $this->getServer()->getCommandMap()->registerAll("MyEntities", [
-            new PHCommand("myentities", self::$language['cmd_myentities'], ["mye"]),
+            new PHCommand("myentities", self::$language->translateString('cmd_myentities'), ["mye"]),
         ]);
         $this->getServer()->getPluginManager()->registerEvents(new EventListener(), $this);
         //Count skins available
@@ -112,13 +107,11 @@ class MyEntities extends PluginBase implements Listener
         }
     }
 
-    public static function loadConfig()
+    public static function loadConfig(): void
     {
-        self::getInstance()->reloadConfig();
         //Load configuration file
+        //TODO note: this should not be done due to double memory allocation (double ram use) - get data directly from config
         $data = self::getInstance()->getConfig()->getAll();
-        //Define Public Var Data-Config File
-        self::$configData = $data;
         self::$skinsList = $data["skins"];
         self::$miscList = $data["misc"];
     }
@@ -176,6 +169,7 @@ class MyEntities extends PluginBase implements Listener
      * @param HeadProperties $properties
      * @return Item
      * @throws \InvalidArgumentException
+     * @throws \RuntimeException
      */
     public static function getPlayerHeadItem2(HeadProperties $properties): Item
     {
@@ -259,7 +253,7 @@ class MyEntities extends PluginBase implements Listener
     }
 
     /**
-     * @param CustomEntityProperties $properties
+     * @param VehicleProperties $properties
      * @return Item
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
@@ -277,39 +271,14 @@ class MyEntities extends PluginBase implements Listener
             ]),
             self::arrayToCompTag((array)$properties, "MyEntities"),
         ]);
-        if ($properties->usable && $properties->usable["skinchange"] == 1) {
+        if ($properties->usable && $properties->usable["skinchange"] === 1) {
             $compoundTag->setTag(new ByteArrayTag('skin_empty', MyEntities::createSkin($properties->skin->getSkinId() . "_empty")));
         }
         return $item->setCustomBlockData($compoundTag)
             ->setCustomName(TextFormat::colorize('&r' . $properties->name, '&'));
     }
 
-    private function initializeLanguage()
-    {
-        if (!isset(self::$miscList['language'])) {
-            self::logMessage("Language not set, English applied", 0);
-            self::$miscList['language'] = 'en';
-            //TODO: Error here if language is missing:
-            //[Server thread/CRITICAL]: ErrorException: "Undefined index: language" (EXCEPTION) in "plugins/MyEntities/src/Benda95280/MyEntities/MyEntities" at line 205
-        }
-        $languageSet = self::$miscList['language'];
-        //Get all language file
-        $language = [];
-        foreach ($this->getResources() as $resource) {
-            if ($resource->isFile() and substr(($filename = $resource->getFilename()), 0, 5) === "lang_") {
-                $language[substr($filename, 5, -4)] = yaml_parse(file_get_contents($resource->getPathname()));
-            }
-        }
-        //Check if language exist, has set in config
-        if (isset($language[$languageSet])) {
-            self::$language = $language[$languageSet];
-        } else {
-            self::$language = $language["en"];
-            self::logMessage(sprintf(self::$language['init_lang_notexist'], $languageSet), 0);
-        }
-    }
-
-    public static function createSkin($skinName)
+    public static function createSkin($skinName): string
     {
         $path = MyEntities::getInstance()->getDataFolder() . "skins" . DIRECTORY_SEPARATOR . "{$skinName}.png";
         $img = @imagecreatefrompng($path);
@@ -329,13 +298,13 @@ class MyEntities extends PluginBase implements Listener
     }
 
     /**
-     * @param $array
-     * @param String $arrayname
+     * @param array $array
+     * @param string $arrayname
      * @return CompoundTag
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
-    public static function arrayToCompTag($array, String $arrayname)
+    public static function arrayToCompTag(array $array, string $arrayname): CompoundTag
     {
         $tag = new CompoundTag($arrayname, []);
         foreach ($array as $key => $value) {
@@ -344,13 +313,17 @@ class MyEntities extends PluginBase implements Listener
             else if (is_array($value)) $tag->setTag(MyEntities::arrayToCompTag($value, $key));
         }
         return $tag;
-        //This sadly does not work correctly (because of weird property issue) #blamepmmp
-        $tag = NBTStream::fromArray($array);
-        $tag->setName($arrayname);
-        return $tag;
+        //This sadly does not work correctly (because of "no dynamic fields") #blamepmmp - see NoDynamicFieldsTrait
+        //$tag = NBTStream::fromArray($array);
+        //$tag->setName($arrayname);
+        //return $tag;
     }
 
-    public static function logMessage(String $message, $level)
+    /**
+     * @param string $message
+     * @param int $level
+     */
+    public static function logMessage(string $message, int $level = 0)
     {
         //Level 0 Only Error
         if (self::$miscList["log-level"] >= $level) self::$instance->getLogger()->info("§4" . $message);

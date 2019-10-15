@@ -50,12 +50,11 @@ class CheckIn
                     MyEntities::$skinsList[$filename]["param"]["size"] = "normal";
                     MyEntities::$skinsList[$filename]["param"]["health"] = 1;
                     MyEntities::$skinsList[$filename]["param"]["unbreakable"] = 0;
-                    MyEntities::logMessage(sprintf(MyEntities::$language['checkin_newadded'], $filename), 1);
+                    MyEntities::logMessage(MyEntities::$language->translateString('checkin_newadded', [$filename]), 1);
                 }
             }
         }
-        MyEntities::$configData["skins"] = MyEntities::$skinsList;
-        MyEntities::getInstance()->getConfig()->setAll(MyEntities::$configData);
+        MyEntities::getInstance()->getConfig()->set('skins', MyEntities::$skinsList);
         MyEntities::getInstance()->getConfig()->save();
 
 //CHECK SKIN CONFIGURATION
@@ -66,19 +65,19 @@ class CheckIn
 
             //Entity must have a skin file
             if (!file_exists(MyEntities::$pathSkins . $skinName . '.png')) {
-                MyEntities::logMessage(sprintf(MyEntities::$language['checkin_noskinpng'], $skinName), 0);
+                MyEntities::logMessage(MyEntities::$language->translateString('checkin_noskinpng', [$skinName]), 0);
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;
             }
-            //Entity declaration cannot have white space and correct lenght
+            //Entity declaration cannot have white space and correct length
             if (preg_match('/\s/', $skinName) || strlen($skinName) <= 4 || strlen($skinName) >= 22) {
-                MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entspaceorchar'], $skinName), 0);
+                MyEntities::logMessage(MyEntities::$language->translateString('checkin_entspaceorchar', [$skinName]), 0);
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;
             }
             //Entity must have a correct lenght	name
             if (!isset($skinValue["name"]) || strlen($skinValue["name"]) <= 4 || strlen($skinValue["name"]) >= 22) {
-                MyEntities::logMessage(sprintf(MyEntities::$language['checkin_namespaceorchar'], $skinName), 0);				
+                MyEntities::logMessage(MyEntities::$language->translateString('checkin_namespaceorchar', [$skinName]), 0);
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;
             }
@@ -87,19 +86,19 @@ class CheckIn
 
             //Entity must have Param child
             if (!isset($skinValue["param"])) {
-                MyEntities::logMessage(sprintf(MyEntities::$language['checkin_paramchildmissing'], $skinName), 0);				
+                MyEntities::logMessage(MyEntities::$language->translateString('checkin_paramchildmissing', [$skinName]), 0);
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;
             }
             //Entity must have a parameter Health in Param
             if (!isset($skinValue["param"]["health"]) || !is_int($skinValue["param"]["health"]) || $skinValue["param"]["health"] < 1 || $skinValue["param"]["health"] > 75) {
-                MyEntities::logMessage(sprintf(MyEntities::$language['checkin_health'], $skinName), 0);				
+                MyEntities::logMessage(MyEntities::$language->translateString('checkin_health', [$skinName]), 0);
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;
             }
             //Entity must have a parameter Unbreakable in Param
             if (!isset($skinValue["param"]["unbreakable"]) || !is_int($skinValue["param"]["unbreakable"]) || !($skinValue["param"]["unbreakable"] == 1 || $skinValue["param"]["unbreakable"] == 0)) {
-                MyEntities::logMessage(sprintf(MyEntities::$language['checkin_unbreakable'], $skinName), 0);				
+                MyEntities::logMessage(MyEntities::$language->translateString('checkin_unbreakable', [$skinName]), 0);
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;
             }
@@ -111,75 +110,75 @@ class CheckIn
 
                 //Must be unbreakable to be usable !
                 if ($skinValue["param"]["unbreakable"] == 0) {
-					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_unbreakablenotset'], $skinName), 0);				
+                    MyEntities::logMessage(MyEntities::$language->translateString('checkin_usable_unbreakablenotset', [$skinName]), 0);
                     unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check usable time (1-20)
                 if (!isset($skinValue["param"]["usable"]["time"]) || !is_int($skinValue["param"]["usable"]["time"]) || $skinValue["param"]["usable"]["time"] < 1 || $skinValue["param"]["usable"]["time"] > 20) {
-					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_timeusable'], $skinName), 0);				
-					unset(MyEntities::$skinsList[$skinName]);
+                    MyEntities::logMessage(MyEntities::$language->translateString('checkin_usable_timeusable', [$skinName]), 0);
+                    unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check Reload Time (0-20)
                 if (!isset($skinValue["param"]["usable"]["reload"]) || !is_int($skinValue["param"]["usable"]["reload"]) || $skinValue["param"]["usable"]["reload"] < 0 || $skinValue["param"]["usable"]["reload"] > 300) {
-					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_reloadtime'], $skinName), 0);				
+                    MyEntities::logMessage(MyEntities::$language->translateString('checkin_usable_reloadtime', [$skinName]), 0);
                     unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check Skin change
                 if (!isset($skinValue["param"]["usable"]["skinchange"]) || !is_int($skinValue["param"]["usable"]["skinchange"]) || !($skinValue["param"]["usable"]["skinchange"] == 1 || $skinValue["param"]["usable"]["skinchange"] == 0)) {
-					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_skinchange'], $skinName), 0);				
-					unset(MyEntities::$skinsList[$skinName]);
+                    MyEntities::logMessage(MyEntities::$language->translateString('checkin_usable_skinchange', [$skinName]), 0);
+                    unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check Skin change, the skin has to exist
                 if (isset($skinValue["param"]["usable"]["skinchange"]) && $skinValue["param"]["usable"]["skinchange"] == 1 && !file_exists(MyEntities::$pathSkins . $skinName . '_empty.png')) {
-					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_missingskinempty'], $skinName, $skinName), 0);				
-					unset(MyEntities::$skinsList[$skinName]);
+                    MyEntities::logMessage(MyEntities::$language->translateString('checkin_usable_missingskinempty', [$skinName, $skinName]), 0);
+                    unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check Descruction
                 if (!isset($skinValue["param"]["usable"]["destruction"]) || !is_int($skinValue["param"]["usable"]["destruction"]) || !($skinValue["param"]["usable"]["destruction"] == 1 || $skinValue["param"]["usable"]["destruction"] == 0)) {
-					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_destruction'], $skinName), 0);				
-					unset(MyEntities::$skinsList[$skinName]);
+                    MyEntities::logMessage(MyEntities::$language->translateString('checkin_usable_destruction', [$skinName]), 0);
+                    unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check Destruction_MSG
                 if (!isset($skinValue["param"]["usable"]["destruction_msg"]) || !is_string($skinValue["param"]["usable"]["destruction_msg"])) {
-					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_destructionmsg'], $skinName), 0);				
-					unset(MyEntities::$skinsList[$skinName]);
+                    MyEntities::logMessage(MyEntities::$language->translateString('checkin_usable_destructionmsg', [$skinName]), 0);
+                    unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check if message show up when used
                 if (!isset($skinValue["param"]["usable"]["use_msg"]) || !is_int($skinValue["param"]["usable"]["use_msg"]) || !($skinValue["param"]["usable"]["use_msg"] == 1 || $skinValue["param"]["usable"]["use_msg"] == 0)) {
-					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_messagewhenused'], $skinName), 0);				
-					unset(MyEntities::$skinsList[$skinName]);
+                    MyEntities::logMessage(MyEntities::$language->translateString('checkin_usable_messagewhenused', [$skinName]), 0);
+                    unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check Action is set
                 if (!isset($skinValue["param"]["usable"]["action"]) || !is_string($skinValue["param"]["usable"]["action"])) {
-					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_missingaction'], $skinName), 0);				
+                    MyEntities::logMessage(MyEntities::$language->translateString('checkin_usable_missingaction', [$skinName]), 0);
                     unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check Action validity JSON
                 if (!json_decode($skinValue["param"]["usable"]["action"])) {
-					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_actionJSON'], $skinName), 0);				
+                    MyEntities::logMessage(MyEntities::$language->translateString('checkin_usable_actionJSON', [$skinName]), 0);
                     unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
                 //Check Action validity in details
                 if (!self::checkAction(json_decode($skinValue["param"]["usable"]["action"]))) {
-					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_actioninvalid'], $skinName), 0);				
+                    MyEntities::logMessage(MyEntities::$language->translateString('checkin_usable_actioninvalid', [$skinName]), 0);
                     unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
 
                 //Check RandomAction change when empty
                 if (!isset($skinValue["param"]["usable"]["action_random"]) || !is_int($skinValue["param"]["usable"]["action_random"]) || !($skinValue["param"]["usable"]["action_random"] == 1 || $skinValue["param"]["usable"]["action_random"] == 0)) {
-					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_usable_actionrandom'], $skinName), 0);				
-					unset(MyEntities::$skinsList[$skinName]);
+                    MyEntities::logMessage(MyEntities::$language->translateString('checkin_usable_actionrandom', [$skinName]), 0);
+                    unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
             }
@@ -198,11 +197,11 @@ class CheckIn
                 else if (isset($skinValue["param"]["size"]) && $skinValue["param"]["size"] === "normal") $countFileSkinsHeadNormal++;
                 else if (isset($skinValue["param"]["size"]) && $skinValue["param"]["size"] === "block") $countFileSkinsHeadBlock++;
                 else {
-					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_head_size'], $skinName), 0);				
+                    MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_head_size', [$skinName]), 0);
                     unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
-				MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_head_loaded'], $skinName, $skinValue["param"]["size"], $skinValue["name"]), 2);
+                MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_head_loaded', [$skinName, $skinValue["param"]["size"], $skinValue["name"]]), 2);
 
             } else if (isset($skinValue["type"]) && ($skinValue["type"] == "custom" || $skinValue["type"] == "vehicle")) {
                 //CustomSkin must have json geometry file
@@ -212,55 +211,55 @@ class CheckIn
                     if (!is_null($decodedGeometry)) {
                         $countFileSkinsCustom++;
                     } else {
-						MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_custom_geometryjson'], $skinName), 0);				
+                        MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_custom_geometryjson', [$skinName]), 0);
                         unset(MyEntities::$skinsList[$skinName]);
                         continue;
                     }
                     if (!isset($skinValue["param"]["geometryName"])) {
-						MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_custom_geometryname'], $skinName), 0);				
+                        MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_custom_geometryname', [$skinName]), 0);
                         unset(MyEntities::$skinsList[$skinName]);
                         continue;
                     }
                     if (isset($skinValue["param"]["size"])) {
-						MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_custom_size'], $skinName), 0);				
-						unset(MyEntities::$skinsList[$skinName]);
+                        MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_custom_size', [$skinName]), 0);
+                        unset(MyEntities::$skinsList[$skinName]);
                         continue;
                     }
                 } else {
-					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_custom_missingjsonfile'], $skinName), 0);				
+                    MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_custom_missingjsonfile', [$skinName]), 0);
                     unset(MyEntities::$skinsList[$skinName]);
                     continue;
                 }
-				MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_custom_loaded'], $skinName, $skinValue["name"]), 2);				
+                MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_custom_loaded', [$skinName, $skinValue["name"]]), 2);
             } else {
-				MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_error_typenotexist'], $skinName), 0);				
+                MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_error_typenotexist', [$skinName]), 0);
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;
             }
         }
-		MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_loaded_headsmall'], $countFileSkinsHeadSmall), 1);				
-		MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_loaded_headnormal'], $countFileSkinsHeadNormal), 1);				
-		MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_loaded_headblock'], $countFileSkinsHeadBlock), 1);				
-		MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_loaded_custom'], $countFileSkinsCustom), 1);				
-		MyEntities::logMessage(MyEntities::$language['checkin_activated'], 1);				
+        MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_loaded_headsmall', [$countFileSkinsHeadSmall]), 1);
+        MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_loaded_headnormal', [$countFileSkinsHeadNormal]), 1);
+        MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_loaded_headblock', [$countFileSkinsHeadBlock]), 1);
+        MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_loaded_custom', [$countFileSkinsCustom]), 1);
+        MyEntities::logMessage(MyEntities::$language->translateString('checkin_activated'), 1);
     }
-	
-	private static function checkAction($actions)
+
+    private static function checkAction($actions)
     {
         foreach ($actions as $actionName => $actionValue) {
             if (is_object($actionValue)) {
                 foreach ($actionValue as $actionName1 => $actionValue1) {
                     //This actions is a set of actions
                     if (!self::checkActionDetail($actionName1, $actionValue1)) {
-						MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_checkaction_actionset'], $actionName1), 1);				
-						return false;
+                        MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_checkaction_actionset', [$actionName1]), 1);
+                        return false;
                     }
                 }
             } else {
                 //No set of actions
                 if (!self::checkActionDetail($actionName, $actionValue)) {
-					MyEntities::logMessage(sprintf(MyEntities::$language['checkin_entity_checkaction_action'], $actionName), 1);				
-					unset(self::$skinsList[$actionName]);
+                    MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_checkaction_action', [$actionName]), 1);
+                    unset(MyEntities::$skinsList[$actionName]);
                     return false;
                 }
             }
@@ -310,11 +309,11 @@ class CheckIn
                 break;
             case "cmd":
                 $toExecute = explode(";", $actionValue);
-				$whoExecute = $toExecute[0];
-				if (!isset($toExecute[0]) OR ($whoExecute != "console" AND $whoExecute != "player") OR !$toExecute[1] OR $toExecute[1] == "")
-					return false;
-				else
-					return true;
+                $whoExecute = $toExecute[0];
+                if (!isset($toExecute[0]) OR ($whoExecute != "console" AND $whoExecute != "player") OR !$toExecute[1] OR $toExecute[1] == "")
+                    return false;
+                else
+                    return true;
             default:
                 return false;
         }

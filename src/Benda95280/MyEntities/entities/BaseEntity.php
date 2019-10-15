@@ -24,7 +24,6 @@ declare(strict_types=1);
 
 namespace Benda95280\MyEntities\entities;
 
-use Benda95280\MyEntities\entities\block\BlockProperties;
 use Benda95280\MyEntities\MyEntities;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\entity\Effect;
@@ -127,22 +126,15 @@ abstract class BaseEntity extends Human
             $item = $player->getInventory()->getItemInHand();
             if ($player->hasPermission('MyEntities.attack')) {
                 //handle admin items
-                if ($item->getID() == ItemIds::STICK && $item->getCustomName() == "§6**Obj Remover**") {
+                if ($item->getID() === ItemIds::STICK && $item->getCustomName() === "§6**Obj Remover**") {
                     $this->kill();
                     $source->setCancelled();
                     return;
                 }
                 if ($item->getID() === ItemIds::STICK && $item->getCustomName() === "§6**Obj Rotation**") {
-                    if ($this->properties instanceof BlockProperties) {
-                        //Block must rotate 90°
-                        $newYaw = ($this->getYaw() + 90) % 360;
-                        $this->setRotation($newYaw, 0);
-                        #$this->respawnToAll();
-                    } else {
-                        $newYaw = ($this->getYaw() + 45) % 360;
-                        $this->setRotation($newYaw, 0);
-                        #$this->respawnToAll();//Without it rotates smoothly
-                    }
+                    $newYaw = ($this->getYaw() + 45) % 360;
+                    $this->setRotation($newYaw, 0);
+                    #$this->respawnToAll();//Without it rotates smoothly
                     $source->setCancelled();
                     return;
                 }
@@ -179,9 +171,9 @@ abstract class BaseEntity extends Human
                             //After used, change value
                             $usable_time--;
                             if ($showMsg == 1 && $usable_time != 0)
-                                $player->sendMessage(TextFormat::colorize(MyEntities::$language['ent_remaining'] . ": " . $usable_time));
+                                $player->sendMessage(TextFormat::colorize(MyEntities::$language->translateString('ent_remaining') . ": " . $usable_time));
                             else if ($showMsg == 1 && $usable_time == 0) {
-                                $player->sendMessage(TextFormat::colorize(MyEntities::$language['ent_empty']));
+                                $player->sendMessage(TextFormat::colorize(MyEntities::$language->translateString('ent_empty')));
                                 //Need new skin ?
                                 if ($skinChange == 1) {
                                     $this->properties->usable["time"] = 0;
@@ -189,9 +181,9 @@ abstract class BaseEntity extends Human
                                     $this->respawnToAll();
                                 }
                             }
-                        } else $player->sendMessage(TextFormat::colorize(MyEntities::$language['ent_donotspam']));
+                        } else $player->sendMessage(TextFormat::colorize(MyEntities::$language->translateString('ent_donotspam')));
 
-                    } else $player->sendMessage(TextFormat::colorize(MyEntities::$language['ent_notusable']));
+                    } else $player->sendMessage(TextFormat::colorize(MyEntities::$language->translateString('ent_notusable')));
                     //Show message that is not usable for now ... (Or forever)
 
                     //Do i need to be removed ?
@@ -270,12 +262,12 @@ abstract class BaseEntity extends Human
                 if ($item instanceof Durable) {
                     if ($item->getDamage() > 0) {
                         $player->getInventory()->setItem($index, $item->setDamage(0));
-                        $player->sendMessage(TextFormat::GREEN . " " . MyEntities::$language['action_repair_success']);
+                        $player->sendMessage(TextFormat::GREEN . " " . MyEntities::$language->translateString('action_repair_success'));
                     } else {
-                        $player->sendMessage(TextFormat::RED . "[Error]" . TextFormat::DARK_RED . " " . MyEntities::$language['action_repair_nodmg']);
+                        $player->sendMessage(TextFormat::RED . "[Error]" . TextFormat::DARK_RED . " " . MyEntities::$language->translateString('action_repair_nodmg'));
                     }
                 } else {
-                    $player->sendMessage(TextFormat::RED . "[Error]" . TextFormat::DARK_RED . " " . MyEntities::$language['action_repair_cannot']);
+                    $player->sendMessage(TextFormat::RED . "[Error]" . TextFormat::DARK_RED . " " . MyEntities::$language->translateString('action_repair_cannot'));
                 }
                 break;
             case "cmd":
@@ -286,9 +278,9 @@ abstract class BaseEntity extends Human
                 unset($toExecute[0]);
 
                 foreach ($toExecute as $indvtoExecute) {
-                    if ($whoExecute == "console")
+                    if ($whoExecute === "console")
                         $this->getPlugin()->getServer()->dispatchCommand(new ConsoleCommandSender(), $indvtoExecute);
-                    else if ($whoExecute == "player")
+                    else if ($whoExecute === "player")
                         $this->getPlugin()->getServer()->dispatchCommand($player, $indvtoExecute);
                 }
                 break;

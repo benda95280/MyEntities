@@ -154,6 +154,7 @@ class CustomVehicle extends CustomEntity
         parent::kill();
     }
 
+    //TODO
     public function getRiderSeatPosition(int $seatNumber = 0){
         return new Vector3(0, $this->height * 0.75 + $this->riderOffset, 0);
     }

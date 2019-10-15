@@ -45,10 +45,10 @@ class PHCommand extends BaseCommand
          * /mye reload : Reload configuration
          */
         $this->setPermission("MyEntities");
-        $this->registerSubCommand(new PHItemCommand("item",		MyEntities::$language['cmd_giveitem']));
-        $this->registerSubCommand(new PHEntityCommand("entity",	MyEntities::$language['cmd_giveentity']));
-        $this->registerSubCommand(new PHHeadCommand("head",		MyEntities::$language['cmd_givehead']));
-		$this->registerSubCommand(new PHReloadCommand("reload",	MyEntities::$language['cmd_reload']));
+        $this->registerSubCommand(new PHItemCommand("item", MyEntities::$language->translateString('cmd_giveitem')));
+        $this->registerSubCommand(new PHEntityCommand("entity", MyEntities::$language->translateString('cmd_giveentity')));
+        $this->registerSubCommand(new PHHeadCommand("head", MyEntities::$language->translateString('cmd_givehead')));
+        $this->registerSubCommand(new PHReloadCommand("reload", MyEntities::$language->translateString('cmd_reload')));
     }
 
     /**

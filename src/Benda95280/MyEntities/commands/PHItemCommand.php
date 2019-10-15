@@ -49,13 +49,13 @@ class PHItemCommand extends BaseSubCommand
         if (!$player instanceof Player) return;
 
         if (!empty($itemName = ($args["item"] ?? ""))) {
-            if ($itemName == "rotator") {
+            if ($itemName === "rotator") {
                 $item = ItemFactory::get(ItemIds::STICK /* ID */, 0 /* Item Damage/meta */, 1 /*Count*/);
                 $item->setCustomName("§6**Obj Rotation**");
                 $player->getInventory()->addItem($item);
                 $player->sendMessage(TextFormat::colorize(sprintf(MyEntities::getInstance()->getConfig()->get("messages")['message-head-added'], "Obj_Rotation")));
 
-            } else if ($itemName == "remover") {
+            } else if ($itemName === "remover") {
                 $item = ItemFactory::get(ItemIds::STICK /* ID */, 0 /* Item Damage/meta */, 1 /*Count*/);
                 $item->setCustomName("§6**Obj Remover**");
                 $player->getInventory()->addItem($item);
