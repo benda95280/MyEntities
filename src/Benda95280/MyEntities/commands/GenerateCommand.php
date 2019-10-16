@@ -43,22 +43,26 @@ class GenerateCommand extends BaseSubCommand
         $name = (string)$args["name"];
         if (empty(trim($name))) {
             $sender->sendMessage(TextFormat::RED . "Name cannot be empty");//todo translation
+            return;
         }
         switch ($type) {
             case EntityTypeArgument::ENTITY:
                 {
                     $properties = new CustomEntityProperties();
                     $sender->sendForm($properties->getForm());
+                    break;
                 }
             case EntityTypeArgument::HEAD:
                 {
                     $properties = new HeadProperties();
                     $sender->sendForm($properties->getForm());
+                    break;
                 }
             case EntityTypeArgument::VEHICLE:
                 {
                     $properties = new VehicleProperties();
                     $sender->sendForm($properties->getForm());
+                    break;
                 }
             default:
                 {

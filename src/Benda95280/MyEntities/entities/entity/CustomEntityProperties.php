@@ -30,7 +30,7 @@ class CustomEntityProperties extends Properties
     public function getForm(): CustomForm
     {
         $form = parent::getForm();
-        $form->addElement(new Dropdown("Size", ["Normal" => self::SIZE_NORMAL, "Block" => self::SIZE_BLOCK, "Small" => self::SIZE_SMALL]));
+        $form->addElement(new Dropdown("Size", ["Normal", "Block", "Small", "Custom"]));
         $form->addElement(new Toggle("Solid", $this->solid));
         return $form;
     }

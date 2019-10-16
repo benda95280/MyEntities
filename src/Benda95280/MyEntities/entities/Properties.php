@@ -14,6 +14,7 @@ use pocketmine\block\BlockIds;
 use pocketmine\entity\Skin;
 use pocketmine\nbt\NBTStream;
 use pocketmine\nbt\tag\CompoundTag;
+use xenialdan\customui\elements\Dropdown;
 use xenialdan\customui\elements\Input;
 use xenialdan\customui\elements\Label;
 use xenialdan\customui\elements\StepSlider;
@@ -116,7 +117,12 @@ abstract class Properties
     public function getForm(): CustomForm
     {
         $form = new CustomForm("Entity properties");
-        $form->addElement(new Label("Skin: " . $this->skin->getSkinId()));
+        $form->addElement(new Label("Skin"));
+        if ($this->skin instanceof Skin)
+            $form->addElement(new Label($this->skin->getSkinId()));
+        else {
+            $form->addElement(new Dropdown("Select skin", array_keys(MyEntities::$skinsList)));
+        }
         $form->addElement(new StepSlider("Rotation per tick", [0, 1, 2, 3, 4, 5, 10, 15, 20, 22.5, 30, 45, 90, 120, 180]));
         $form->addElement(new Input("Name", "Entity nametag", $this->name));
         $form->addElement(new Input("Health", "Integer", (string)$this->health));
