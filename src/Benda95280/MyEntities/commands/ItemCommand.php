@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Benda95280\MyEntities\commands;
 
+use Benda95280\MyEntities\commands\arguments\MYEItemArgument;
+use Benda95280\MyEntities\commands\arguments\PlayerNameTargetArgument;
 use Benda95280\MyEntities\MyEntities;
-use CortexPE\Commando\args\StringEnumArgument;
 use CortexPE\Commando\BaseSubCommand;
 use pocketmine\command\CommandSender;
 use pocketmine\item\ItemFactory;
@@ -22,24 +23,7 @@ class ItemCommand extends BaseSubCommand
     protected function prepare(): void
     {
         $this->setPermission("MyEntities.give");
-        $stringEnumArgument = new class("item") extends StringEnumArgument
-        {
-            protected const VALUES = [
-                "remover" => "remover",
-                "rotator" => "rotator",
-            ];
-
-            public function getTypeName(): string
-            {
-                return "string";
-            }
-
-            public function parse(string $argument, CommandSender $sender)
-            {
-                return $this->getValue($argument);
-            }
-        };
-        $this->registerArgument(0, $stringEnumArgument);
+        $this->registerArgument(0, new MYEItemArgument("item", false));
         $this->registerArgument(1, new PlayerNameTargetArgument("player", true));
     }
 

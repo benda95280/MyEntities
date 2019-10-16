@@ -14,6 +14,11 @@ use pocketmine\block\BlockIds;
 use pocketmine\entity\Skin;
 use pocketmine\nbt\NBTStream;
 use pocketmine\nbt\tag\CompoundTag;
+use xenialdan\customui\elements\Input;
+use xenialdan\customui\elements\Label;
+use xenialdan\customui\elements\StepSlider;
+use xenialdan\customui\elements\Toggle;
+use xenialdan\customui\windows\CustomForm;
 
 abstract class Properties
 {
@@ -106,5 +111,16 @@ abstract class Properties
     public static function getDestroyParticlesBlock(): Block
     {
         return BlockFactory::get(BlockIds::AIR);
+    }
+
+    public function getForm(): CustomForm
+    {
+        $form = new CustomForm("Entity properties");
+        $form->addElement(new Label("Skin: " . $this->skin->getSkinId()));
+        $form->addElement(new StepSlider("Rotation per tick", [0, 1, 2, 3, 4, 5, 10, 15, 20, 22.5, 30, 45, 90, 120, 180]));
+        $form->addElement(new Input("Name", "Entity nametag", $this->name));
+        $form->addElement(new Input("Health", "Integer", (string)$this->health));
+        $form->addElement(new Toggle("Unbreakable", $this->unbreakable));
+        return $form;
     }
 }

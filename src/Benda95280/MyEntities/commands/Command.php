@@ -38,17 +38,19 @@ class Command extends BaseCommand
     protected function prepare(): void
     {
         /*
-         * /mye entity [SkinName] {PlayerName} : Give player headObj
-         * /mye item remover {PlayerName} : Give item Remover
-         * /mye item rotator {PlayerName} : Give item Rotator
-         * /mye head {PlayerName} : Give a player's head
+         * /mye entity <SkinName> [PlayerName] : Give player headObj
+         * /mye item remover [PlayerName] : Give item Remover
+         * /mye item rotator [PlayerName] : Give item Rotator
+         * /mye head [PlayerName] : Give a player's head
          * /mye reload : Reload configuration
+         * /mye generate <type> <name> : Generate an entity configuration
          */
         $this->setPermission("MyEntities");
         $this->registerSubCommand(new ItemCommand("item", MyEntities::$language->translateString('cmd_giveitem')));
         $this->registerSubCommand(new EntityCommand("entity", MyEntities::$language->translateString('cmd_giveentity')));
         $this->registerSubCommand(new HeadCommand("head", MyEntities::$language->translateString('cmd_givehead')));
         $this->registerSubCommand(new ReloadCommand("reload", MyEntities::$language->translateString('cmd_reload')));
+        $this->registerSubCommand(new GenerateCommand("generate", MyEntities::$language->translateString('cmd_generate')));
     }
 
     /**

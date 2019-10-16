@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Benda95280\MyEntities\commands;
+namespace Benda95280\MyEntities\commands\arguments;
 
 use Benda95280\MyEntities\MyEntities;
 use CortexPE\Commando\args\StringEnumArgument;
