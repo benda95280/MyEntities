@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Benda95280\MyEntities\commands;
 
+use Benda95280\MyEntities\commands\arguments\PlayerNameTargetArgument;
 use Benda95280\MyEntities\entities\head\HeadProperties;
 use Benda95280\MyEntities\MyEntities;
 use CortexPE\Commando\BaseSubCommand;
