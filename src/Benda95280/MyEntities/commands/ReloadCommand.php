@@ -9,7 +9,7 @@ use Benda95280\MyEntities\MyEntities;
 use CortexPE\Commando\BaseSubCommand;
 use pocketmine\command\CommandSender;
 
-class PHReloadCommand extends BaseSubCommand
+class ReloadCommand extends BaseSubCommand
 {
     /**
      * This is where all the arguments, permissions, sub-commands, etc would be registered

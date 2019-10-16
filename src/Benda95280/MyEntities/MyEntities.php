@@ -24,7 +24,7 @@ declare(strict_types=1);
 
 namespace Benda95280\MyEntities;
 
-use Benda95280\MyEntities\commands\PHCommand;
+use Benda95280\MyEntities\commands\Command;
 use Benda95280\MyEntities\entities\entity\CustomEntity;
 use Benda95280\MyEntities\entities\entity\CustomEntityProperties;
 use Benda95280\MyEntities\entities\head\HeadEntity;
@@ -92,7 +92,7 @@ class MyEntities extends PluginBase implements Listener
         Entity::registerEntity(CustomVehicle::class, true, ['mye_vehicle']);
 
         $this->getServer()->getCommandMap()->registerAll("MyEntities", [
-            new PHCommand("myentities", self::$language->translateString('cmd_myentities'), ["mye"]),
+            new Command("myentities", self::$language->translateString('cmd_myentities'), ["mye"]),
         ]);
         $this->getServer()->getPluginManager()->registerEvents(new EventListener(), $this);
         //Count skins available

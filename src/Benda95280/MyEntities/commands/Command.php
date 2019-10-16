@@ -29,7 +29,7 @@ use CortexPE\Commando\args\BaseArgument;
 use CortexPE\Commando\BaseCommand;
 use pocketmine\command\CommandSender;
 
-class PHCommand extends BaseCommand
+class Command extends BaseCommand
 {
     /**
      * This is where all the arguments, permissions, sub-commands, etc would be registered
@@ -45,10 +45,10 @@ class PHCommand extends BaseCommand
          * /mye reload : Reload configuration
          */
         $this->setPermission("MyEntities");
-        $this->registerSubCommand(new PHItemCommand("item", MyEntities::$language->translateString('cmd_giveitem')));
-        $this->registerSubCommand(new PHEntityCommand("entity", MyEntities::$language->translateString('cmd_giveentity')));
-        $this->registerSubCommand(new PHHeadCommand("head", MyEntities::$language->translateString('cmd_givehead')));
-        $this->registerSubCommand(new PHReloadCommand("reload", MyEntities::$language->translateString('cmd_reload')));
+        $this->registerSubCommand(new ItemCommand("item", MyEntities::$language->translateString('cmd_giveitem')));
+        $this->registerSubCommand(new EntityCommand("entity", MyEntities::$language->translateString('cmd_giveentity')));
+        $this->registerSubCommand(new HeadCommand("head", MyEntities::$language->translateString('cmd_givehead')));
+        $this->registerSubCommand(new ReloadCommand("reload", MyEntities::$language->translateString('cmd_reload')));
     }
 
     /**

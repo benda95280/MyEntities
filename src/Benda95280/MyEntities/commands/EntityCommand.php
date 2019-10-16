@@ -15,7 +15,7 @@ use pocketmine\entity\Skin;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class PHEntityCommand extends BaseSubCommand
+class EntityCommand extends BaseSubCommand
 {
     /**
      * This is where all the arguments, permissions, sub-commands, etc would be registered

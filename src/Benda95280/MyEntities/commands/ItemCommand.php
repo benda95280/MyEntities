@@ -13,7 +13,7 @@ use pocketmine\item\ItemIds;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class PHItemCommand extends BaseSubCommand
+class ItemCommand extends BaseSubCommand
 {
     /**
      * This is where all the arguments, permissions, sub-commands, etc would be registered
