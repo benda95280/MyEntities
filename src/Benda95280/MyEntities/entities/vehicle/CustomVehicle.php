@@ -110,7 +110,7 @@ class CustomVehicle extends CustomEntity
 	 * This is controller axis input
 	 * WASD and phone input is mapped to controller axis input
 	 * @see https://docs.unity3d.com/560/Documentation/Manual/ConventionalGameInput.html
-	 * @param float $xAxisInput LEFT = 1, RIGHT = -1 Yes, Minecraft got this one messed up -.- It is inversed
+	 * @param float $xAxisInput LEFT = 1, RIGHT = -1 Yes, Minecraft got this one messed up -.- It is inverted
 	 * @param float $yAxisInput UP/FORWARD = 1, DOWN/BACKWARDS = -1
 	 */
 	public function input(float $xAxisInput, float $yAxisInput)
