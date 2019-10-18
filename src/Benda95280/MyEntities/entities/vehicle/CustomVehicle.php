@@ -110,21 +110,18 @@ class CustomVehicle extends CustomEntity
 	 * This is controller axis input
 	 * WASD and phone input is mapped to controller axis input
 	 * @see https://docs.unity3d.com/560/Documentation/Manual/ConventionalGameInput.html
-	 * @param float $xAxisInput
-	 * @param float $yAxisInput
+	 * @param float $xAxisInput LEFT = 1, RIGHT = -1 Yes, Minecraft got this one messed up -.- It is inversed
+	 * @param float $yAxisInput UP/FORWARD = 1, DOWN/BACKWARDS = -1
 	 */
 	public function input(float $xAxisInput, float $yAxisInput)
 	{
-		// motionX LEFT = 1, RIGHT = -1
-		// motionY UP = 1, DOWN = -1
-		//
-		// * NOTE
 		// when player press a couple of KEY at the same time,
 		// motionX and motionY will have a slightly lower value,
 		// ~ 0.707 (or cos(45 deg))
 		// This is due to controller input mapping
 
 		// you can implement player input override this method
+		// Right now this is hotairballoon input mechanics
 		if ($xAxisInput > 0) $this->yaw -= 5;
 		else if ($xAxisInput < 0) $this->yaw += 5;
 
