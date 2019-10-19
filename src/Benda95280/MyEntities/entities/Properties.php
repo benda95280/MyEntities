@@ -14,6 +14,7 @@ use pocketmine\block\BlockIds;
 use pocketmine\entity\Skin;
 use pocketmine\nbt\NBTStream;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\Player;
 use xenialdan\customui\elements\Dropdown;
 use xenialdan\customui\elements\Input;
 use xenialdan\customui\elements\Label;
@@ -117,6 +118,10 @@ abstract class Properties
     public function getForm(): CustomForm
     {
         $form = new CustomForm("Entity properties");
+		$form->setCallable(function (Player $player, $data) use ($form) {
+			$player->sendMessage(print_r($data, true));
+			$player->sendMessage(print_r($form->getContent(), true));
+		});
         $form->addElement(new Label("Skin"));
         if ($this->skin instanceof Skin)
             $form->addElement(new Label($this->skin->getSkinId()));

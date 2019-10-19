@@ -14,6 +14,7 @@ use pocketmine\event\entity\EntityLevelChangeEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerDeathEvent;
+use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\item\ItemIds;
 use pocketmine\math\Vector3;
@@ -68,8 +69,8 @@ class EventListener implements Listener
 	public function onPlayerLeaveEvent(PlayerQuitEvent $event)
 	{
 		$player = $event->getPlayer();
-		if (isset(Main::$inVehicle[$player->getRawUniqueId()])) {
-			Main::$inVehicle[$player->getRawUniqueId()]->removePlayer($player);
+		if (isset(MyEntities::$inVehicle[$player->getRawUniqueId()])) {
+			MyEntities::$inVehicle[$player->getRawUniqueId()]->removePlayer($player);
 			MyEntities::getInstance()->getLogger()->debug($player->getName() . " Has left the server while in a vehicle, they have been kicked from the vehicle.");
 		}
 	}
