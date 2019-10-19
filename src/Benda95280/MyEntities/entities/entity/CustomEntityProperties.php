@@ -13,7 +13,6 @@ use xenialdan\customui\windows\CustomForm;
 class CustomEntityProperties extends Properties
 {
     const TYPE = "entity";
-    public static $sizeDefault = [self::SIZE_BLOCK, self::SIZE_BLOCK];
     protected static $type = self::TYPE;
     public $geometryName;
     public $width = self::SIZE_BLOCK;

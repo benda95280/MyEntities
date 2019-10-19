@@ -58,8 +58,10 @@ class MyEntities extends PluginBase implements Listener
     public static $language;
 
     public const PREFIX = TextFormat::BLUE . 'MyEntities' . TextFormat::DARK_GRAY . '> ' . TextFormat::WHITE;
+	/** @var CustomVehicle[] */
+	public static $inVehicle = [];
 
-    /**
+	/**
      * @throws \pocketmine\plugin\PluginException
      * @throws \CortexPE\Commando\exception\HookAlreadyRegistered
      */

@@ -12,7 +12,6 @@ use pocketmine\nbt\tag\CompoundTag;
 class HeadProperties extends Properties
 {
     const TYPE = "head";
-    public static $sizeDefault = [self::SIZE_NORMAL, self::SIZE_NORMAL];
     public $userName;
     public $width = self::SIZE_NORMAL;
     public $height = self::SIZE_NORMAL;

@@ -29,6 +29,7 @@ use pocketmine\command\ConsoleCommandSender;
 use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntityIds;
 use pocketmine\entity\Human;
 use pocketmine\entity\Skin;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -47,6 +48,9 @@ use pocketmine\utils\TextFormat;
 
 abstract class BaseEntity extends Human
 {
+
+	public const NETWORK_ID = EntityIds::PLAYER;
+
     /** @var Properties */
     public $properties;
 
