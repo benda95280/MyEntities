@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Benda95280\MyEntities;
 
+use Benda95280\MyEntities\entities\entity\CloneEntity;
 use Benda95280\MyEntities\entities\entity\CustomEntity;
 use Benda95280\MyEntities\entities\head\HeadEntity;
 use Benda95280\MyEntities\entities\Properties;
+use Benda95280\MyEntities\entities\vehicle\CarVehicle;
 use Benda95280\MyEntities\entities\vehicle\CustomVehicle;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockPlaceEvent;
@@ -45,7 +47,11 @@ class EventListener implements Listener
 			} else if ($item->getId() === ItemIds::MOB_HEAD && $item->getDamage() === 0) {
 				(new CustomEntity($player->level, $nbt))->spawnToAll();
 			} else if ($item->getId() === ItemIds::BOOKSHELF) {
-				(new CustomVehicle($player->level, $nbt))->spawnToAll();
+				//TODO different types (abuse meta or use nbt tag)
+				//(new CustomVehicle($player->level, $nbt))->spawnToAll();
+				(new CarVehicle($player->level, $nbt))->spawnToAll();
+			} else if ($item->getId() === ItemIds::SPAWN_EGG) {
+				(new CloneEntity($player->level, $nbt))->spawnToAll();
 			} else return;//Not a MyEntities entity
 			if (!$player->isCreative()) {
 				$player->getInventory()->setItemInHand($item->setCount($item->getCount() - 1));
@@ -129,7 +135,7 @@ class EventListener implements Listener
 					$player = $event->getPlayer();
 					$vehicle = $player->getLevel()->getEntity($packet->target);
 					if ($vehicle instanceof CustomVehicle) {
-						$player->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, $vehicle->getInteractString());
+						$player->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, $vehicle->getInteractString($player));
 						$event->setCancelled();
 					}
 				}

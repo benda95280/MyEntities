@@ -70,13 +70,14 @@ class CheckIn
                 continue;
             }
             //Entity declaration cannot have white space and correct length
-            if (preg_match('/\s/', $skinName) || strlen($skinName) <= 4 || strlen($skinName) >= 22) {
+			if (preg_match('/\s/', $skinName) || strlen($skinName) < 4 || strlen($skinName) > 22) {
                 MyEntities::logMessage(MyEntities::$language->translateString('checkin_entspaceorchar', [$skinName]), 0);
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;
             }
-            //Entity must have a correct lenght	name
-            if (!isset($skinValue["name"]) || strlen($skinValue["name"]) <= 4 || strlen($skinValue["name"]) >= 22) {
+			//Entity must have a correct length	name
+			//TODO allow longer and shorter names. This restriction is stupid
+			if (!isset($skinValue["name"]) || strlen($skinValue["name"]) < 4 || strlen($skinValue["name"]) > 22) {
                 MyEntities::logMessage(MyEntities::$language->translateString('checkin_namespaceorchar', [$skinName]), 0);
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;

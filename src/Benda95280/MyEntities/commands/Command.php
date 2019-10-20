@@ -44,6 +44,8 @@ class Command extends BaseCommand
          * /mye head [PlayerName] : Give a player's head
          * /mye reload : Reload configuration
          * /mye generate <type> <name> : Generate an entity configuration
+         * /mye edit : Edit the properties of an entity
+         * /mye clone : Give a spawn egg that spawns a clone
          */
         $this->setPermission("MyEntities");
         $this->registerSubCommand(new ItemCommand("item", MyEntities::$language->translateString('cmd_giveitem')));
@@ -51,6 +53,8 @@ class Command extends BaseCommand
         $this->registerSubCommand(new HeadCommand("head", MyEntities::$language->translateString('cmd_givehead')));
         $this->registerSubCommand(new ReloadCommand("reload", MyEntities::$language->translateString('cmd_reload')));
         $this->registerSubCommand(new GenerateCommand("generate", MyEntities::$language->translateString('cmd_generate')));
+		$this->registerSubCommand(new EditEntityCommand("edit", MyEntities::$language->translateString('cmd_edit')));
+		$this->registerSubCommand(new CloneCommand("clone", MyEntities::$language->translateString('cmd_clone')));
     }
 
     /**

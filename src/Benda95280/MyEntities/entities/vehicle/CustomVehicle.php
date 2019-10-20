@@ -31,6 +31,8 @@ class CustomVehicle extends CustomEntity
 	private $owner = null;
 	/** @var Player[] */
 	protected $passengers = [];
+	/** @var float */
+	protected $stepHeight = 0.6;
 
 	public function __construct(Level $level, CompoundTag $nbt)
 	{
@@ -54,14 +56,14 @@ class CustomVehicle extends CustomEntity
 		return BlockFactory::get(BlockIds::IRON_BLOCK);
 	}
 
-	public function getInteractString(): string
+	public function getInteractString(Player $player): string
 	{
 		return "Ride";
 	}
 
 	public function getDriverSeatPosition(): ?Vector3
 	{
-		if ($this->properties->driverPosition === null) return new Vector3(0, $this->height, 0);
+		if ($this->properties->driverPosition === null) return new Vector3(0, $this->height - 0.3, 0);
 		else return $this->properties->driverPosition;
 	}
 

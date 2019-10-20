@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Benda95280\MyEntities\commands;
 
 use Benda95280\MyEntities\commands\arguments\EntityTypeArgument;
+use Benda95280\MyEntities\entities\entity\CloneEntityProperties;
 use Benda95280\MyEntities\entities\entity\CustomEntityProperties;
 use Benda95280\MyEntities\entities\head\HeadProperties;
 use Benda95280\MyEntities\entities\vehicle\VehicleProperties;
@@ -63,7 +64,13 @@ class GenerateCommand extends BaseSubCommand
                     $properties = new VehicleProperties();
                     $sender->sendForm($properties->getForm());
                     break;
-                }
+				}
+			case EntityTypeArgument::CLONE:
+			{
+				$properties = new CloneEntityProperties();
+				$sender->sendForm($properties->getForm());
+				break;
+			}
             default:
                 {
                     $sender->sendMessage(TextFormat::RED . "Incorrect type given");

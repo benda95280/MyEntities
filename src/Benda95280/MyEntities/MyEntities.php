@@ -25,6 +25,8 @@ declare(strict_types=1);
 namespace Benda95280\MyEntities;
 
 use Benda95280\MyEntities\commands\Command;
+use Benda95280\MyEntities\entities\entity\CloneEntity;
+use Benda95280\MyEntities\entities\entity\CloneEntityProperties;
 use Benda95280\MyEntities\entities\entity\CustomEntity;
 use Benda95280\MyEntities\entities\entity\CustomEntityProperties;
 use Benda95280\MyEntities\entities\head\HeadEntity;
@@ -64,6 +66,8 @@ class MyEntities extends PluginBase implements Listener
 	public const PREFIX = TextFormat::BLUE . 'MyEntities' . TextFormat::DARK_GRAY . '> ' . TextFormat::WHITE;
 	/** @var CustomVehicle[] */
 	public static $inVehicle = [];
+	/** @var array key: player rawuuid, value: bool */
+	public static $editing = [];
 
 	/**
 	 * @throws PluginException
@@ -95,6 +99,7 @@ class MyEntities extends PluginBase implements Listener
 
 		Entity::registerEntity(HeadEntity::class, true, ['mye_head']);
 		Entity::registerEntity(CustomEntity::class, true, ['mye_entity']);
+		Entity::registerEntity(CloneEntity::class, true, ['mye_entity_clone']);
 		Entity::registerEntity(CustomVehicle::class, true, ['mye_vehicle']);
 		Entity::registerEntity(HotairBalloonVehicle::class, true, ['mye_vehicle_balloon']);
 		Entity::registerEntity(CarVehicle::class, true, ['mye_vehicle_car']);
@@ -118,7 +123,6 @@ class MyEntities extends PluginBase implements Listener
 	public static function loadConfig(): void
 	{
 		//Load configuration file
-		//TODO note: this should not be done due to double memory allocation (double ram use) - get data directly from config
 		$data = self::getInstance()->getConfig()->getAll();
 		self::$skinsList = $data["skins"];
 		self::$miscList = $data["misc"];
@@ -176,6 +180,29 @@ class MyEntities extends PluginBase implements Listener
 		}
 		return $item->setCustomBlockData($compoundTag)
 			->setCustomName(TextFormat::colorize('&r' . $properties->name, '&'));
+	}
+
+	/**
+	 * @param CustomEntityProperties $properties
+	 * @return Item
+	 * @throws \InvalidArgumentException
+	 * @throws \RuntimeException
+	 */
+	public static function getPlayerCloneItem(CloneEntityProperties $properties)
+	{
+		$item = (ItemFactory::get(Item::SPAWN_EGG));
+		$compoundTag = new CompoundTag("", [
+			new CompoundTag("Skin", [
+				new StringTag("Name", $properties->skin->getSkinId()),
+				new ByteArrayTag("Data", $properties->skin->getSkinData()),
+				new ByteArrayTag("CapeData", $properties->skin->getCapeData()),
+				new StringTag("GeometryName", $properties->skin->getGeometryName()),
+				new ByteArrayTag("GeometryData", $properties->skin->getGeometryData())
+			]),
+			self::arrayToCompTag((array)$properties, "MyEntities"),
+		]);
+		return $item->setCustomBlockData($compoundTag)
+			->setCustomName(TextFormat::colorize(sprintf('&r&6%s\'s Clone', $properties->name), '&'));
 	}
 
 	/**
