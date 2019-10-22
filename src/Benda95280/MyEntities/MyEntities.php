@@ -71,6 +71,16 @@ class MyEntities extends PluginBase implements Listener
 
 	/**
 	 * @throws PluginException
+	 */
+	public function onLoad()
+	{
+		if (!extension_loaded("gd")) {
+			throw new PluginException("GD library is not enabled! Please uncomment gd2 in php.ini!");
+		}
+	}
+
+	/**
+	 * @throws PluginException
 	 * @throws HookAlreadyRegistered
 	 */
 	public function onEnable(): void
