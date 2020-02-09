@@ -31,10 +31,6 @@ use Benda95280\MyEntities\entities\entity\CustomEntity;
 use Benda95280\MyEntities\entities\entity\CustomEntityProperties;
 use Benda95280\MyEntities\entities\head\HeadEntity;
 use Benda95280\MyEntities\entities\head\HeadProperties;
-use Benda95280\MyEntities\entities\vehicle\CarVehicle;
-use Benda95280\MyEntities\entities\vehicle\CustomVehicle;
-use Benda95280\MyEntities\entities\vehicle\HotairBalloonVehicle;
-use Benda95280\MyEntities\entities\vehicle\VehicleProperties;
 use CortexPE\Commando\exception\HookAlreadyRegistered;
 use CortexPE\Commando\PacketHooker;
 use pocketmine\entity\Entity;
@@ -64,8 +60,6 @@ class MyEntities extends PluginBase implements Listener
 	public static $language;
 
 	public const PREFIX = TextFormat::BLUE . 'MyEntities' . TextFormat::DARK_GRAY . '> ' . TextFormat::WHITE;
-	/** @var CustomVehicle[] */
-	public static $inVehicle = [];
 	/** @var array key: player rawuuid, value: bool */
 	public static $editing = [];
 
@@ -110,9 +104,6 @@ class MyEntities extends PluginBase implements Listener
 		Entity::registerEntity(HeadEntity::class, true, ['mye_head']);
 		Entity::registerEntity(CustomEntity::class, true, ['mye_entity']);
 		Entity::registerEntity(CloneEntity::class, true, ['mye_entity_clone']);
-		Entity::registerEntity(CustomVehicle::class, true, ['mye_vehicle']);
-		Entity::registerEntity(HotairBalloonVehicle::class, true, ['mye_vehicle_balloon']);
-		Entity::registerEntity(CarVehicle::class, true, ['mye_vehicle_car']);
 
 		$this->getServer()->getCommandMap()->registerAll("MyEntities", [
 			new Command("myentities", self::$language->translateString('cmd_myentities'), ["mye"]),
@@ -213,32 +204,6 @@ class MyEntities extends PluginBase implements Listener
 		]);
 		return $item->setCustomBlockData($compoundTag)
 			->setCustomName(TextFormat::colorize(sprintf('&r&6%s\'s Clone', $properties->name), '&'));
-	}
-
-	/**
-	 * @param VehicleProperties $properties
-	 * @return Item
-	 * @throws \InvalidArgumentException
-	 * @throws \RuntimeException
-	 */
-	public static function getPlayerCustomItemVehicle(VehicleProperties $properties): Item
-	{
-		$item = (ItemFactory::get(Item::BOOKSHELF));//TODO different item (minecart)
-		$compoundTag = new CompoundTag("", [
-			new CompoundTag("Skin", [
-				new StringTag("Name", $properties->skin->getSkinId()),
-				new ByteArrayTag("Data", $properties->skin->getSkinData()),
-				new ByteArrayTag("CapeData", ""),
-				new StringTag("GeometryName", $properties->skin->getGeometryName()),
-				new ByteArrayTag("GeometryData", $properties->skin->getGeometryData())
-			]),
-			self::arrayToCompTag((array)$properties, "MyEntities"),
-		]);
-		if ($properties->usable && $properties->usable["skinchange"] === 1) {
-			$compoundTag->setTag(new ByteArrayTag('skin_empty', MyEntities::createSkin($properties->skin->getSkinId() . "_empty")));
-		}
-		return $item->setCustomBlockData($compoundTag)
-			->setCustomName(TextFormat::colorize('&r' . $properties->name, '&'));
 	}
 
 	public static function createSkin($skinName): string
