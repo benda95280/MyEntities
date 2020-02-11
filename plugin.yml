@@ -3,7 +3,7 @@ version: 0.1
 main: Benda95280\MyEntities\MyEntities
 api: 3.0.1
 author: Benda95280
-
+extensions: ['gd']
 permissions:
   MyEntities:
     description: Main permission
