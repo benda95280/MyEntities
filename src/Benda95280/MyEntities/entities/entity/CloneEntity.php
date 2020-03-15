@@ -1,7 +1,6 @@
 <?php
 
-/*	
- *  Original Source: https://github.com/Enes5519/PlayerHead 
+/*
  *  MyEntities - a PocketMine-MP plugin to add player custom entities and support for custom Player Head on server
  *  Copyright (C) 2019 Benda95280
  *
@@ -26,6 +25,7 @@ namespace Benda95280\MyEntities\entities\entity;
 
 use Benda95280\MyEntities\entities\BaseEntity;
 use Benda95280\MyEntities\MyEntities;
+use InvalidArgumentException;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockIds;
@@ -33,7 +33,7 @@ use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
-class CloneEntity extends CustomEntity
+class CloneEntity extends BaseEntity
 {
 	/** @var CloneEntityProperties */
 	public $properties;
@@ -43,7 +43,7 @@ class CloneEntity extends CustomEntity
 	public function __construct(Level $level, CompoundTag $nbt)
 	{
 		$properties = new CloneEntityProperties($nbt->getCompoundTag("MyEntities"));
-		BaseEntity::__construct($properties, $level, $nbt);
+		parent::__construct($properties, $level, $nbt);
 		$this->defaultYaw = $this->yaw;
 		$this->defaultPitch = $this->pitch;
 		$properties->skin = $this->skin;
@@ -51,7 +51,7 @@ class CloneEntity extends CustomEntity
 
 	/**
 	 * @return Block
-	 * @throws \InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	public static function getDestroyParticlesBlock(): Block
 	{

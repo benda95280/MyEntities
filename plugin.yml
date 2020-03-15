@@ -1,8 +1,10 @@
 name: MyEntities
-version: 0.1
+version: 0.1.1
 main: Benda95280\MyEntities\MyEntities
-api: 3.0.1
-author: Benda95280
+api: ["3.11"]
+authors:
+  - Benda95280
+  - XenialDan
 extensions: ['gd']
 permissions:
   MyEntities:
@@ -12,6 +14,8 @@ permissions:
       MyEntities.give:
         default: op
       MyEntities.head:
+        default: op
+      MyEntities.clone:
         default: op
       MyEntities.spawn:
         default: op

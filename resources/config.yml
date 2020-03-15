@@ -6,6 +6,7 @@ misc:
   language: en
 message:
   message-head-added: '&a%s''s &aitem added in your inventory.'
+  message-clone-added: '&a%s''s &aitem added in your inventory.'
 skins:
   book_1:
     type: 'head'

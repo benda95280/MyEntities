@@ -8,6 +8,7 @@ use Benda95280\MyEntities\commands\arguments\MYEItemArgument;
 use Benda95280\MyEntities\commands\arguments\PlayerNameTargetArgument;
 use Benda95280\MyEntities\MyEntities;
 use CortexPE\Commando\BaseSubCommand;
+use CortexPE\Commando\exception\ArgumentOrderException;
 use pocketmine\command\CommandSender;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
@@ -18,7 +19,7 @@ class ItemCommand extends BaseSubCommand
 {
     /**
      * This is where all the arguments, permissions, sub-commands, etc would be registered
-     * @throws \CortexPE\Commando\exception\ArgumentOrderException
+     * @throws ArgumentOrderException
      */
     protected function prepare(): void
     {

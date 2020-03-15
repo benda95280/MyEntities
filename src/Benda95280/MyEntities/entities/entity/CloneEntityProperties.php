@@ -15,8 +15,8 @@ class CloneEntityProperties extends Properties
 {
 	const TYPE = "clone";
 	protected static $type = self::TYPE;
-	public $width = self::SIZE_BLOCK;
-	public $height = self::SIZE_BLOCK;
+    public $width = 0.6;
+    public $height = 1.8;
 	public $scale = 1.0;
 	public $lookAtRange = 0;
 

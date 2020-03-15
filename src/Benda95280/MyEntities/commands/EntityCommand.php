@@ -9,20 +9,21 @@ use Benda95280\MyEntities\commands\arguments\SkinsEnumArgument;
 use Benda95280\MyEntities\entities\entity\CustomEntityProperties;
 use Benda95280\MyEntities\entities\head\HeadProperties;
 use Benda95280\MyEntities\entities\Properties;
-use Benda95280\MyEntities\entities\vehicle\VehicleProperties;
 use Benda95280\MyEntities\MyEntities;
 use CortexPE\Commando\BaseSubCommand;
+use CortexPE\Commando\exception\ArgumentOrderException;
+use InvalidArgumentException;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Skin;
-use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
+use RuntimeException;
 
 class EntityCommand extends BaseSubCommand
 {
 	/**
 	 * This is where all the arguments, permissions, sub-commands, etc would be registered
-	 * @throws \CortexPE\Commando\exception\ArgumentOrderException
+	 * @throws ArgumentOrderException
 	 */
 	protected function prepare(): void
 	{
@@ -38,8 +39,8 @@ class EntityCommand extends BaseSubCommand
 	 * @param CommandSender $sender
 	 * @param string $aliasUsed
 	 * @param array $args
-	 * @throws \InvalidArgumentException
-	 * @throws \RuntimeException
+	 * @throws InvalidArgumentException
+	 * @throws RuntimeException
 	 */
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
 	{
@@ -62,19 +63,6 @@ class EntityCommand extends BaseSubCommand
 						file_get_contents($pathSkinsHead . $skinName . '.json')
 					);
 					$player->getInventory()->addItem(MyEntities::getPlayerCustomItem($properties));
-					#$player->getInventory()->addItem(MyEntities::getPlayerCustomItem($skinName, $nameFinal, $param));
-				} else if (MyEntities::$skinsList[$skinName]['type'] === "vehicle") {
-					$properties = new VehicleProperties(MyEntities::arrayToCompTag($param, Properties::PROPERTY_TAG));
-					$properties->name = $nameFinal;
-					$properties->skin = new Skin(
-						$skinName,
-						MyEntities::createSkin($skinName),
-						"",
-						$properties->geometryName,
-						file_get_contents($pathSkinsHead . $skinName . '.json')
-					);
-					$properties->driverPosition = new Vector3(0, 0.5, 0);//TODO remove, just for debug cart
-					$player->getInventory()->addItem(MyEntities::getPlayerCustomItemVehicle($properties));
 				} else {
 					$properties = new HeadProperties(MyEntities::arrayToCompTag($param, Properties::PROPERTY_TAG));
 					$properties->name = $nameFinal;
@@ -86,7 +74,6 @@ class EntityCommand extends BaseSubCommand
 						HeadProperties::GEOMETRY
 					);
 					$player->getInventory()->addItem(MyEntities::getPlayerHeadItem($properties));
-					#$player->getInventory()->addItem(MyEntities::getPlayerHeadItem($skinName, $nameFinal, $param));
 				}
 				$player->sendMessage(TextFormat::colorize(sprintf(MyEntities::getInstance()->getConfig()->get("messages")['message-head-added'], $nameFinal)));
 

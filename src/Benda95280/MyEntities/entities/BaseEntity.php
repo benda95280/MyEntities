@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace Benda95280\MyEntities\entities;
 
 use Benda95280\MyEntities\MyEntities;
+use InvalidArgumentException;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
@@ -116,7 +117,7 @@ abstract class BaseEntity extends Human
 	}
 
 	/**
-	 * @throws \InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	protected function startDeathAnimation(): void
 	{
@@ -234,7 +235,7 @@ abstract class BaseEntity extends Human
 	 * @param $actionName
 	 * @param $actionValue
 	 * @param Player $player
-	 * @throws \InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	private function doAction($actionName, $actionValue, Player $player): void
 	{
@@ -294,9 +295,9 @@ abstract class BaseEntity extends Human
 
 				foreach ($toExecute as $indvtoExecute) {
 					if ($whoExecute === "console")
-						$this->getPlugin()->getServer()->dispatchCommand(new ConsoleCommandSender(), $indvtoExecute);
+						MyEntities::getInstance()->getServer()->dispatchCommand(new ConsoleCommandSender(), $indvtoExecute);
 					else if ($whoExecute === "player")
-						$this->getPlugin()->getServer()->dispatchCommand($player, $indvtoExecute);
+                        MyEntities::getInstance()->getServer()->dispatchCommand($player, $indvtoExecute);
 				}
 				break;
 

@@ -8,9 +8,10 @@ use Benda95280\MyEntities\commands\arguments\EntityTypeArgument;
 use Benda95280\MyEntities\entities\entity\CloneEntityProperties;
 use Benda95280\MyEntities\entities\entity\CustomEntityProperties;
 use Benda95280\MyEntities\entities\head\HeadProperties;
-use Benda95280\MyEntities\entities\vehicle\VehicleProperties;
 use CortexPE\Commando\args\RawStringArgument;
 use CortexPE\Commando\BaseSubCommand;
+use CortexPE\Commando\exception\ArgumentOrderException;
+use InvalidArgumentException;
 use pocketmine\command\CommandSender;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
@@ -19,7 +20,7 @@ class GenerateCommand extends BaseSubCommand
 {
     /**
      * This is where all the arguments, permissions, sub-commands, etc would be registered
-     * @throws \CortexPE\Commando\exception\ArgumentOrderException
+     * @throws ArgumentOrderException
      */
     protected function prepare(): void
     {
@@ -35,7 +36,7 @@ class GenerateCommand extends BaseSubCommand
      * @param CommandSender $sender
      * @param string $aliasUsed
      * @param array $args
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
@@ -59,12 +60,6 @@ class GenerateCommand extends BaseSubCommand
                     $sender->sendForm($properties->getForm());
                     break;
                 }
-            case EntityTypeArgument::VEHICLE:
-                {
-                    $properties = new VehicleProperties();
-                    $sender->sendForm($properties->getForm());
-                    break;
-				}
 			case EntityTypeArgument::CLONE:
 			{
 				$properties = new CloneEntityProperties();

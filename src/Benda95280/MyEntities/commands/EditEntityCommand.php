@@ -13,8 +13,7 @@ class EditEntityCommand extends BaseSubCommand
 {
 	/**
 	 * This is where all the arguments, permissions, sub-commands, etc would be registered
-	 * @throws \CortexPE\Commando\exception\ArgumentOrderException
-	 */
+     */
 	protected function prepare(): void
 	{
 		/*

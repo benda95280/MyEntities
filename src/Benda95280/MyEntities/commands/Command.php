@@ -27,13 +27,14 @@ namespace Benda95280\MyEntities\commands;
 use Benda95280\MyEntities\MyEntities;
 use CortexPE\Commando\args\BaseArgument;
 use CortexPE\Commando\BaseCommand;
+use CortexPE\Commando\exception\SubCommandCollision;
 use pocketmine\command\CommandSender;
 
 class Command extends BaseCommand
 {
     /**
      * This is where all the arguments, permissions, sub-commands, etc would be registered
-     * @throws \CortexPE\Commando\exception\SubCommandCollision
+     * @throws SubCommandCollision
      */
     protected function prepare(): void
     {

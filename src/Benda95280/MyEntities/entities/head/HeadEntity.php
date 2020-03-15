@@ -26,6 +26,7 @@ namespace Benda95280\MyEntities\entities\head;
 
 use Benda95280\MyEntities\entities\BaseEntity;
 use Benda95280\MyEntities\MyEntities;
+use InvalidArgumentException;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockIds;
@@ -43,7 +44,7 @@ class HeadEntity extends BaseEntity
 
     /**
      * @return Block
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function getDestroyParticlesBlock(): Block
     {

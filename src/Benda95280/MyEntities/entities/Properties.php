@@ -7,8 +7,8 @@ namespace Benda95280\MyEntities\entities;
 use Benda95280\MyEntities\entities\entity\CloneEntityProperties;
 use Benda95280\MyEntities\entities\entity\CustomEntityProperties;
 use Benda95280\MyEntities\entities\head\HeadProperties;
-use Benda95280\MyEntities\entities\vehicle\VehicleProperties;
 use Benda95280\MyEntities\MyEntities;
+use InvalidArgumentException;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockIds;
@@ -38,7 +38,6 @@ abstract class Properties
 	const TYPES = [
 		HeadProperties::TYPE,
 		CustomEntityProperties::TYPE,
-		VehicleProperties::TYPE,
 		CloneEntityProperties::TYPE,
 	];
 	public $width;
@@ -99,18 +98,18 @@ abstract class Properties
 
 	/**
 	 * @return int
-	 * @throws \InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	public static function getType(): int
 	{
 		$search = array_search(self::$type, self::TYPES);
-		if (!is_int($search)) throw new \InvalidArgumentException("Incorrect type given");
+		if (!is_int($search)) throw new InvalidArgumentException("Incorrect type given");
 		return $search;
 	}
 
 	/**
 	 * @return Block
-	 * @throws \InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	public static function getDestroyParticlesBlock(): Block
 	{

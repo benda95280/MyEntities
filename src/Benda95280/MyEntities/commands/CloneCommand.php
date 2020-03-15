@@ -8,15 +8,18 @@ use Benda95280\MyEntities\commands\arguments\PlayerNameTargetArgument;
 use Benda95280\MyEntities\entities\entity\CloneEntityProperties;
 use Benda95280\MyEntities\MyEntities;
 use CortexPE\Commando\BaseSubCommand;
+use CortexPE\Commando\exception\ArgumentOrderException;
+use InvalidArgumentException;
 use pocketmine\command\CommandSender;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
+use RuntimeException;
 
 class CloneCommand extends BaseSubCommand
 {
 	/**
 	 * This is where all the arguments, permissions, sub-commands, etc would be registered
-	 * @throws \CortexPE\Commando\exception\ArgumentOrderException
+	 * @throws ArgumentOrderException
 	 */
 	protected function prepare(): void
 	{
@@ -31,8 +34,8 @@ class CloneCommand extends BaseSubCommand
 	 * @param CommandSender $sender
 	 * @param string $aliasUsed
 	 * @param array $args
-	 * @throws \InvalidArgumentException
-	 * @throws \RuntimeException
+	 * @throws InvalidArgumentException
+	 * @throws RuntimeException
 	 */
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
 	{
@@ -45,6 +48,6 @@ class CloneCommand extends BaseSubCommand
 		$properties->height = $player->height;
 		$properties->scale = $player->getScale();
 		$sender->getInventory()->addItem(MyEntities::getPlayerCloneItem($properties));
-		$sender->sendMessage(TextFormat::colorize(sprintf(MyEntities::getInstance()->getConfig()->get("messages")['message-head-added'], $player->getName())));//TODO
+		$sender->sendMessage(TextFormat::colorize(sprintf(MyEntities::getInstance()->getConfig()->get("messages")['message-clone-added'], $player->getName())));//TODO
 	}
 }

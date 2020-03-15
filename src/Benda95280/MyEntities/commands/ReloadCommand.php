@@ -7,6 +7,7 @@ namespace Benda95280\MyEntities\commands;
 use Benda95280\MyEntities\CheckIn;
 use Benda95280\MyEntities\MyEntities;
 use CortexPE\Commando\BaseSubCommand;
+use InvalidStateException;
 use pocketmine\command\CommandSender;
 
 class ReloadCommand extends BaseSubCommand
@@ -37,7 +38,7 @@ class ReloadCommand extends BaseSubCommand
 
         try {
             CheckIn::check($countFileSkinsHeadSmall, $countFileSkinsHeadNormal, $countFileSkinsHeadBlock, $countFileSkinsCustom);
-        } catch (\InvalidStateException $e) {
+        } catch (InvalidStateException $e) {
         }
     }
 }

@@ -33,6 +33,8 @@ use Benda95280\MyEntities\entities\head\HeadEntity;
 use Benda95280\MyEntities\entities\head\HeadProperties;
 use CortexPE\Commando\exception\HookAlreadyRegistered;
 use CortexPE\Commando\PacketHooker;
+use InvalidArgumentException;
+use InvalidStateException;
 use pocketmine\entity\Entity;
 use pocketmine\event\Listener;
 use pocketmine\item\Item;
@@ -44,7 +46,9 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginException;
+use pocketmine\tile\Skull;
 use pocketmine\utils\TextFormat;
+use RuntimeException;
 
 class MyEntities extends PluginBase implements Listener
 {
@@ -117,7 +121,7 @@ class MyEntities extends PluginBase implements Listener
 
 		try {
 			CheckIn::check($countFileSkinsHeadSmall, $countFileSkinsHeadNormal, $countFileSkinsHeadBlock, $countFileSkinsCustom);
-		} catch (\InvalidStateException $e) {
+		} catch (InvalidStateException $e) {
 		}
 	}
 
@@ -137,35 +141,34 @@ class MyEntities extends PluginBase implements Listener
 	/**
 	 * @param HeadProperties $properties
 	 * @return Item
-	 * @throws \InvalidArgumentException
-	 * @throws \RuntimeException
+	 * @throws InvalidArgumentException
+	 * @throws RuntimeException
 	 */
 	public static function getPlayerHeadItem(HeadProperties $properties): Item
 	{
-		$item = (ItemFactory::get(Item::MOB_HEAD, 3))
-			->setCustomBlockData(new CompoundTag("", [
-				new CompoundTag("Skin", [
-					new StringTag("Name", $properties->skin->getSkinId()),
-					new ByteArrayTag("Data", $properties->skin->getSkinData()),
-					new ByteArrayTag("CapeData", ""),
-					new StringTag("GeometryName", "geometry.MyEntities_head"),
-					new ByteArrayTag("GeometryData", $properties::GEOMETRY)
-				]),
-				self::arrayToCompTag((array)$properties, "MyEntities")
-			]))
-			->setCustomName(TextFormat::colorize('&r' . $properties->name, '&'));
-		return $item;
+        return (ItemFactory::get(Item::MOB_HEAD, Skull::TYPE_HUMAN))
+            ->setCustomBlockData(new CompoundTag("", [
+                new CompoundTag("Skin", [
+                    new StringTag("Name", $properties->skin->getSkinId()),
+                    new ByteArrayTag("Data", $properties->skin->getSkinData()),
+                    new ByteArrayTag("CapeData", ""),
+                    new StringTag("GeometryName", "geometry.MyEntities_head"),
+                    new ByteArrayTag("GeometryData", $properties::GEOMETRY)
+                ]),
+                self::arrayToCompTag((array)$properties, "MyEntities")
+            ]))
+            ->setCustomName(TextFormat::colorize('&r' . $properties->name, '&'));
 	}
 
 	/**
 	 * @param CustomEntityProperties $properties
 	 * @return Item
-	 * @throws \InvalidArgumentException
-	 * @throws \RuntimeException
+	 * @throws InvalidArgumentException
+	 * @throws RuntimeException
 	 */
 	public static function getPlayerCustomItem(CustomEntityProperties $properties): Item
 	{
-		$item = (ItemFactory::get(Item::MOB_HEAD));
+		$item = (ItemFactory::get(Item::MOB_HEAD, Skull::TYPE_SKELETON));
 		$compoundTag = new CompoundTag("", [
 			new CompoundTag("Skin", [
 				new StringTag("Name", $properties->skin->getSkinId()),
@@ -184,14 +187,14 @@ class MyEntities extends PluginBase implements Listener
 	}
 
 	/**
-	 * @param CustomEntityProperties $properties
+	 * @param CloneEntityProperties $properties
 	 * @return Item
-	 * @throws \InvalidArgumentException
-	 * @throws \RuntimeException
+	 * @throws InvalidArgumentException
+	 * @throws RuntimeException
 	 */
 	public static function getPlayerCloneItem(CloneEntityProperties $properties)
 	{
-		$item = (ItemFactory::get(Item::SPAWN_EGG));
+		$item = (ItemFactory::get(Item::MOB_HEAD, Skull::TYPE_ZOMBIE));
 		$compoundTag = new CompoundTag("", [
 			new CompoundTag("Skin", [
 				new StringTag("Name", $properties->skin->getSkinId()),
@@ -229,8 +232,8 @@ class MyEntities extends PluginBase implements Listener
 	 * @param array $array
 	 * @param string $arrayname
 	 * @return CompoundTag
-	 * @throws \RuntimeException
-	 * @throws \InvalidArgumentException
+	 * @throws RuntimeException
+	 * @throws InvalidArgumentException
 	 */
 	public static function arrayToCompTag(array $array, string $arrayname): CompoundTag
 	{

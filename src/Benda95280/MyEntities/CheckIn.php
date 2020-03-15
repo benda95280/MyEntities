@@ -24,6 +24,8 @@ declare(strict_types=1);
 
 namespace Benda95280\MyEntities;
 
+use InvalidStateException;
+
 class CheckIn
 {
 
@@ -32,7 +34,7 @@ class CheckIn
      * @param $countFileSkinsHeadNormal
      * @param $countFileSkinsHeadBlock
      * @param $countFileSkinsCustom
-     * @throws \InvalidStateException
+     * @throws InvalidStateException
      */
     public static function check($countFileSkinsHeadSmall, $countFileSkinsHeadNormal, $countFileSkinsHeadBlock, $countFileSkinsCustom): void
     {
@@ -204,7 +206,7 @@ class CheckIn
                 }
                 MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_head_loaded', [$skinName, $skinValue["param"]["size"], $skinValue["name"]]), 2);
 
-            } else if (isset($skinValue["type"]) && ($skinValue["type"] == "custom" || $skinValue["type"] == "vehicle")) {
+            } else if (isset($skinValue["type"]) && ($skinValue["type"] == "custom")) {
                 //CustomSkin must have json geometry file
                 if (file_exists(MyEntities::$pathSkins . $skinName . '.json')) {
                     $decodedGeometry = json_decode(file_get_contents(MyEntities::$pathSkins . $skinName . '.json'));
@@ -277,6 +279,7 @@ class CheckIn
                 if (is_string($actionValue)) return true;
                 else return false;
                 break;
+            case "repair":
             case "heal":
                 if (is_integer($actionValue)) return true;
                 else return false;
@@ -303,10 +306,6 @@ class CheckIn
                     if (!isset($toGiveExp[0]) OR !isset($toGiveExp[1]) OR !isset($toGiveExp[2]) OR isset($toGiveExp[3])) return false;
                 }
                 return true;
-                break;
-            case "repair":
-                if (is_integer($actionValue)) return true;
-                else return false;
                 break;
             case "cmd":
                 $toExecute = explode(";", $actionValue);
