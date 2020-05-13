@@ -19,7 +19,7 @@ Do you need to add entity and manage it easily , and add more blocks/items to yo
 Want a life dispenser ? A small flower pot ? Or just some popcorn ?
 
 ## Features:
-* !! Some examples inclued !!
+* !! Some examples included !!
 * Can be run from console
 * Automatic creation of entity in config file when Skin in folder and not exist (I'm so lazy ...)
 * Items/entities can be given to players
