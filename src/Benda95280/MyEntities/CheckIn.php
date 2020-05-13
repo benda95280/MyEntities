@@ -47,12 +47,18 @@ class CheckIn
             $filename_exp_end = end($filename_explode);
             if (strtolower($filename_exp_end) != "empty") {
                 if (!isset(MyEntities::$skinsList[$filename])) {
-                    MyEntities::$skinsList[$filename]["type"] = "head";
-                    MyEntities::$skinsList[$filename]["name"] = $filename;
-                    MyEntities::$skinsList[$filename]["param"]["size"] = "normal";
-                    MyEntities::$skinsList[$filename]["param"]["health"] = 1;
-                    MyEntities::$skinsList[$filename]["param"]["unbreakable"] = 0;
-                    MyEntities::logMessage(MyEntities::$language->translateString('checkin_newadded', [$filename]), 1);
+					//Entity declaration cannot have white space and correct length
+					if (preg_match('/\s/', $filename) || strlen($filename) < 4 || strlen($filename) > 22) {
+						MyEntities::logMessage(MyEntities::$language->translateString('checkin_entspaceorchar', [$filename]), 0);
+					}
+					else {
+						MyEntities::$skinsList[$filename]["type"] = "head";
+						MyEntities::$skinsList[$filename]["name"] = $filename;
+						MyEntities::$skinsList[$filename]["param"]["size"] = "normal";
+						MyEntities::$skinsList[$filename]["param"]["health"] = 1;
+						MyEntities::$skinsList[$filename]["param"]["unbreakable"] = 0;
+						MyEntities::logMessage(MyEntities::$language->translateString('checkin_newadded', [$filename]), 1);
+					}
                 }
             }
         }
@@ -70,6 +76,17 @@ class CheckIn
                 MyEntities::logMessage(MyEntities::$language->translateString('checkin_noskinpng', [$skinName]), 0);
                 unset(MyEntities::$skinsList[$skinName]);
                 continue;
+            }
+
+            //Entity skin cannot exeed 256x256px
+            if (getImageSize(MyEntities::$pathSkins . $skinName . '.png')[0] > 256  || getImageSize(MyEntities::$pathSkins . $skinName . '.png')[1] > 256) {
+                MyEntities::logMessage(MyEntities::$language->translateString('checkin_skinsizeover256', [$skinName]), 0);
+                unset(MyEntities::$skinsList[$skinName]);
+                continue;
+            }
+            //Entity skin is big ...prevent ...
+            elseif (getImageSize(MyEntities::$pathSkins . $skinName . '.png')[0] >= 128  || getImageSize(MyEntities::$pathSkins . $skinName . '.png')[1] >= 128) {
+                MyEntities::logMessage(MyEntities::$language->translateString('checkin_skinsizeover128', [$skinName]), 0);
             }
             //Entity declaration cannot have white space and correct length
 			if (preg_match('/\s/', $skinName) || strlen($skinName) < 4 || strlen($skinName) > 22) {
@@ -209,20 +226,29 @@ class CheckIn
             } else if (isset($skinValue["type"]) && ($skinValue["type"] == "custom")) {
                 //CustomSkin must have json geometry file
                 if (file_exists(MyEntities::$pathSkins . $skinName . '.json')) {
-                    $decodedGeometry = json_decode(file_get_contents(MyEntities::$pathSkins . $skinName . '.json'));
-                    //Test json Validity
-                    if (!is_null($decodedGeometry)) {
-                        $countFileSkinsCustom++;
-                    } else {
-                        MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_custom_geometryjson', [$skinName]), 0);
-                        unset(MyEntities::$skinsList[$skinName]);
-                        continue;
-                    }
+                    $decodedGeometry = json_decode(file_get_contents(MyEntities::$pathSkins . $skinName . '.json'), true);
+					
                     if (!isset($skinValue["param"]["geometryName"])) {
                         MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_custom_geometryname', [$skinName]), 0);
                         unset(MyEntities::$skinsList[$skinName]);
                         continue;
                     }
+                    //Test json Validity
+                    if (!is_null($decodedGeometry)) {
+						if(isset($decodedGeometry["format_version"]) && isset($decodedGeometry[$skinValue["param"]["geometryName"]])) {
+							$countFileSkinsCustom++;
+						}
+						else {
+							MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_custom_geometryjsonwronginside', [$skinName, $skinValue["param"]["geometryName"]]), 0);
+							unset(MyEntities::$skinsList[$skinName]);
+							continue;							
+						}
+                    } else {
+                        MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_custom_geometryjson', [$skinName]), 0);
+                        unset(MyEntities::$skinsList[$skinName]);
+                        continue;
+                    }
+					
                     if (isset($skinValue["param"]["size"])) {
                         MyEntities::logMessage(MyEntities::$language->translateString('checkin_entity_custom_size', [$skinName]), 0);
                         unset(MyEntities::$skinsList[$skinName]);
