@@ -1,5 +1,5 @@
 name: MyEntities
-version: 0.1.1
+version: 0.1.2
 main: Benda95280\MyEntities\MyEntities
 api: ["3.11"]
 authors:
