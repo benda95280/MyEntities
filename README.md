@@ -19,7 +19,7 @@ Do you need to add entity and manage it easily , and add more blocks/items to yo
 Want a life dispenser ? A small flower pot ? Or just some popcorn ?
 
 ## Features:
-* !! Some examples inclued !!
+* !! Some examples included !!
 * Can be run from console
 * Automatic creation of entity in config file when Skin in folder and not exist (I'm so lazy ...)
 * Items/entities can be given to players
@@ -132,10 +132,12 @@ A big thanks to :
 
 ## I'm stuck on (Help needed):
 - [x] Looking for information about: Entity act as a Block (Collision, breaking ...)
+- [ ] Collision seems very strange, it's like knocback when you touch it
+- [ ] Prevent placing entity over existing entity (Like flower)
 - [ ] Is it possible to added floating effect to the entity ? (Like a cloud)
-- [ ] Looking for help for the reload function. I've to use a Task, but i want a task that check ALL of my entity that need to be updated, and not a task per entity
+- [ ] Looking for help for the reload function in the entity. I've to use a Task, but i want a task that check ALL of my entity that need to be updated, and not a task per entity
 - [x] Looking to the right way to have the file CheckIn.php loaded
 
 
 ## Known BUG
-- [ ] Orientation of normal and small entity when created is 90° instead of 45° (Don't know how to fix now, will check later)
+- Wait issue
